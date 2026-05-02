@@ -14,7 +14,7 @@ type Phase = "video" | "transition" | "gallery";
 // Paneles infograficos — aparecen y desaparecen con el video scroll
 // Equivalente al HoverInfographic del proyecto anterior
 // progress: 0-1 del video. center: momento de maxima visibilidad
-function infographicOpacity(progress: number, center: number, width = 0.28): number {
+function infographicOpacity(progress: number, center: number, width = 0.35): number {
   const dist = Math.abs(progress - center);
   if (dist > width) return 0;
   return Math.max(0, 1 - (dist / width));
@@ -92,17 +92,25 @@ export default function Experience() {
         const p = videoProgressRef.current;
 
         if (infographic1Ref.current) {
+          // Entrada desde abajo-izquierda, salida por arriba
+          // p < center: sube desde abajo (yOff positivo -> negativo)
+          // p > center: sale por arriba (yOff sigue bajando hacia negativo)
           const op1 = infographicOpacity(p, 0.25);
-          const yOff1 = (1 - op1) * 60;
-          infographic1Ref.current.style.opacity = String(op1);
-          infographic1Ref.current.style.transform = `translate3d(0px, ${yOff1}px, 0)`;
+          const relPos = (p - 0.25) / 0.35; // -1 a +1
+          const yOff1 = relPos * -120;       // sube 120px de inicio a fin
+          const xOff1 = (1 - op1) * -50;    // entra desde izquierda
+          infographic1Ref.current.style.opacity = String(Math.max(0, op1));
+          infographic1Ref.current.style.transform = `translate3d(${xOff1}px, ${yOff1}px, 0)`;
         }
 
         if (infographic2Ref.current) {
+          // Entrada desde abajo-derecha, salida por arriba
           const op2 = infographicOpacity(p, 0.65);
-          const yOff2 = (1 - op2) * 60;
-          infographic2Ref.current.style.opacity = String(op2);
-          infographic2Ref.current.style.transform = `translate3d(0px, ${yOff2}px, 0)`;
+          const relPos2 = (p - 0.65) / 0.35;
+          const yOff2 = relPos2 * -120;
+          const xOff2 = (1 - op2) * 50;     // entra desde derecha
+          infographic2Ref.current.style.opacity = String(Math.max(0, op2));
+          infographic2Ref.current.style.transform = `translate3d(${xOff2}px, ${yOff2}px, 0)`;
         }
 
         if (videoProgressRef.current >= 0.999 && delta > 0) {
@@ -248,8 +256,8 @@ export default function Experience() {
                 transition: "none",
                 background: "rgba(0,0,0,0.09)",
                 border: "1px solid rgba(255,255,255,0.1)",
-                padding: "2.5rem 3rem",
-                maxWidth: "28rem",
+                padding: "3rem 4rem",
+                maxWidth: "36rem",
                 borderRadius: "2px",
               }}
             >
@@ -267,7 +275,7 @@ export default function Experience() {
               <h2 style={{
                 fontFamily: "Georgia, serif",
                 color: "white",
-                fontSize: "clamp(1.8rem, 3.5vw, 3rem)",
+                fontSize: "clamp(2.2rem, 4.5vw, 4rem)",
                 fontWeight: 300,
                 letterSpacing: "0.05em",
                 lineHeight: 1.2,
@@ -309,8 +317,8 @@ export default function Experience() {
                 transition: "none",
                 background: "rgba(0,0,0,0.09)",
                 border: "1px solid rgba(255,255,255,0.1)",
-                padding: "2.5rem 3rem",
-                maxWidth: "28rem",
+                padding: "3rem 4rem",
+                maxWidth: "36rem",
                 borderRadius: "2px",
                 textAlign: "right",
               }}
@@ -329,7 +337,7 @@ export default function Experience() {
               <h2 style={{
                 fontFamily: "Georgia, serif",
                 color: "white",
-                fontSize: "clamp(1.8rem, 3.5vw, 3rem)",
+                fontSize: "clamp(2.2rem, 4.5vw, 4rem)",
                 fontWeight: 300,
                 letterSpacing: "0.05em",
                 lineHeight: 1.2,
