@@ -190,6 +190,65 @@ export default function Experience() {
         </div>
 
       </div>
+      {/* SCROLL INDICATOR — fijo, animado */}
+      <style>{`
+        @keyframes scrollPulse {
+          0% { opacity: 0; transform: translateY(-6px); }
+          50% { opacity: 1; transform: translateY(0px); }
+          100% { opacity: 0; transform: translateY(6px); }
+        }
+        @keyframes scrollFade {
+          0%, 100% { opacity: 0.2; }
+          50% { opacity: 0.8; }
+        }
+        .scroll-dot {
+          animation: scrollPulse 1.8s ease-in-out infinite;
+        }
+        .scroll-text {
+          animation: scrollFade 1.8s ease-in-out infinite;
+        }
+      `}</style>
+
+      <div style={{
+        position: "fixed",
+        bottom: "2.5rem",
+        left: "50%",
+        transform: "translateX(-50%)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "0.6rem",
+        zIndex: 200,
+        pointerEvents: "none",
+      }}>
+        <span className="scroll-text" style={{
+          color: "#c9a96e",
+          fontSize: "0.45rem",
+          letterSpacing: "0.5em",
+          fontFamily: "Georgia, serif",
+          textTransform: "uppercase",
+        }}>
+          SCROLL
+        </span>
+        {/* Contenedor del mouse */}
+        <div style={{
+          width: "1.4rem",
+          height: "2.2rem",
+          border: "1px solid rgba(201,169,110,0.5)",
+          borderRadius: "0.7rem",
+          display: "flex",
+          justifyContent: "center",
+          paddingTop: "0.35rem",
+        }}>
+          <div className="scroll-dot" style={{
+            width: "0.2rem",
+            height: "0.4rem",
+            borderRadius: "0.2rem",
+            background: "#c9a96e",
+          }} />
+        </div>
+      </div>
+
     </div>
   );
 }
