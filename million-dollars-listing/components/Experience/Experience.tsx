@@ -144,15 +144,7 @@ export default function Experience() {
             muted playsInline preload="auto"
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
-          {/* Scroll indicator */}
-          <div style={{
-            position: "absolute", bottom: "2.5rem", left: 0,
-            width: "100%", display: "flex", flexDirection: "column",
-            alignItems: "center", gap: "0.5rem", opacity: 0.35, pointerEvents: "none",
-          }}>
-            <span style={{ color: "white", fontSize: "0.5rem", letterSpacing: "0.4em" }}>SCROLL</span>
-            <div style={{ width: "1px", height: "2rem", background: "white" }} />
-          </div>
+
         </div>
 
         {/* GALERIA */}
