@@ -9,7 +9,6 @@ const GALLERY_IMAGES = [
 ];
 
 const LOCALES = ["EN", "ES", "FR", "RU"];
-
 type Phase = "video" | "transition" | "gallery";
 
 export default function Experience() {
@@ -30,7 +29,6 @@ export default function Experience() {
 
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
-
     gsap.set(stage, { height: "100vh" });
 
     const handleWheel = (e: WheelEvent) => {
@@ -38,12 +36,8 @@ export default function Experience() {
       const delta = e.deltaY;
 
       if (phaseRef.current === "video") {
-        videoProgressRef.current = Math.max(0, Math.min(1,
-          videoProgressRef.current + delta * 0.0006
-        ));
-        if (video.duration) {
-          video.currentTime = videoProgressRef.current * video.duration;
-        }
+        videoProgressRef.current = Math.max(0, Math.min(1, videoProgressRef.current + delta * 0.0006));
+        if (video.duration) video.currentTime = videoProgressRef.current * video.duration;
         if (videoProgressRef.current >= 0.999 && delta > 0) {
           phaseRef.current = "transition";
           transitionProgressRef.current = 0;
@@ -51,13 +45,10 @@ export default function Experience() {
       }
 
       else if (phaseRef.current === "transition") {
-        transitionProgressRef.current = Math.max(0, Math.min(1,
-          transitionProgressRef.current + delta * 0.005
-        ));
+        transitionProgressRef.current = Math.max(0, Math.min(1, transitionProgressRef.current + delta * 0.005));
         const newHeight = 100 + transitionProgressRef.current * 50;
         const scrollY = transitionProgressRef.current * 50;
         gsap.set(stage, { y: -scrollY + "vh", height: newHeight + "vh" });
-
         if (transitionProgressRef.current >= 0.999 && delta > 0) {
           phaseRef.current = "gallery";
           galleryProgressRef.current = 0;
@@ -70,9 +61,7 @@ export default function Experience() {
 
       else if (phaseRef.current === "gallery") {
         const maxX = galleryTrack.scrollWidth - window.innerWidth;
-        galleryProgressRef.current = Math.max(0, Math.min(1,
-          galleryProgressRef.current + delta * 0.0006
-        ));
+        galleryProgressRef.current = Math.max(0, Math.min(1, galleryProgressRef.current + delta * 0.0006));
         gsap.to(galleryTrack, {
           x: -galleryProgressRef.current * maxX,
           duration: 0.5,
@@ -97,11 +86,10 @@ export default function Experience() {
   return (
     <div style={{ position: "fixed", inset: 0, width: "100%", height: "100vh", overflow: "hidden", background: "#0a0a0a" }}>
 
-      {/* ── NAVBAR ────────────────────────────────────────────────────────── */}
+      {/* NAVBAR */}
       <nav style={{
         position: "fixed",
-        top: 0,
-        left: 0,
+        top: 0, left: 0,
         width: "100%",
         height: "5rem",
         display: "flex",
@@ -110,207 +98,97 @@ export default function Experience() {
         padding: "0 2.5rem",
         zIndex: 100,
         background: "linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%)",
-        pointerEvents: "none",
       }}>
-
-        {/* LOGO — izquierda */}
-        <div style={{ pointerEvents: "auto" }}>
-          <p style={{
-            color: "#c9a96e",
-            fontFamily: "Georgia, serif",
-            fontSize: "clamp(0.6rem, 1.2vw, 0.85rem)",
-            letterSpacing: "0.25em",
-            fontWeight: 400,
-            margin: 0,
-            lineHeight: 1.3,
-          }}>
+        {/* LOGO */}
+        <div>
+          <p style={{ color: "#c9a96e", fontFamily: "Georgia, serif", fontSize: "clamp(0.6rem, 1.2vw, 0.85rem)", letterSpacing: "0.25em", fontWeight: 400, margin: 0, lineHeight: 1.3 }}>
             MILLION DOLLARS
           </p>
-          <p style={{
-            color: "#c9a96e",
-            fontFamily: "Georgia, serif",
-            fontSize: "clamp(0.5rem, 0.9vw, 0.65rem)",
-            letterSpacing: "0.5em",
-            fontWeight: 300,
-            margin: 0,
-            opacity: 0.6,
-          }}>
+          <p style={{ color: "#c9a96e", fontFamily: "Georgia, serif", fontSize: "clamp(0.5rem, 0.9vw, 0.65rem)", letterSpacing: "0.5em", fontWeight: 300, margin: 0, opacity: 0.6 }}>
             LISTING MARBELLA
           </p>
         </div>
 
-        {/* LANGUAGE SWITCHER — derecha */}
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.1rem",
-          pointerEvents: "auto",
-        }}>
+        {/* IDIOMAS */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.1rem" }}>
           {LOCALES.map((lang, i) => (
             <div key={lang} style={{ display: "flex", alignItems: "center" }}>
               <button
                 onClick={() => setActiveLang(lang)}
                 style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
+                  background: "none", border: "none", cursor: "pointer",
                   color: activeLang === lang ? "#c9a96e" : "rgba(255,255,255,0.35)",
-                  fontFamily: "Georgia, serif",
-                  fontSize: "0.55rem",
-                  letterSpacing: "0.2em",
-                  padding: "0.3rem 0.5rem",
-                  transition: "color 0.3s ease",
-                  textTransform: "uppercase",
+                  fontFamily: "Georgia, serif", fontSize: "0.55rem",
+                  letterSpacing: "0.2em", padding: "0.3rem 0.5rem",
+                  transition: "color 0.3s ease", textTransform: "uppercase",
                 }}
               >
                 {lang}
               </button>
               {i < LOCALES.length - 1 && (
-                <span style={{
-                  color: "rgba(255,255,255,0.15)",
-                  fontSize: "0.4rem",
-                }}>
-                  |
-                </span>
+                <span style={{ color: "rgba(255,255,255,0.15)", fontSize: "0.4rem" }}>|</span>
               )}
             </div>
           ))}
         </div>
       </nav>
 
-      {/* ── STAGE ─────────────────────────────────────────────────────────── */}
-      <div
-        ref={stageRef}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100vh",
-          willChange: "height, transform",
-        }}
-      >
+      {/* STAGE */}
+      <div ref={stageRef} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100vh", willChange: "height, transform" }}>
+
         {/* VIDEO */}
-        <div style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100vh",
-          overflow: "hidden",
-        }}>
+        <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100vh", overflow: "hidden" }}>
           <video
             ref={videoRef}
             src="/videos/hero.mp4"
-            muted
-            playsInline
-            preload="auto"
+            muted playsInline preload="auto"
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
+          {/* Scroll indicator */}
+          <div style={{
+            position: "absolute", bottom: "2.5rem", left: 0,
+            width: "100%", display: "flex", flexDirection: "column",
+            alignItems: "center", gap: "0.5rem", opacity: 0.35, pointerEvents: "none",
+          }}>
+            <span style={{ color: "white", fontSize: "0.5rem", letterSpacing: "0.4em" }}>SCROLL</span>
+            <div style={{ width: "1px", height: "2rem", background: "white" }} />
+          </div>
+        </div>
 
-          {/* GALERIA */
+        {/* GALERIA */}
         <div style={{
-          position: "absolute",
-          top: "100vh",
-          left: 0,
-          width: "100%",
-          height: "50vh",
-          overflow: "hidden",
-          background: "linear-gradient(to bottom, #050505 0%, #0a0a0a 100%)",
+          position: "absolute", top: "100vh", left: 0,
+          width: "100%", height: "50vh", overflow: "hidden",
+          background: "linear-gradient(to bottom, #050505, #0a0a0a)",
           borderTop: "1px solid rgba(201,169,110,0.15)",
         }}>
-          <div
-            ref={galleryTrackRef}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              height: "100%",
-              width: "max-content",
-              gap: "1.5rem",
-              paddingLeft: "4rem",
-              paddingRight: "4rem",
-              willChange: "transform",
-            }}
-          >
+          <div ref={galleryTrackRef} style={{
+            display: "flex", alignItems: "center",
+            height: "100%", width: "max-content",
+            gap: "1.5rem", paddingLeft: "4rem", paddingRight: "4rem",
+            willChange: "transform",
+          }}>
+
             {/* Label */}
-            <div style={{
-              flexShrink: 0,
-              width: "16vw",
-              color: "#c9a96e",
-              fontFamily: "Georgia, serif",
-            }}>
-              <p style={{
-                fontSize: "0.5rem",
-                letterSpacing: "0.45em",
-                opacity: 0.4,
-                textTransform: "uppercase",
-                margin: "0 0 0.8rem",
-              }}>
-                Seleccion
-              </p>
-              <h2 style={{
-                fontSize: "clamp(1rem, 1.8vw, 1.5rem)",
-                fontWeight: 300,
-                lineHeight: 1.3,
-                margin: "0 0 1rem",
-              }}>
+            <div style={{ flexShrink: 0, width: "16vw", color: "#c9a96e", fontFamily: "Georgia, serif" }}>
+              <p style={{ fontSize: "0.5rem", letterSpacing: "0.45em", opacity: 0.4, textTransform: "uppercase", margin: "0 0 0.8rem" }}>Seleccion</p>
+              <h2 style={{ fontSize: "clamp(1rem, 1.8vw, 1.5rem)", fontWeight: 300, lineHeight: 1.3, margin: "0 0 1rem" }}>
                 Propiedades<br />Exclusivas
               </h2>
-              <div style={{
-                width: "2rem",
-                height: "1px",
-                background: "#c9a96e",
-                opacity: 0.25,
-                marginBottom: "1rem",
-              }} />
-              <p style={{
-                fontSize: "0.45rem",
-                letterSpacing: "0.2em",
-                opacity: 0.3,
-                lineHeight: 1.8,
-                margin: 0,
-              }}>
+              <div style={{ width: "2rem", height: "1px", background: "#c9a96e", opacity: 0.25, marginBottom: "1rem" }} />
+              <p style={{ fontSize: "0.45rem", letterSpacing: "0.2em", opacity: 0.3, lineHeight: 1.8, margin: 0 }}>
                 MARBELLA<br />COSTA DEL SOL
               </p>
             </div>
 
-            <div style={{
-              flexShrink: 0,
-              width: "1px",
-              height: "60%",
-              background: "rgba(201,169,110,0.2)",
-            }} />
+            <div style={{ flexShrink: 0, width: "1px", height: "60%", background: "rgba(201,169,110,0.2)" }} />
 
             {/* Imagenes */}
             {GALLERY_IMAGES.map((src, i) => (
-              <div key={i} style={{
-                flexShrink: 0,
-                width: "38vw",
-                height: "40vh",
-                overflow: "hidden",
-                position: "relative",
-              }}>
-                <img
-                  src={src}
-                  alt={"Propiedad " + (i + 1)}
-                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                />
-                <div style={{
-                  position: "absolute",
-                  bottom: "0.8rem",
-                  left: "0.8rem",
-                  background: "rgba(0,0,0,0.4)",
-                  padding: "0.3rem 0.6rem",
-                }}>
-                  <p style={{
-                    color: "#c9a96e",
-                    fontSize: "0.45rem",
-                    letterSpacing: "0.4em",
-                    margin: 0,
-                    opacity: 0.8,
-                  }}>
-                    0{i + 1}
-                  </p>
+              <div key={i} style={{ flexShrink: 0, width: "38vw", height: "40vh", overflow: "hidden", position: "relative" }}>
+                <img src={src} alt={"Propiedad " + (i + 1)} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                <div style={{ position: "absolute", bottom: "0.8rem", left: "0.8rem", background: "rgba(0,0,0,0.4)", padding: "0.3rem 0.6rem" }}>
+                  <p style={{ color: "#c9a96e", fontSize: "0.45rem", letterSpacing: "0.4em", margin: 0, opacity: 0.8 }}>0{i + 1}</p>
                 </div>
               </div>
             ))}
