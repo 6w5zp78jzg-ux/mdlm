@@ -59,11 +59,11 @@ export default function Experience() {
         ));
 
         // Stage crece: 100vh -> 133vh
-        const newHeight = 100 + transitionProgressRef.current * 33;
+        const newHeight = 100 + transitionProgressRef.current * 50;
         gsap.set(stage, { height: newHeight + "vh" });
 
         // Y el viewport sube para mostrar el espacio nuevo
-        const scrollY = transitionProgressRef.current * 33;
+        const scrollY = transitionProgressRef.current * 50;
         gsap.set(stage, {
           y: -scrollY + "vh",
           height: newHeight + "vh",
@@ -282,7 +282,7 @@ export default function Experience() {
               <div key={i} style={{
                 flexShrink: 0,
                 width: "38vw",
-                height: "26vh",
+                height: "40vh",
                 overflow: "hidden",
                 position: "relative",
               }}>
