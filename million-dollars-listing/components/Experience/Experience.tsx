@@ -12,56 +12,56 @@ const GALLERY_IMAGES = [
 ];
 
 export default function Experience() {
-  const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const galleryRef = useRef<HTMLDivElement>(null);
   const galleryTrackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const video = videoRef.current;
-    const gallery = galleryRef.current;
     const galleryTrack = galleryTrackRef.current;
-    if (!video || !gallery || !galleryTrack) return;
+    if (!video || !galleryTrack) return;
 
-    // Esperar a que el video tenga metadata
     const init = () => {
-      const duration = video.duration;
-
-      // ── FASE 1: Video scrubbing ──────────────────────────────────────────
-      // El scroll de la primera seccion controla currentTime del video
+      // ── FASE 1: Video scrubbing pinned ──────────────────────────────────
+      // 300vh de scroll controlan el currentTime del video
       ScrollTrigger.create({
         trigger: "#video-section",
         start: "top top",
-        end: "bottom top",
+        end: "+=300vh",
         pin: true,
         scrub: true,
         onUpdate: (self) => {
-          video.currentTime = self.progress * duration;
+          if (video.duration) {
+            video.currentTime = self.progress * video.duration;
+          }
         },
       });
 
-      // ── FASE 2 + 3: Galeria horizontal ───────────────────────────────────
-      // La galeria se desplaza horizontalmente con el scroll vertical
+      // ── FASE 2: Galeria horizontal ───────────────────────────────────────
+      // Se activa despues del espacio de transicion de 1/3 pantalla
       const galleryWidth = galleryTrack.scrollWidth - window.innerWidth;
 
-      gsap.to(galleryTrack, {
-        x: -galleryWidth,
-        ease: "none",
-        scrollTrigger: {
-          trigger: "#gallery-section",
-          start: "top top",
-          end: () => "+=" + galleryWidth,
-          pin: true,
-          scrub: 1,
-          anticipatePin: 1,
-        },
-      });
+      gsap.fromTo(galleryTrack,
+        { x: galleryWidth },
+        {
+          x: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: "#gallery-section",
+            start: "top top",
+            end: () => "+=" + galleryWidth,
+            pin: true,
+            scrub: 1,
+            anticipatePin: 1,
+          },
+        }
+      );
     };
 
     if (video.readyState >= 1) {
       init();
     } else {
       video.addEventListener("loadedmetadata", init);
+      return () => video.removeEventListener("loadedmetadata", init);
     }
 
     return () => {
@@ -70,10 +70,10 @@ export default function Experience() {
   }, []);
 
   return (
-    <div ref={containerRef}>
+    <div style={{ background: "#0a0a0a" }}>
 
-      {/* ── FASE 1: VIDEO SCRUBBING ─────────────────────────────── */}
-      <div id="video-section" style={{ height: "300vh", position: "relative" }}>
+      {/* ── FASE 1: VIDEO SCRUBBING ─────────────────────────────────────── */}
+      <div id="video-section" style={{ height: "100vh", position: "relative" }}>
         <video
           ref={videoRef}
           src="/videos/hero.mp4"
@@ -81,31 +81,29 @@ export default function Experience() {
           playsInline
           preload="auto"
           style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
+            position: "absolute",
+            top: 0, left: 0,
             width: "100%",
-            height: "100vh",
+            height: "100%",
             objectFit: "cover",
           }}
         />
-        {/* Overlay texto hero */}
+
+        {/* Titulo hero */}
         <div style={{
-          position: "fixed",
-          top: 0, left: 0,
-          width: "100%", height: "100vh",
+          position: "absolute",
+          bottom: "4rem", left: 0,
+          width: "100%",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "flex-end",
-          paddingBottom: "4rem",
           pointerEvents: "none",
           zIndex: 10,
         }}>
           <h1 style={{
             color: "#c9a96e",
             fontFamily: "serif",
-            fontSize: "clamp(2rem, 5vw, 4rem)",
+            fontSize: "clamp(1.5rem, 4vw, 3.5rem)",
             letterSpacing: "0.4em",
             fontWeight: 300,
             textAlign: "center",
@@ -114,101 +112,149 @@ export default function Experience() {
           </h1>
           <p style={{
             color: "#c9a96e",
-            opacity: 0.6,
+            opacity: 0.5,
             letterSpacing: "0.6em",
-            fontSize: "0.7rem",
+            fontSize: "0.65rem",
             marginTop: "0.5rem",
           }}>
             MARBELLA
           </p>
-          {/* Scroll indicator */}
           <div style={{
-            position: "absolute",
-            bottom: "2rem",
+            marginTop: "2rem",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             gap: "0.5rem",
-            opacity: 0.5,
+            opacity: 0.4,
           }}>
-            <span style={{ color: "white", fontSize: "0.6rem", letterSpacing: "0.3em" }}>SCROLL</span>
-            <div style={{ width: "1px", height: "3rem", background: "white" }} />
+            <span style={{ color: "white", fontSize: "0.55rem", letterSpacing: "0.3em" }}>SCROLL</span>
+            <div style={{ width: "1px", height: "2.5rem", background: "white" }} />
           </div>
         </div>
       </div>
 
-      {/* ── FASE 2 + 3: GALERIA HORIZONTAL ─────────────────────── */}
-      <div id="gallery-section" style={{ position: "relative", background: "#0a0a0a" }}>
-        <div ref={galleryRef} style={{ overflow: "hidden" }}>
-          <div
-            ref={galleryTrackRef}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "2rem",
-              padding: "0 4rem",
-              width: "max-content",
-              height: "100vh",
-            }}
-          >
-            {/* Titulo galeria */}
-            <div style={{
-              flexShrink: 0,
-              width: "30vw",
-              color: "#c9a96e",
-              fontFamily: "serif",
-              paddingRight: "4rem",
+      {/* ── TRANSICION: 1/3 de pantalla de scroll natural ───────────────── */}
+      {/* Este espacio crea la separacion fluida entre video y galeria      */}
+      <div style={{
+        height: "33vh",
+        background: "linear-gradient(to bottom, #000000, #0a0a0a)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}>
+        <div style={{
+          textAlign: "center",
+          opacity: 0.3,
+        }}>
+          <p style={{
+            color: "#c9a96e",
+            fontSize: "0.6rem",
+            letterSpacing: "0.5em",
+          }}>
+            COLECCION EXCLUSIVA
+          </p>
+        </div>
+      </div>
+
+      {/* ── FASE 2: GALERIA HORIZONTAL ──────────────────────────────────── */}
+      <div
+        id="gallery-section"
+        style={{ height: "100vh", overflow: "hidden", position: "relative" }}
+      >
+        <div
+          ref={galleryTrackRef}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "1.5rem",
+            paddingLeft: "6rem",
+            paddingRight: "4rem",
+            width: "max-content",
+            height: "100%",
+            willChange: "transform",
+          }}
+        >
+          {/* Label inicial */}
+          <div style={{
+            flexShrink: 0,
+            width: "25vw",
+            color: "#c9a96e",
+            fontFamily: "serif",
+          }}>
+            <p style={{
+              fontSize: "0.55rem",
+              letterSpacing: "0.5em",
+              opacity: 0.4,
+              marginBottom: "1rem",
+              textTransform: "uppercase",
             }}>
-              <p style={{ fontSize: "0.6rem", letterSpacing: "0.5em", opacity: 0.5, marginBottom: "1rem" }}>
-                COLECCION EXCLUSIVA
-              </p>
-              <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontWeight: 300, lineHeight: 1.1 }}>
-                Propiedades<br />Seleccionadas
-              </h2>
-              <div style={{ width: "3rem", height: "1px", background: "#c9a96e", opacity: 0.4, margin: "2rem 0" }} />
-              <p style={{ fontSize: "0.7rem", letterSpacing: "0.2em", opacity: 0.6, lineHeight: 2 }}>
-                MARBELLA · COSTA DEL SOL
-              </p>
-            </div>
-
-            {/* Imagenes */}
-            {GALLERY_IMAGES.map((src, i) => (
-              <div
-                key={i}
-                style={{
-                  flexShrink: 0,
-                  width: "65vw",
-                  height: "75vh",
-                  overflow: "hidden",
-                  position: "relative",
-                }}
-              >
-                <img
-                  src={src}
-                  alt={"Propiedad " + (i + 1)}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    display: "block",
-                  }}
-                />
-                <div style={{
-                  position: "absolute",
-                  bottom: "2rem",
-                  left: "2rem",
-                  color: "white",
-                }}>
-                  <p style={{ fontSize: "0.6rem", letterSpacing: "0.4em", opacity: 0.6 }}>
-                    PROPIEDAD 0{i + 1}
-                  </p>
-                </div>
-              </div>
-            ))}
-
-            {/* Espacio final */}
-            <div style={{ flexShrink: 0, width: "20vw" }} />
+              Propiedades
+            </p>
+            <h2 style={{
+              fontSize: "clamp(1.5rem, 3vw, 2.5rem)",
+              fontWeight: 300,
+              lineHeight: 1.2,
+            }}>
+              Seleccion<br />Exclusiva
+            </h2>
+            <div style={{
+              width: "2rem",
+              height: "1px",
+              background: "#c9a96e",
+              opacity: 0.3,
+              margin: "1.5rem 0",
+            }} />
+            <p style={{
+              fontSize: "0.6rem",
+              letterSpacing: "0.2em",
+              opacity: 0.4,
+              lineHeight: 2,
+            }}>
+              MARBELLA · COSTA DEL SOL
+            </p>
           </div>
+
+          {/* Imagenes */}
+          {GALLERY_IMAGES.map((src, i) => (
+            <div
+              key={i}
+              style={{
+                flexShrink: 0,
+                width: "45vw",
+                height: "70vh",
+                overflow: "hidden",
+                position: "relative",
+              }}
+            >
+              <img
+                src={src}
+                alt={"Propiedad " + (i + 1)}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                }}
+              />
+              <div style={{
+                position: "absolute",
+                bottom: "1.5rem",
+                left: "1.5rem",
+              }}>
+                <p style={{
+                  color: "white",
+                  fontSize: "0.55rem",
+                  letterSpacing: "0.4em",
+                  opacity: 0.5,
+                }}>
+                  PROPIEDAD 0{i + 1}
+                </p>
+              </div>
+            </div>
+          ))}
+
+          {/* Espacio final */}
+          <div style={{ flexShrink: 0, width: "15vw" }} />
         </div>
       </div>
 
