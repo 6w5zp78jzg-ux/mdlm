@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 const GALLERY_IMAGES = [
@@ -7,6 +7,8 @@ const GALLERY_IMAGES = [
   "/gallery/a741c346-7225-4ccb-81fb-13b02e7f5573.jpeg",
   "/gallery/a8c5ab21-42e6-4e78-8613-43737facb1d8.jpeg",
 ];
+
+const LOCALES = ["EN", "ES", "FR", "RU"];
 
 type Phase = "video" | "transition" | "gallery";
 
@@ -18,6 +20,7 @@ export default function Experience() {
   const videoProgressRef = useRef(0);
   const transitionProgressRef = useRef(0);
   const galleryProgressRef = useRef(0);
+  const [activeLang, setActiveLang] = useState("ES");
 
   useEffect(() => {
     const video = videoRef.current;
@@ -28,46 +31,32 @@ export default function Experience() {
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
 
-    // Estado inicial: stage = 100vh (solo video visible)
     gsap.set(stage, { height: "100vh" });
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       const delta = e.deltaY;
 
-      // ── FASE 1: VIDEO SCRUBBING ──────────────────────────────────────
       if (phaseRef.current === "video") {
         videoProgressRef.current = Math.max(0, Math.min(1,
           videoProgressRef.current + delta * 0.0006
         ));
-
         if (video.duration) {
           video.currentTime = videoProgressRef.current * video.duration;
         }
-
         if (videoProgressRef.current >= 0.999 && delta > 0) {
           phaseRef.current = "transition";
           transitionProgressRef.current = 0;
         }
       }
 
-      // ── FASE 2: PANTALLA SE ALARGA 33VH HACIA ABAJO ─────────────────
-      // El stage crece de 100vh a 133vh, revelando el espacio para galeria
       else if (phaseRef.current === "transition") {
         transitionProgressRef.current = Math.max(0, Math.min(1,
           transitionProgressRef.current + delta * 0.005
         ));
-
-        // Stage crece: 100vh -> 133vh
         const newHeight = 100 + transitionProgressRef.current * 50;
-        gsap.set(stage, { height: newHeight + "vh" });
-
-        // Y el viewport sube para mostrar el espacio nuevo
         const scrollY = transitionProgressRef.current * 50;
-        gsap.set(stage, {
-          y: -scrollY + "vh",
-          height: newHeight + "vh",
-        });
+        gsap.set(stage, { y: -scrollY + "vh", height: newHeight + "vh" });
 
         if (transitionProgressRef.current >= 0.999 && delta > 0) {
           phaseRef.current = "gallery";
@@ -79,20 +68,17 @@ export default function Experience() {
         }
       }
 
-      // ── FASE 3: GALERIA HORIZONTAL ───────────────────────────────────
       else if (phaseRef.current === "gallery") {
         const maxX = galleryTrack.scrollWidth - window.innerWidth;
         galleryProgressRef.current = Math.max(0, Math.min(1,
           galleryProgressRef.current + delta * 0.0006
         ));
-
         gsap.to(galleryTrack, {
           x: -galleryProgressRef.current * maxX,
           duration: 0.5,
           ease: "power2.out",
           overwrite: true,
         });
-
         if (galleryProgressRef.current <= 0.001 && delta < 0) {
           phaseRef.current = "transition";
           transitionProgressRef.current = 1;
@@ -101,7 +87,6 @@ export default function Experience() {
     };
 
     window.addEventListener("wheel", handleWheel, { passive: false });
-
     return () => {
       window.removeEventListener("wheel", handleWheel);
       document.body.style.overflow = "";
@@ -110,16 +95,90 @@ export default function Experience() {
   }, []);
 
   return (
-    <div style={{
-      position: "fixed",
-      inset: 0,
-      width: "100%",
-      height: "100vh",
-      overflow: "hidden",
-      background: "#0a0a0a",
-    }}>
+    <div style={{ position: "fixed", inset: 0, width: "100%", height: "100vh", overflow: "hidden", background: "#0a0a0a" }}>
 
-      {/* ── STAGE: contenedor que crece de 100vh a 133vh ─────────────── */}
+      {/* ── NAVBAR ────────────────────────────────────────────────────────── */}
+      <nav style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "5rem",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "0 2.5rem",
+        zIndex: 100,
+        background: "linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%)",
+        pointerEvents: "none",
+      }}>
+
+        {/* LOGO — izquierda */}
+        <div style={{ pointerEvents: "auto" }}>
+          <p style={{
+            color: "#c9a96e",
+            fontFamily: "Georgia, serif",
+            fontSize: "clamp(0.6rem, 1.2vw, 0.85rem)",
+            letterSpacing: "0.25em",
+            fontWeight: 400,
+            margin: 0,
+            lineHeight: 1.3,
+          }}>
+            MILLION DOLLARS
+          </p>
+          <p style={{
+            color: "#c9a96e",
+            fontFamily: "Georgia, serif",
+            fontSize: "clamp(0.5rem, 0.9vw, 0.65rem)",
+            letterSpacing: "0.5em",
+            fontWeight: 300,
+            margin: 0,
+            opacity: 0.6,
+          }}>
+            LISTING MARBELLA
+          </p>
+        </div>
+
+        {/* LANGUAGE SWITCHER — derecha */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.1rem",
+          pointerEvents: "auto",
+        }}>
+          {LOCALES.map((lang, i) => (
+            <div key={lang} style={{ display: "flex", alignItems: "center" }}>
+              <button
+                onClick={() => setActiveLang(lang)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: activeLang === lang ? "#c9a96e" : "rgba(255,255,255,0.35)",
+                  fontFamily: "Georgia, serif",
+                  fontSize: "0.55rem",
+                  letterSpacing: "0.2em",
+                  padding: "0.3rem 0.5rem",
+                  transition: "color 0.3s ease",
+                  textTransform: "uppercase",
+                }}
+              >
+                {lang}
+              </button>
+              {i < LOCALES.length - 1 && (
+                <span style={{
+                  color: "rgba(255,255,255,0.15)",
+                  fontSize: "0.4rem",
+                }}>
+                  |
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      </nav>
+
+      {/* ── STAGE ─────────────────────────────────────────────────────────── */}
       <div
         ref={stageRef}
         style={{
@@ -131,8 +190,7 @@ export default function Experience() {
           willChange: "height, transform",
         }}
       >
-
-        {/* ── VIDEO: ocupa el 100vh superior siempre ─────────────────── */}
+        {/* VIDEO */}
         <div style={{
           position: "absolute",
           top: 0,
@@ -147,14 +205,10 @@ export default function Experience() {
             muted
             playsInline
             preload="auto"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
 
-          {/* Titulo hero — sobre el video */}
+          {/* Titulo hero */}
           <div style={{
             position: "absolute",
             bottom: "5rem",
@@ -202,19 +256,17 @@ export default function Experience() {
           </div>
         </div>
 
-        {/* ── GALERIA: ubicada en el 33vh inferior (que se revela) ──── */}
-        <div
-          style={{
-            position: "absolute",
-            top: "100vh",
-            left: 0,
-            width: "100%",
-            height: "33vh",
-            overflow: "hidden",
-            background: "linear-gradient(to bottom, #050505 0%, #0a0a0a 100%)",
-            borderTop: "1px solid rgba(201,169,110,0.2)",
-          }}
-        >
+        {/* GALERIA */}
+        <div style={{
+          position: "absolute",
+          top: "100vh",
+          left: 0,
+          width: "100%",
+          height: "50vh",
+          overflow: "hidden",
+          background: "linear-gradient(to bottom, #050505 0%, #0a0a0a 100%)",
+          borderTop: "1px solid rgba(201,169,110,0.15)",
+        }}>
           <div
             ref={galleryTrackRef}
             style={{
@@ -236,31 +288,31 @@ export default function Experience() {
               fontFamily: "Georgia, serif",
             }}>
               <p style={{
-                fontSize: "0.45rem",
+                fontSize: "0.5rem",
                 letterSpacing: "0.45em",
                 opacity: 0.4,
                 textTransform: "uppercase",
-                margin: "0 0 0.6rem",
+                margin: "0 0 0.8rem",
               }}>
                 Seleccion
               </p>
               <h2 style={{
-                fontSize: "clamp(0.9rem, 1.5vw, 1.3rem)",
+                fontSize: "clamp(1rem, 1.8vw, 1.5rem)",
                 fontWeight: 300,
                 lineHeight: 1.3,
-                margin: "0 0 0.8rem",
+                margin: "0 0 1rem",
               }}>
                 Propiedades<br />Exclusivas
               </h2>
               <div style={{
-                width: "1.5rem",
+                width: "2rem",
                 height: "1px",
                 background: "#c9a96e",
                 opacity: 0.25,
-                marginBottom: "0.8rem",
+                marginBottom: "1rem",
               }} />
               <p style={{
-                fontSize: "0.4rem",
+                fontSize: "0.45rem",
                 letterSpacing: "0.2em",
                 opacity: 0.3,
                 lineHeight: 1.8,
@@ -289,12 +341,7 @@ export default function Experience() {
                 <img
                   src={src}
                   alt={"Propiedad " + (i + 1)}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    display: "block",
-                  }}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                 />
                 <div style={{
                   position: "absolute",
@@ -305,7 +352,7 @@ export default function Experience() {
                 }}>
                   <p style={{
                     color: "#c9a96e",
-                    fontSize: "0.4rem",
+                    fontSize: "0.45rem",
                     letterSpacing: "0.4em",
                     margin: 0,
                     opacity: 0.8,
