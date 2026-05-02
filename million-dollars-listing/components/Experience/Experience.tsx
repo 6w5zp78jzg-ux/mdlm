@@ -141,7 +141,7 @@ export default function Experience() {
       {/* ── TITULO ──────────────────────────────────────────────────────── */}
       <div style={{
         position: "absolute",
-        bottom: "5rem",
+        bottom: "35vh",
         left: 0,
         width: "100%",
         display: "flex",
@@ -191,10 +191,10 @@ export default function Experience() {
         id="gallery-section"
         style={{
           position: "absolute",
-          top: "67vh",
+          top: "70vh",
           left: 0,
           width: "100%",
-          height: "33vh",
+          height: "30vh",
           overflow: "hidden",
           zIndex: 20,
           background: "linear-gradient(to right, #0a0a0a 0%, #111111 100%)",
@@ -270,7 +270,7 @@ export default function Experience() {
             <div key={i} style={{
               flexShrink: 0,
               width: "38vw",
-              height: "28vh",
+              height: "22vh",
               overflow: "hidden",
               position: "relative",
             }}>
