@@ -190,63 +190,51 @@ export default function Experience() {
         </div>
 
       </div>
-      {/* SCROLL INDICATOR — fijo, animado */}
+      {/* SCROLL INDICATOR — linea neon con crecimiento organico */}
       <style>{`
-        @keyframes scrollPulse {
-          0% { opacity: 0; transform: translateY(-6px); }
-          50% { opacity: 1; transform: translateY(0px); }
-          100% { opacity: 0; transform: translateY(6px); }
+        @keyframes neonBreath {
+          0%   { height: 1.5rem; opacity: 0.3; box-shadow: 0 0 4px 1px rgba(255,255,255,0.3); }
+          50%  { height: 3.5rem; opacity: 1;   box-shadow: 0 0 12px 3px rgba(255,255,255,0.9), 0 0 24px 6px rgba(255,255,255,0.3); }
+          100% { height: 1.5rem; opacity: 0.3; box-shadow: 0 0 4px 1px rgba(255,255,255,0.3); }
         }
-        @keyframes scrollFade {
+        @keyframes textFade {
           0%, 100% { opacity: 0.2; }
-          50% { opacity: 0.8; }
+          50%       { opacity: 0.7; }
         }
-        .scroll-dot {
-          animation: scrollPulse 1.8s ease-in-out infinite;
+        .neon-line {
+          animation: neonBreath 2.4s ease-in-out infinite;
         }
-        .scroll-text {
-          animation: scrollFade 1.8s ease-in-out infinite;
+        .scroll-label {
+          animation: textFade 2.4s ease-in-out infinite;
         }
       `}</style>
 
       <div style={{
         position: "fixed",
-        bottom: "2.5rem",
+        bottom: "2rem",
         left: "50%",
         transform: "translateX(-50%)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: "0.6rem",
+        gap: "0.7rem",
         zIndex: 200,
         pointerEvents: "none",
       }}>
-        <span className="scroll-text" style={{
-          color: "#c9a96e",
-          fontSize: "0.45rem",
+        <span className="scroll-label" style={{
+          color: "white",
+          fontSize: "0.4rem",
           letterSpacing: "0.5em",
           fontFamily: "Georgia, serif",
           textTransform: "uppercase",
         }}>
           SCROLL
         </span>
-        {/* Contenedor del mouse */}
-        <div style={{
-          width: "1.4rem",
-          height: "2.2rem",
-          border: "1px solid rgba(201,169,110,0.5)",
-          borderRadius: "0.7rem",
-          display: "flex",
-          justifyContent: "center",
-          paddingTop: "0.35rem",
-        }}>
-          <div className="scroll-dot" style={{
-            width: "0.2rem",
-            height: "0.4rem",
-            borderRadius: "0.2rem",
-            background: "#c9a96e",
-          }} />
-        </div>
+        <div className="neon-line" style={{
+          width: "1px",
+          background: "white",
+          borderRadius: "1px",
+        }} />
       </div>
 
     </div>
