@@ -8,13 +8,17 @@ const GALLERY_IMAGES = [
   "/gallery/a8c5ab21-42e6-4e78-8613-43737facb1d8.jpeg",
 ];
 
+type Phase = "video" | "transition" | "gallery";
+
 export default function Experience() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const galleryTrackRef = useRef<HTMLDivElement>(null);
-  const phaseRef = useRef<"video" | "transition" | "gallery">("video");
+  const phaseRef = useRef<Phase>("video");
   const videoProgressRef = useRef(0);
   const transitionProgressRef = useRef(0);
   const galleryProgressRef = useRef(0);
+  const rafRef = useRef<number>(0);
+  const targetVideoTimeRef = useRef(0);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -22,58 +26,75 @@ export default function Experience() {
     const gallerySection = document.getElementById("gallery-section");
     if (!video || !galleryTrack || !gallerySection) return;
 
-    // Bloquear scroll nativo
+    // Bloquear scroll nativo completamente
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
+
+    // Posicion inicial galeria — completamente fuera de pantalla abajo
+    gsap.set(gallerySection, { y: "100vh", opacity: 0 });
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       const delta = e.deltaY;
+      const speed = 0.0006;
 
-      // ── FASE 1: VIDEO SCRUBBING ──────────────────────────────────────────
+      // ── FASE 1: VIDEO ──────────────────────────────────────────────────
       if (phaseRef.current === "video") {
-        videoProgressRef.current = Math.max(0, Math.min(1, videoProgressRef.current + delta * 0.0008));
+        videoProgressRef.current = Math.max(0, Math.min(1,
+          videoProgressRef.current + delta * speed
+        ));
+
         if (video.duration) {
-          video.currentTime = videoProgressRef.current * video.duration;
+          targetVideoTimeRef.current = videoProgressRef.current * video.duration;
+          video.currentTime = targetVideoTimeRef.current;
         }
-        if (videoProgressRef.current >= 1 && delta > 0) {
+
+        // Solo avanza a transicion si el video llego al final
+        if (videoProgressRef.current >= 0.999 && delta > 0) {
           phaseRef.current = "transition";
+          transitionProgressRef.current = 0;
         }
       }
 
-      // ── FASE 2: TRANSICION 1/3 PANTALLA ─────────────────────────────────
+      // ── FASE 2: TRANSICION ─────────────────────────────────────────────
       else if (phaseRef.current === "transition") {
-        transitionProgressRef.current = Math.max(0, Math.min(1, transitionProgressRef.current + delta * 0.004));
+        transitionProgressRef.current = Math.max(0, Math.min(1,
+          transitionProgressRef.current + delta * 0.005
+        ));
 
-        // La galeria sube desde abajo hasta quedar en el 1/3 inferior
-        const yOffset = (1 - transitionProgressRef.current) * 100;
+        // Galeria sube desde abajo — destino: top 67vh (1/3 inferior)
+        const yPercent = 100 - (transitionProgressRef.current * 100);
         gsap.set(gallerySection, {
-          y: yOffset + "vh",
+          y: yPercent + "vh",
           opacity: transitionProgressRef.current,
         });
 
-        if (transitionProgressRef.current >= 1 && delta > 0) {
+        if (transitionProgressRef.current >= 0.999 && delta > 0) {
           phaseRef.current = "gallery";
+          galleryProgressRef.current = 0;
         }
-        if (transitionProgressRef.current <= 0 && delta < 0) {
+        if (transitionProgressRef.current <= 0.001 && delta < 0) {
           phaseRef.current = "video";
           videoProgressRef.current = 1;
+          gsap.set(gallerySection, { y: "100vh", opacity: 0 });
         }
       }
 
-      // ── FASE 3: GALERIA HORIZONTAL ───────────────────────────────────────
+      // ── FASE 3: GALERIA HORIZONTAL ─────────────────────────────────────
       else if (phaseRef.current === "gallery") {
-        const galleryWidth = galleryTrack.scrollWidth - window.innerWidth;
-        galleryProgressRef.current = Math.max(0, Math.min(1, galleryProgressRef.current + delta * 0.0008));
+        const maxX = galleryTrack.scrollWidth - window.innerWidth;
+        galleryProgressRef.current = Math.max(0, Math.min(1,
+          galleryProgressRef.current + delta * speed
+        ));
 
         gsap.to(galleryTrack, {
-          x: -galleryProgressRef.current * galleryWidth,
-          duration: 0.6,
+          x: -galleryProgressRef.current * maxX,
+          duration: 0.5,
           ease: "power2.out",
           overwrite: true,
         });
 
-        if (galleryProgressRef.current <= 0 && delta < 0) {
+        if (galleryProgressRef.current <= 0.001 && delta < 0) {
           phaseRef.current = "transition";
           transitionProgressRef.current = 1;
         }
@@ -86,13 +107,21 @@ export default function Experience() {
       window.removeEventListener("wheel", handleWheel);
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
   return (
-    <div style={{ position: "fixed", inset: 0, width: "100%", height: "100vh", overflow: "hidden", background: "#0a0a0a" }}>
+    <div style={{
+      position: "fixed",
+      inset: 0,
+      width: "100%",
+      height: "100vh",
+      overflow: "hidden",
+      background: "#0a0a0a",
+    }}>
 
-      {/* ── VIDEO ─────────────────────────────────────────────────────────── */}
+      {/* ── VIDEO FULLSCREEN ────────────────────────────────────────────── */}
       <video
         ref={videoRef}
         src="/videos/hero.mp4"
@@ -101,17 +130,19 @@ export default function Experience() {
         preload="auto"
         style={{
           position: "absolute",
-          top: 0, left: 0,
-          width: "100%", height: "100%",
+          inset: 0,
+          width: "100%",
+          height: "100%",
           objectFit: "cover",
           zIndex: 1,
         }}
       />
 
-      {/* ── TITULO HERO ───────────────────────────────────────────────────── */}
+      {/* ── TITULO ──────────────────────────────────────────────────────── */}
       <div style={{
         position: "absolute",
-        bottom: "3rem", left: 0,
+        bottom: "5rem",
+        left: 0,
         width: "100%",
         display: "flex",
         flexDirection: "column",
@@ -121,38 +152,41 @@ export default function Experience() {
       }}>
         <h1 style={{
           color: "#c9a96e",
-          fontFamily: "serif",
-          fontSize: "clamp(1.2rem, 5vw, 3.5rem)",
-          letterSpacing: "0.4em",
+          fontFamily: "Georgia, serif",
+          fontSize: "clamp(1rem, 4.5vw, 3.5rem)",
+          letterSpacing: "0.5em",
           fontWeight: 300,
           textAlign: "center",
           margin: 0,
+          textShadow: "0 2px 20px rgba(0,0,0,0.8)",
         }}>
           MILLION DOLLARS LISTING
         </h1>
         <p style={{
           color: "#c9a96e",
           opacity: 0.5,
-          letterSpacing: "0.6em",
+          letterSpacing: "0.7em",
           fontSize: "0.6rem",
-          marginTop: "0.4rem",
+          marginTop: "0.5rem",
+          textShadow: "0 2px 10px rgba(0,0,0,0.8)",
         }}>
           MARBELLA
         </p>
         <div style={{
-          marginTop: "1.5rem",
+          marginTop: "2rem",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: "0.4rem",
+          gap: "0.5rem",
           opacity: 0.35,
         }}>
-          <span style={{ color: "white", fontSize: "0.5rem", letterSpacing: "0.3em" }}>SCROLL</span>
+          <span style={{ color: "white", fontSize: "0.5rem", letterSpacing: "0.4em" }}>SCROLL</span>
           <div style={{ width: "1px", height: "2rem", background: "white" }} />
         </div>
       </div>
 
-      {/* ── GALERIA: empieza en 67vh (ocupa el 33vh inferior) ─────────────── */}
+      {/* ── GALERIA: ocupa el tercio inferior (33vh) ─────────────────────── */}
+      {/* Posicion fija: top 67vh — se desliza desde abajo durante transicion */}
       <div
         id="gallery-section"
         style={{
@@ -163,72 +197,80 @@ export default function Experience() {
           height: "33vh",
           overflow: "hidden",
           zIndex: 20,
-          opacity: 0,
-          transform: "translateY(100vh)",
-          background: "#0a0a0a",
+          background: "linear-gradient(to right, #0a0a0a 0%, #111111 100%)",
+          borderTop: "1px solid rgba(201,169,110,0.15)",
         }}
       >
         <div
           ref={galleryTrackRef}
           style={{
             display: "flex",
+            flexDirection: "row",
             alignItems: "center",
-            gap: "1rem",
-            paddingLeft: "3rem",
-            paddingRight: "2rem",
-            width: "max-content",
             height: "100%",
+            width: "max-content",
+            gap: "1.5rem",
+            paddingLeft: "4rem",
+            paddingRight: "4rem",
             willChange: "transform",
           }}
         >
-          {/* Label */}
+          {/* Label lateral */}
           <div style={{
             flexShrink: 0,
-            width: "18vw",
+            width: "16vw",
             color: "#c9a96e",
-            fontFamily: "serif",
-            paddingRight: "1rem",
+            fontFamily: "Georgia, serif",
           }}>
             <p style={{
               fontSize: "0.45rem",
-              letterSpacing: "0.4em",
+              letterSpacing: "0.45em",
               opacity: 0.4,
-              marginBottom: "0.5rem",
               textTransform: "uppercase",
+              margin: "0 0 0.6rem",
             }}>
-              Seleccion Exclusiva
+              Seleccion
             </p>
             <h2 style={{
-              fontSize: "clamp(0.8rem, 1.8vw, 1.4rem)",
+              fontSize: "clamp(0.9rem, 1.5vw, 1.3rem)",
               fontWeight: 300,
               lineHeight: 1.3,
-              margin: 0,
+              margin: "0 0 0.8rem",
             }}>
-              Propiedades<br />Marbella
+              Propiedades<br />Exclusivas
             </h2>
             <div style={{
               width: "1.5rem",
               height: "1px",
               background: "#c9a96e",
-              opacity: 0.3,
-              margin: "0.8rem 0",
+              opacity: 0.25,
+              marginBottom: "0.8rem",
             }} />
             <p style={{
-              fontSize: "0.45rem",
+              fontSize: "0.4rem",
               letterSpacing: "0.2em",
-              opacity: 0.35,
+              opacity: 0.3,
               lineHeight: 1.8,
+              margin: 0,
             }}>
-              COSTA DEL SOL
+              MARBELLA<br />COSTA DEL SOL
             </p>
           </div>
 
-          {/* Imagenes — altura adaptada al 33vh */}
+          {/* Separador */}
+          <div style={{
+            flexShrink: 0,
+            width: "1px",
+            height: "60%",
+            background: "rgba(201,169,110,0.2)",
+          }} />
+
+          {/* Imagenes — altura 28vh para respirar dentro del 33vh */}
           {GALLERY_IMAGES.map((src, i) => (
             <div key={i} style={{
               flexShrink: 0,
-              width: "40vw",
-              height: "26vh",
+              width: "38vw",
+              height: "28vh",
               overflow: "hidden",
               position: "relative",
             }}>
@@ -242,25 +284,28 @@ export default function Experience() {
                   display: "block",
                 }}
               />
+              {/* Label numero */}
               <div style={{
                 position: "absolute",
                 bottom: "0.8rem",
                 left: "0.8rem",
+                background: "rgba(0,0,0,0.4)",
+                padding: "0.3rem 0.6rem",
               }}>
                 <p style={{
-                  color: "white",
-                  fontSize: "0.45rem",
-                  letterSpacing: "0.35em",
-                  opacity: 0.5,
+                  color: "#c9a96e",
+                  fontSize: "0.4rem",
+                  letterSpacing: "0.4em",
                   margin: 0,
+                  opacity: 0.8,
                 }}>
-                  PROPIEDAD 0{i + 1}
+                  0{i + 1}
                 </p>
               </div>
             </div>
           ))}
 
-          <div style={{ flexShrink: 0, width: "10vw" }} />
+          <div style={{ flexShrink: 0, width: "8vw" }} />
         </div>
       </div>
 
