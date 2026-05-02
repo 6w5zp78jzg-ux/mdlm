@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import "../../app/globals.css";
 
 const locales = ["en", "es", "fr", "ru"];
 
