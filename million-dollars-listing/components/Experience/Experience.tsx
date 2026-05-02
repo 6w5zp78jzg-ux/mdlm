@@ -14,7 +14,7 @@ type Phase = "video" | "transition" | "gallery";
 // Paneles infograficos — aparecen y desaparecen con el video scroll
 // Equivalente al HoverInfographic del proyecto anterior
 // progress: 0-1 del video. center: momento de maxima visibilidad
-function infographicOpacity(progress: number, center: number, width = 0.18): number {
+function infographicOpacity(progress: number, center: number, width = 0.28): number {
   const dist = Math.abs(progress - center);
   if (dist > width) return 0;
   return Math.max(0, 1 - (dist / width));
@@ -61,18 +61,16 @@ export default function Experience() {
 
         if (infographic1Ref.current) {
           const op1 = infographicOpacity(p, 0.25);
-          const xOff1 = (1 - op1) * -40;
-          const yOff1 = (1 - op1) * 20;
+          const yOff1 = (1 - op1) * 60;
           infographic1Ref.current.style.opacity = String(op1);
-          infographic1Ref.current.style.transform = `translate3d(${xOff1}px, ${yOff1}px, 0)`;
+          infographic1Ref.current.style.transform = `translate3d(0px, ${yOff1}px, 0)`;
         }
 
         if (infographic2Ref.current) {
           const op2 = infographicOpacity(p, 0.65);
-          const xOff2 = (1 - op2) * 40;
-          const yOff2 = (1 - op2) * 20;
+          const yOff2 = (1 - op2) * 60;
           infographic2Ref.current.style.opacity = String(op2);
-          infographic2Ref.current.style.transform = `translate3d(${xOff2}px, ${yOff2}px, 0)`;
+          infographic2Ref.current.style.transform = `translate3d(0px, ${yOff2}px, 0)`;
         }
 
         if (videoProgressRef.current >= 0.999 && delta > 0) {
@@ -217,7 +215,7 @@ export default function Experience() {
               ref={infographic1Ref}
               style={{
                 opacity: 0,
-                transform: "translate3d(-40px, 20px, 0)",
+                transform: "translate3d(0px, 60px, 0)",
                 transition: "none",
                 background: "rgba(0,0,0,0.09)",
                 border: "1px solid rgba(255,255,255,0.1)",
@@ -278,7 +276,7 @@ export default function Experience() {
               ref={infographic2Ref}
               style={{
                 opacity: 0,
-                transform: "translate3d(40px, 20px, 0)",
+                transform: "translate3d(0px, 60px, 0)",
                 transition: "none",
                 background: "rgba(0,0,0,0.09)",
                 border: "1px solid rgba(255,255,255,0.1)",
