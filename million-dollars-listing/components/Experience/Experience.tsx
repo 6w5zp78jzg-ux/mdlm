@@ -11,10 +11,21 @@ const GALLERY_IMAGES = [
 const LOCALES = ["EN", "ES", "FR", "RU"];
 type Phase = "video" | "transition" | "gallery";
 
+// Paneles infograficos — aparecen y desaparecen con el video scroll
+// Equivalente al HoverInfographic del proyecto anterior
+// progress: 0-1 del video. center: momento de maxima visibilidad
+function infographicOpacity(progress: number, center: number, width = 0.18): number {
+  const dist = Math.abs(progress - center);
+  if (dist > width) return 0;
+  return Math.max(0, 1 - (dist / width));
+}
+
 export default function Experience() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const galleryTrackRef = useRef<HTMLDivElement>(null);
+  const infographic1Ref = useRef<HTMLDivElement>(null);
+  const infographic2Ref = useRef<HTMLDivElement>(null);
   const phaseRef = useRef<Phase>("video");
   const videoProgressRef = useRef(0);
   const transitionProgressRef = useRef(0);
@@ -35,20 +46,50 @@ export default function Experience() {
       e.preventDefault();
       const delta = e.deltaY;
 
+      // ── FASE 1: VIDEO SCRUBBING ──────────────────────────────────────
       if (phaseRef.current === "video") {
-        videoProgressRef.current = Math.max(0, Math.min(1, videoProgressRef.current + delta * 0.0006));
-        if (video.duration) video.currentTime = videoProgressRef.current * video.duration;
+        videoProgressRef.current = Math.max(0, Math.min(1,
+          videoProgressRef.current + delta * 0.0006
+        ));
+
+        if (video.duration) {
+          video.currentTime = videoProgressRef.current * video.duration;
+        }
+
+        // Actualizar infograficos segun progreso del video
+        const p = videoProgressRef.current;
+
+        if (infographic1Ref.current) {
+          const op1 = infographicOpacity(p, 0.25);
+          const xOff1 = (1 - op1) * -40;
+          const yOff1 = (1 - op1) * 20;
+          infographic1Ref.current.style.opacity = String(op1);
+          infographic1Ref.current.style.transform = `translate3d(${xOff1}px, ${yOff1}px, 0)`;
+        }
+
+        if (infographic2Ref.current) {
+          const op2 = infographicOpacity(p, 0.65);
+          const xOff2 = (1 - op2) * 40;
+          const yOff2 = (1 - op2) * 20;
+          infographic2Ref.current.style.opacity = String(op2);
+          infographic2Ref.current.style.transform = `translate3d(${xOff2}px, ${yOff2}px, 0)`;
+        }
+
         if (videoProgressRef.current >= 0.999 && delta > 0) {
           phaseRef.current = "transition";
           transitionProgressRef.current = 0;
         }
       }
 
+      // ── FASE 2: PANTALLA SE ALARGA 50VH ─────────────────────────────
       else if (phaseRef.current === "transition") {
-        transitionProgressRef.current = Math.max(0, Math.min(1, transitionProgressRef.current + delta * 0.005));
+        transitionProgressRef.current = Math.max(0, Math.min(1,
+          transitionProgressRef.current + delta * 0.005
+        ));
         const newHeight = 100 + transitionProgressRef.current * 50;
         const scrollY = transitionProgressRef.current * 50;
         gsap.set(stage, { y: -scrollY + "vh", height: newHeight + "vh" });
+
         if (transitionProgressRef.current >= 0.999 && delta > 0) {
           phaseRef.current = "gallery";
           galleryProgressRef.current = 0;
@@ -59,9 +100,12 @@ export default function Experience() {
         }
       }
 
+      // ── FASE 3: GALERIA HORIZONTAL ───────────────────────────────────
       else if (phaseRef.current === "gallery") {
         const maxX = galleryTrack.scrollWidth - window.innerWidth;
-        galleryProgressRef.current = Math.max(0, Math.min(1, galleryProgressRef.current + delta * 0.0006));
+        galleryProgressRef.current = Math.max(0, Math.min(1,
+          galleryProgressRef.current + delta * 0.0006
+        ));
         gsap.to(galleryTrack, {
           x: -galleryProgressRef.current * maxX,
           duration: 0.5,
@@ -86,20 +130,42 @@ export default function Experience() {
   return (
     <div style={{ position: "fixed", inset: 0, width: "100%", height: "100vh", overflow: "hidden", background: "#0a0a0a" }}>
 
+      {/* SCROLL INDICATOR */}
+      <style>{`
+        @keyframes neonBreath {
+          0%   { height: 1.5rem; opacity: 0.3; box-shadow: 0 0 4px 1px rgba(255,255,255,0.3); }
+          50%  { height: 3.5rem; opacity: 1;   box-shadow: 0 0 12px 3px rgba(255,255,255,0.9), 0 0 24px 6px rgba(255,255,255,0.3); }
+          100% { height: 1.5rem; opacity: 0.3; box-shadow: 0 0 4px 1px rgba(255,255,255,0.3); }
+        }
+        @keyframes textFade {
+          0%, 100% { opacity: 0.2; }
+          50%       { opacity: 0.7; }
+        }
+        .neon-line { animation: neonBreath 2.4s ease-in-out infinite; }
+        .scroll-label { animation: textFade 2.4s ease-in-out infinite; }
+      `}</style>
+
+      <div style={{
+        position: "fixed", bottom: "2rem", left: "50%",
+        transform: "translateX(-50%)",
+        display: "flex", flexDirection: "column", alignItems: "center",
+        gap: "0.7rem", zIndex: 200, pointerEvents: "none",
+      }}>
+        <span className="scroll-label" style={{
+          color: "white", fontSize: "0.4rem",
+          letterSpacing: "0.5em", fontFamily: "Georgia, serif",
+          textTransform: "uppercase",
+        }}>SCROLL</span>
+        <div className="neon-line" style={{ width: "1px", background: "white", borderRadius: "1px" }} />
+      </div>
+
       {/* NAVBAR */}
       <nav style={{
-        position: "fixed",
-        top: 0, left: 0,
-        width: "100%",
-        height: "5rem",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "0 2.5rem",
-        zIndex: 100,
+        position: "fixed", top: 0, left: 0, width: "100%", height: "5rem",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "0 2.5rem", zIndex: 100,
         background: "linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%)",
       }}>
-        {/* LOGO */}
         <div>
           <p style={{ color: "#c9a96e", fontFamily: "Georgia, serif", fontSize: "clamp(0.6rem, 1.2vw, 0.85rem)", letterSpacing: "0.25em", fontWeight: 400, margin: 0, lineHeight: 1.3 }}>
             MILLION DOLLARS
@@ -108,23 +174,16 @@ export default function Experience() {
             LISTING MARBELLA
           </p>
         </div>
-
-        {/* IDIOMAS */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.1rem" }}>
           {LOCALES.map((lang, i) => (
             <div key={lang} style={{ display: "flex", alignItems: "center" }}>
-              <button
-                onClick={() => setActiveLang(lang)}
-                style={{
-                  background: "none", border: "none", cursor: "pointer",
-                  color: activeLang === lang ? "#c9a96e" : "rgba(255,255,255,0.35)",
-                  fontFamily: "Georgia, serif", fontSize: "0.55rem",
-                  letterSpacing: "0.2em", padding: "0.3rem 0.5rem",
-                  transition: "color 0.3s ease", textTransform: "uppercase",
-                }}
-              >
-                {lang}
-              </button>
+              <button onClick={() => setActiveLang(lang)} style={{
+                background: "none", border: "none", cursor: "pointer",
+                color: activeLang === lang ? "#c9a96e" : "rgba(255,255,255,0.35)",
+                fontFamily: "Georgia, serif", fontSize: "0.55rem",
+                letterSpacing: "0.2em", padding: "0.3rem 0.5rem",
+                transition: "color 0.3s ease", textTransform: "uppercase",
+              }}>{lang}</button>
               {i < LOCALES.length - 1 && (
                 <span style={{ color: "rgba(255,255,255,0.15)", fontSize: "0.4rem" }}>|</span>
               )}
@@ -145,6 +204,129 @@ export default function Experience() {
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
 
+          {/* ── INFOGRAFICO 1 — izquierda, centro del video ─────────────── */}
+          {/* Aparece al 25% del video, se desvanece entrando desde izquierda */}
+          <div style={{
+            position: "absolute", inset: 0,
+            display: "flex", alignItems: "center",
+            justifyContent: "flex-start",
+            padding: "0 6rem",
+            pointerEvents: "none",
+          }}>
+            <div
+              ref={infographic1Ref}
+              style={{
+                opacity: 0,
+                transform: "translate3d(-40px, 20px, 0)",
+                transition: "none",
+                background: "rgba(0,0,0,0.09)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                padding: "2.5rem 3rem",
+                maxWidth: "28rem",
+                borderRadius: "2px",
+              }}
+            >
+              <span style={{
+                color: "rgba(255,255,255,0.6)",
+                textTransform: "uppercase",
+                letterSpacing: "0.5em",
+                fontSize: "0.55rem",
+                display: "block",
+                marginBottom: "1.2rem",
+                fontStyle: "italic",
+              }}>
+                Especificaciones
+              </span>
+              <h2 style={{
+                fontFamily: "Georgia, serif",
+                color: "white",
+                fontSize: "clamp(1.8rem, 3.5vw, 3rem)",
+                fontWeight: 300,
+                letterSpacing: "0.05em",
+                lineHeight: 1.2,
+                margin: "0 0 1.2rem",
+              }}>
+                12.000 m² <br />
+                <span style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.75em", fontFamily: "sans-serif", fontWeight: 100, letterSpacing: "-0.02em" }}>
+                  Parcela Privada
+                </span>
+              </h2>
+              <div style={{ width: "3rem", height: "1px", background: "rgba(255,255,255,0.4)", marginBottom: "1.2rem" }} />
+              <p style={{
+                color: "rgba(255,255,255,0.85)",
+                textTransform: "uppercase",
+                letterSpacing: "0.2em",
+                fontSize: "0.6rem",
+                lineHeight: 2,
+                margin: 0,
+              }}>
+                Arquitectura brutalista fundida<br />con el paisaje mediterraneo.
+              </p>
+            </div>
+          </div>
+
+          {/* ── INFOGRAFICO 2 — derecha, 65% del video ──────────────────── */}
+          {/* Aparece al 65% del video, entra desde la derecha */}
+          <div style={{
+            position: "absolute", inset: 0,
+            display: "flex", alignItems: "center",
+            justifyContent: "flex-end",
+            padding: "0 6rem",
+            pointerEvents: "none",
+          }}>
+            <div
+              ref={infographic2Ref}
+              style={{
+                opacity: 0,
+                transform: "translate3d(40px, 20px, 0)",
+                transition: "none",
+                background: "rgba(0,0,0,0.09)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                padding: "2.5rem 3rem",
+                maxWidth: "28rem",
+                borderRadius: "2px",
+                textAlign: "right",
+              }}
+            >
+              <span style={{
+                color: "rgba(255,255,255,0.6)",
+                textTransform: "uppercase",
+                letterSpacing: "0.5em",
+                fontSize: "0.55rem",
+                display: "block",
+                marginBottom: "1.2rem",
+                fontStyle: "italic",
+              }}>
+                Perspectiva
+              </span>
+              <h2 style={{
+                fontFamily: "Georgia, serif",
+                color: "white",
+                fontSize: "clamp(1.8rem, 3.5vw, 3rem)",
+                fontWeight: 300,
+                letterSpacing: "0.05em",
+                lineHeight: 1.2,
+                margin: "0 0 1.2rem",
+              }}>
+                Horizonte <br />
+                <span style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.75em", fontFamily: "sans-serif", fontWeight: 100, letterSpacing: "-0.02em" }}>
+                  Sin Limites
+                </span>
+              </h2>
+              <div style={{ width: "3rem", height: "1px", background: "rgba(255,255,255,0.4)", marginBottom: "1.2rem", marginLeft: "auto" }} />
+              <p style={{
+                color: "rgba(255,255,255,0.85)",
+                textTransform: "uppercase",
+                letterSpacing: "0.2em",
+                fontSize: "0.6rem",
+                lineHeight: 2,
+                margin: 0,
+              }}>
+                Piscina panoramica<br />con reflejos de titanio.
+              </p>
+            </div>
+          </div>
+
         </div>
 
         {/* GALERIA */}
@@ -160,8 +342,6 @@ export default function Experience() {
             gap: "1.5rem", paddingLeft: "4rem", paddingRight: "4rem",
             willChange: "transform",
           }}>
-
-            {/* Label */}
             <div style={{ flexShrink: 0, width: "16vw", color: "#c9a96e", fontFamily: "Georgia, serif" }}>
               <p style={{ fontSize: "0.5rem", letterSpacing: "0.45em", opacity: 0.4, textTransform: "uppercase", margin: "0 0 0.8rem" }}>Seleccion</p>
               <h2 style={{ fontSize: "clamp(1rem, 1.8vw, 1.5rem)", fontWeight: 300, lineHeight: 1.3, margin: "0 0 1rem" }}>
@@ -172,10 +352,7 @@ export default function Experience() {
                 MARBELLA<br />COSTA DEL SOL
               </p>
             </div>
-
             <div style={{ flexShrink: 0, width: "1px", height: "60%", background: "rgba(201,169,110,0.2)" }} />
-
-            {/* Imagenes */}
             {GALLERY_IMAGES.map((src, i) => (
               <div key={i} style={{ flexShrink: 0, width: "38vw", height: "40vh", overflow: "hidden", position: "relative" }}>
                 <img src={src} alt={"Propiedad " + (i + 1)} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
@@ -184,59 +361,11 @@ export default function Experience() {
                 </div>
               </div>
             ))}
-
             <div style={{ flexShrink: 0, width: "8vw" }} />
           </div>
         </div>
 
       </div>
-      {/* SCROLL INDICATOR — linea neon con crecimiento organico */}
-      <style>{`
-        @keyframes neonBreath {
-          0%   { height: 1.5rem; opacity: 0.3; box-shadow: 0 0 4px 1px rgba(255,255,255,0.3); }
-          50%  { height: 3.5rem; opacity: 1;   box-shadow: 0 0 12px 3px rgba(255,255,255,0.9), 0 0 24px 6px rgba(255,255,255,0.3); }
-          100% { height: 1.5rem; opacity: 0.3; box-shadow: 0 0 4px 1px rgba(255,255,255,0.3); }
-        }
-        @keyframes textFade {
-          0%, 100% { opacity: 0.2; }
-          50%       { opacity: 0.7; }
-        }
-        .neon-line {
-          animation: neonBreath 2.4s ease-in-out infinite;
-        }
-        .scroll-label {
-          animation: textFade 2.4s ease-in-out infinite;
-        }
-      `}</style>
-
-      <div style={{
-        position: "fixed",
-        bottom: "2rem",
-        left: "50%",
-        transform: "translateX(-50%)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "0.7rem",
-        zIndex: 200,
-        pointerEvents: "none",
-      }}>
-        <span className="scroll-label" style={{
-          color: "white",
-          fontSize: "0.4rem",
-          letterSpacing: "0.5em",
-          fontFamily: "Georgia, serif",
-          textTransform: "uppercase",
-        }}>
-          SCROLL
-        </span>
-        <div className="neon-line" style={{
-          width: "1px",
-          background: "white",
-          borderRadius: "1px",
-        }} />
-      </div>
-
     </div>
   );
 }
