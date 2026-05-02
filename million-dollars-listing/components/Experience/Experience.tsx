@@ -15,9 +15,15 @@ type Phase = "video" | "transition" | "gallery";
 // Equivalente al HoverInfographic del proyecto anterior
 // progress: 0-1 del video. center: momento de maxima visibilidad
 function infographicOpacity(progress: number, center: number, width = 0.35): number {
-  const dist = Math.abs(progress - center);
-  if (dist > width) return 0;
-  return Math.max(0, 1 - (dist / width));
+  const dist = progress - center;
+  // Entrada rapida desde abajo (fade-in corto)
+  if (dist < -width) return 0;
+  if (dist < -width * 0.3) return Math.max(0, 1 - (Math.abs(dist) - width * 0.3) / (width * 0.7));
+  // Zona de maxima visibilidad — casi opaco
+  if (dist < width * 0.5) return 1;
+  // Desvanece solo cuando sale por arriba (fade-out al final)
+  if (dist < width) return Math.max(0, 1 - ((dist - width * 0.5) / (width * 0.5)));
+  return 0;
 }
 
 export default function Experience() {
