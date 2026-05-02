@@ -1,8 +1,14 @@
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 
 const locales = ["en", "es", "fr", "ru"];
+
+export const metadata: Metadata = {
+  title: "Million Dollars Listing Marbella",
+  description: "Ultra-luxury properties in Marbella",
+};
 
 export default async function LocaleLayout({
   children,
@@ -17,12 +23,14 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  const messages = await getMessages();
+  setRequestLocale(locale);
+
+  const messages = await getMessages({ locale });
 
   return (
     <html lang={locale}>
       <body>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
         </NextIntlClientProvider>
       </body>
