@@ -1,7 +1,6 @@
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import "../../app/globals.css";
 
 const locales = ["en", "es", "fr", "ru"];
 
@@ -23,15 +22,9 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  const messages = await getMessages({ locale });
-
   return (
     <html lang={locale}>
-      <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          {children}
-        </NextIntlClientProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
