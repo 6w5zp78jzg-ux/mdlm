@@ -42,6 +42,39 @@ export default function Experience() {
     document.documentElement.style.overflow = "hidden";
     gsap.set(stage, { height: "100vh" });
 
+    // Valores suavizados con lerp — se interpolan en cada RAF
+    // Esto da la fluidez de 120fps aunque el monitor vaya a 60
+    let smoothTransition = 0;
+    let smoothGallery = 0;
+    let targetTransition = 0;
+    let targetGallery = 0;
+    let rafId: number;
+
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+    const tick = () => {
+      // Suavizar transicion con lerp 0.08 — muy fluido
+      smoothTransition = lerp(smoothTransition, targetTransition, 0.08);
+      smoothGallery = lerp(smoothGallery, targetGallery, 0.08);
+
+      // Aplicar transicion suavizada al stage
+      if (phaseRef.current === "transition" || 
+          (smoothTransition > 0.001 && smoothTransition < 0.999)) {
+        const newHeight = 100 + smoothTransition * 50;
+        const scrollY = smoothTransition * 50;
+        gsap.set(stage, { y: -scrollY + "vh", height: newHeight + "vh" });
+      }
+
+      // Aplicar galeria suavizada
+      if (phaseRef.current === "gallery" || smoothGallery > 0.001) {
+        const maxX = galleryTrack.scrollWidth - window.innerWidth;
+        gsap.set(galleryTrack, { x: -smoothGallery * maxX });
+      }
+
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       const delta = e.deltaY;
@@ -56,7 +89,6 @@ export default function Experience() {
           video.currentTime = videoProgressRef.current * video.duration;
         }
 
-        // Actualizar infograficos segun progreso del video
         const p = videoProgressRef.current;
 
         if (infographic1Ref.current) {
@@ -76,21 +108,21 @@ export default function Experience() {
         if (videoProgressRef.current >= 0.999 && delta > 0) {
           phaseRef.current = "transition";
           transitionProgressRef.current = 0;
+          targetTransition = 0;
         }
       }
 
-      // ── FASE 2: PANTALLA SE ALARGA 50VH ─────────────────────────────
+      // ── FASE 2: TRANSICION SUAVIZADA ────────────────────────────────
       else if (phaseRef.current === "transition") {
         transitionProgressRef.current = Math.max(0, Math.min(1,
-          transitionProgressRef.current + delta * 0.005
+          transitionProgressRef.current + delta * 0.004
         ));
-        const newHeight = 100 + transitionProgressRef.current * 50;
-        const scrollY = transitionProgressRef.current * 50;
-        gsap.set(stage, { y: -scrollY + "vh", height: newHeight + "vh" });
+        targetTransition = transitionProgressRef.current;
 
         if (transitionProgressRef.current >= 0.999 && delta > 0) {
           phaseRef.current = "gallery";
           galleryProgressRef.current = 0;
+          targetGallery = 0;
         }
         if (transitionProgressRef.current <= 0.001 && delta < 0) {
           phaseRef.current = "video";
@@ -98,21 +130,17 @@ export default function Experience() {
         }
       }
 
-      // ── FASE 3: GALERIA HORIZONTAL ───────────────────────────────────
+      // ── FASE 3: GALERIA SUAVIZADA ────────────────────────────────────
       else if (phaseRef.current === "gallery") {
-        const maxX = galleryTrack.scrollWidth - window.innerWidth;
         galleryProgressRef.current = Math.max(0, Math.min(1,
           galleryProgressRef.current + delta * 0.0006
         ));
-        gsap.to(galleryTrack, {
-          x: -galleryProgressRef.current * maxX,
-          duration: 0.5,
-          ease: "power2.out",
-          overwrite: true,
-        });
+        targetGallery = galleryProgressRef.current;
+
         if (galleryProgressRef.current <= 0.001 && delta < 0) {
           phaseRef.current = "transition";
           transitionProgressRef.current = 1;
+          targetTransition = 1;
         }
       }
     };
@@ -120,6 +148,7 @@ export default function Experience() {
     window.addEventListener("wheel", handleWheel, { passive: false });
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      cancelAnimationFrame(rafId);
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
     };
