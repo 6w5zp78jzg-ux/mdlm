@@ -208,55 +208,7 @@ export default function Experience() {
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
 
-          {/* Titulo hero */}
-          <div style={{
-            position: "absolute",
-            bottom: "5rem",
-            left: 0,
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            zIndex: 10,
-            pointerEvents: "none",
-          }}>
-            <h1 style={{
-              color: "#c9a96e",
-              fontFamily: "Georgia, serif",
-              fontSize: "clamp(1.2rem, 4.5vw, 3.5rem)",
-              letterSpacing: "0.5em",
-              fontWeight: 300,
-              textAlign: "center",
-              margin: 0,
-              textShadow: "0 2px 20px rgba(0,0,0,0.8)",
-            }}>
-              MILLION DOLLARS LISTING
-            </h1>
-            <p style={{
-              color: "#c9a96e",
-              opacity: 0.5,
-              letterSpacing: "0.7em",
-              fontSize: "0.6rem",
-              marginTop: "0.5rem",
-              textShadow: "0 2px 10px rgba(0,0,0,0.8)",
-            }}>
-              MARBELLA
-            </p>
-            <div style={{
-              marginTop: "2rem",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "0.5rem",
-              opacity: 0.35,
-            }}>
-              <span style={{ color: "white", fontSize: "0.5rem", letterSpacing: "0.4em" }}>SCROLL</span>
-              <div style={{ width: "1px", height: "2rem", background: "white" }} />
-            </div>
-          </div>
-        </div>
-
-        {/* GALERIA */}
+          {/* GALERIA */
         <div style={{
           position: "absolute",
           top: "100vh",
