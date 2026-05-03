@@ -1,0 +1,16 @@
+{
+  "nav": {
+    "properties": "Propriétés",
+    "about": "À propos",
+    "contact": "Contact"
+  },
+  "hero": {
+    "tagline": "Là où la Méditerranée devient légende",
+    "subtitle": "Propriétés ultra-luxe à Marbella",
+    "cta": "Découvrir"
+  },
+  "gallery": {
+    "title": "Propriétés Exclusives",
+    "subtitle": "Une sélection pour l'acheteur le plus exigeant"
+  }
+}
