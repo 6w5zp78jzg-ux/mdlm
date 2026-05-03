@@ -386,14 +386,16 @@ export default function HomeExperience({ properties, locale }: Props) {
               </span>
             </div>
 
+            {/* TEXTO INFERIOR: Estructura limpia (Sin cursiva, Sans-Serif) */}
             <p className="anim-bottom-text delay-3" style={{
-              fontFamily: "'Playfair Display', 'Didot', serif",
-              fontStyle: "italic",
-              fontSize: "clamp(0.8rem, 1.5vw, 1.2rem)",
+              fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
+              fontWeight: 400,
+              fontSize: "clamp(0.65rem, 1vw, 0.85rem)",
+              textTransform: "uppercase",
               color: "#c9a96e", 
               margin: "2.5rem 0 0 0",
               textAlign: "center",
-              letterSpacing: "0.2em"
+              letterSpacing: "0.4em"
             }}>
               {dynamicPhrases[titleIdx].bottom}
             </p>
