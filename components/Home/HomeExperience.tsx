@@ -23,7 +23,27 @@ export default function HomeExperience({ properties, locale }: Props) {
   const router = useRouter();
   const lang = locale as "es" | "en" | "fr" | "ru";
   const SECTION_LENGTH = 1.0;
-  const [skyTime, setSkyTime] = useState(0); // 0 a 1 = ciclo completo
+  
+  // No usamos setSkyTime directamente aquí, la lógica de ciclo está en el tick
+  const [skyTime, setSkyTime] = useState(0); 
+
+  // --- MOTOR NARRATIVO ROTATIVO ---
+  const [sloganIdx, setSloganIdx] = useState(0);
+  const slogans = [
+    "The Apex Of Mediterranean Living",
+    "Architectural Poetry In Motion",
+    "Where Eternity Meets The Sea",
+    "Curated Estates Of Uncompromising Vision",
+    "Redefining Ultra-Luxury Real Estate"
+  ];
+
+  useEffect(() => {
+    // Rotación de frases cada 5 segundos para un ritmo cinemático
+    const sloganInterval = setInterval(() => {
+      setSloganIdx((prev) => (prev + 1) % slogans.length);
+    }, 5000);
+    return () => clearInterval(sloganInterval);
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -41,7 +61,6 @@ export default function HomeExperience({ properties, locale }: Props) {
       cycleTime = cycleTime % 1;
 
       // Calcular el cielo segun la fase del ciclo
-      // 0.0 = amanecer | 0.25 = mediodia | 0.5 = atardecer | 0.75 = medianoche | 1.0 = amanecer
       const t = cycleTime;
       const angle = t * 360 - 90; // sol arranca abajo izquierda
       const sunX = 50 + Math.cos(angle * Math.PI / 180) * 60;
@@ -52,28 +71,20 @@ export default function HomeExperience({ properties, locale }: Props) {
       const nightProgress = isNight ? (t - 0.5) * 2 : 0; // 0 a 1 durante la noche
 
       // Interpolacion suave entre 6 fases del ciclo solar
-      // Definimos paletas como puntos clave y blendeamos
       const lerpColor = (a: number[], b: number[], k: number) =>
         `rgb(${Math.round(a[0] + (b[0] - a[0]) * k)}, ${Math.round(a[1] + (b[1] - a[1]) * k)}, ${Math.round(a[2] + (b[2] - a[2]) * k)})`;
 
       // 6 fases con 5 colores cada una (de cerca al sol al fondo)
       const palettes = [
-        // 0.0 AMANECER
-        [[255,107,26],[255,61,0],[194,24,91],[26,35,126],[6,8,24]],
-        // 0.2 MEDIODIA TEMPRANO
-        [[255,245,184],[255,213,79],[79,195,247],[25,118,210],[6,26,58]],
-        // 0.4 ATARDECER
-        [[255,167,38],[216,67,21],[106,27,154],[26,18,69],[6,8,24]],
-        // 0.6 CREPUSCULO
-        [[80,40,120],[40,30,80],[26,18,69],[10,10,42],[0,0,0]],
-        // 0.8 NOCHE PROFUNDA
-        [[10,10,58],[5,5,36],[2,2,26],[0,0,0],[0,0,0]],
-        // 1.0 = vuelta a 0.0 (amanecer)
-        [[255,107,26],[255,61,0],[194,24,91],[26,35,126],[6,8,24]],
+        [[255,107,26],[255,61,0],[194,24,91],[26,35,126],[6,8,24]], // 0.0 AMANECER
+        [[255,245,184],[255,213,79],[79,195,247],[25,118,210],[6,26,58]], // 0.2 MEDIODIA TEMPRANO
+        [[255,167,38],[216,67,21],[106,27,154],[26,18,69],[6,8,24]], // 0.4 ATARDECER
+        [[80,40,120],[40,30,80],[26,18,69],[10,10,42],[0,0,0]], // 0.6 CREPUSCULO
+        [[10,10,58],[5,5,36],[2,2,26],[0,0,0],[0,0,0]], // 0.8 NOCHE PROFUNDA
+        [[255,107,26],[255,61,0],[194,24,91],[26,35,126],[6,8,24]], // 1.0 = vuelta a 0.0 (amanecer)
       ];
 
-      // Calcular fase actual y k de interpolacion
-      const phaseFloat = t * 5; // 0-5 (5 transiciones, vuelve al inicio)
+      const phaseFloat = t * 5; 
       const phaseIdx = Math.floor(phaseFloat) % 5;
       const k = phaseFloat - Math.floor(phaseFloat);
       const pA = palettes[phaseIdx];
@@ -94,7 +105,7 @@ export default function HomeExperience({ properties, locale }: Props) {
 
       if (skyRef.current) skyRef.current.style.background = skyGradient;
 
-      // SOL — visible solo durante el dia con fade suave
+      // SOL
       if (sunRef.current) {
         let sunVisible = 0;
         if (t < 0.45) sunVisible = 1;
@@ -105,7 +116,7 @@ export default function HomeExperience({ properties, locale }: Props) {
         sunRef.current.style.top = `${sunY}%`;
       }
 
-      // LUNA — fade suave en transiciones
+      // LUNA
       if (moonRef.current) {
         let moonVisible = 0;
         if (t > 0.55 && t < 0.95) {
@@ -113,7 +124,6 @@ export default function HomeExperience({ properties, locale }: Props) {
           else if (t > 0.85) moonVisible = 1 - (t - 0.85) / 0.10;
           else moonVisible = 1;
         }
-        // Luna recorre el cielo en sentido opuesto
         const moonAngle = (t - 0.5) * 2 * 180 - 90;
         const moonX = 50 + Math.cos(moonAngle * Math.PI / 180) * 35;
         const moonY = 30 + Math.sin(moonAngle * Math.PI / 180) * 20;
@@ -122,18 +132,17 @@ export default function HomeExperience({ properties, locale }: Props) {
         moonRef.current.style.top = `${moonY}%`;
       }
 
-      // ESTRELLAS — opacidad segun la profundidad de la noche
+      // ESTRELLAS
       if (starsRef.current) {
         let starOp = 0;
         if (t > 0.5 && t < 0.95) {
-          // Pico de visibilidad en medianoche
           const nightT = (t - 0.5) / 0.45;
           starOp = Math.sin(nightT * Math.PI);
         }
         starsRef.current.style.opacity = String(starOp);
       }
 
-      // ── HEADER FADE OUT al hacer scroll ──────────────────────────────────
+      // ── HEADER FADE OUT ──────────────────────────────────
       smoothHeader = lerp(smoothHeader, targetHeader, 0.055);
       if (headerRef.current) {
         headerRef.current.style.opacity = String(1 - smoothHeader);
@@ -216,42 +225,69 @@ export default function HomeExperience({ properties, locale }: Props) {
     <div style={{ position: "fixed", inset: 0, width: "100%", height: "100vh", overflow: "hidden", background: "#000" }}>
 
       <style>{`
-        /* --- HIGH-END TYPOGRAPHY ANIMATIONS --- */
-        @keyframes cinematicBlurIn {
-          0% { filter: blur(20px); opacity: 0; transform: scale(1.05) translateY(15px); }
-          100% { filter: blur(0px); opacity: 1; transform: scale(1) translateY(0); }
+        /* --- HIGH-END TYPOGRAPHY & CINEMATIC ANIMATIONS --- */
+        
+        /* 1. Rotación de Slogans (Narrativa Dinámica) */
+        @keyframes sloganReveal {
+          0% { opacity: 0; filter: blur(12px); transform: translateY(10px) scale(0.98); letter-spacing: 0.6em; }
+          20% { opacity: 1; filter: blur(0px); transform: translateY(0) scale(1); letter-spacing: 0.4em; }
+          80% { opacity: 1; filter: blur(0px); transform: translateY(0) scale(1); letter-spacing: 0.4em; }
+          100% { opacity: 0; filter: blur(8px); transform: translateY(-10px) scale(1.02); letter-spacing: 0.5em; }
         }
-        @keyframes letterSpacingBreathe {
-          0% { letter-spacing: 0.8em; opacity: 0; }
-          10% { opacity: 1; }
-          100% { letter-spacing: 0.4em; opacity: 0.8; }
+
+        .slogan-anim {
+          animation: sloganReveal 5s cubic-bezier(0.25, 1, 0.5, 1) both;
+          will-change: opacity, transform, filter, letter-spacing;
         }
-        @keyframes liquidMaskReveal {
-          0% { clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%); transform: translateY(30px); }
-          100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transform: translateY(0); }
+
+        /* 2. Respiración General del Hero Text */
+        @keyframes heroBreathe {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.015); }
         }
-        @keyframes elegantGlow {
-          0%, 100% { text-shadow: 0 0 30px rgba(201, 169, 110, 0.2), 0 0 60px rgba(201, 169, 110, 0.05); }
-          50% { text-shadow: 0 0 50px rgba(201, 169, 110, 0.5), 0 0 90px rgba(201, 169, 110, 0.2); }
+
+        .hero-breathe {
+          animation: heroBreathe 8s ease-in-out infinite;
         }
+
+        /* 3. Bloom / Optical Glow Refinado (Evita el "bleeding" sucio) */
+        @keyframes opticalBloom {
+          0%, 100% { 
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4)) 
+                    drop-shadow(0 0 40px rgba(201, 169, 110, 0.15));
+            opacity: 0.9;
+          }
+          50% { 
+            filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.6)) 
+                    drop-shadow(0 0 60px rgba(201, 169, 110, 0.3));
+            opacity: 1;
+          }
+        }
+
+        .title-optical-glow {
+          animation: opticalBloom 6s ease-in-out infinite;
+          mix-blend-mode: screen; /* Clave para el look etéreo */
+        }
+
+        /* 4. Entrada Cinemática de Elementos Fijos */
+        @keyframes cinematicFadeIn {
+          0% { opacity: 0; transform: translateY(20px); filter: blur(10px); }
+          100% { opacity: 1; transform: translateY(0); filter: blur(0px); }
+        }
+
+        .cinematic-enter {
+          animation: cinematicFadeIn 2s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
         @keyframes lineGrowCenter {
           0% { transform: scaleY(0); opacity: 0; }
-          100% { transform: scaleY(1); opacity: 1; }
+          100% { transform: scaleY(1); opacity: 0.5; }
         }
-        @keyframes subtleFade { 0%,100% { opacity: 0.2; } 50% { opacity: 0.7; } }
         
-        .typo-cinematic { animation: cinematicBlurIn 2s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .typo-breathe { animation: letterSpacingBreathe 3s cubic-bezier(0.215, 0.61, 0.355, 1) both; }
-        .typo-liquid { animation: liquidMaskReveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .typo-glow { animation: elegantGlow 5s ease-in-out infinite; }
-        .line-elegant { animation: lineGrowCenter 1.5s cubic-bezier(0.85, 0, 0.15, 1) both; transform-origin: center; }
-        .scroll-pulse { animation: subtleFade 3s ease-in-out infinite; }
-        
-        /* Delays */
-        .del-1 { animation-delay: 0.2s; }
-        .del-2 { animation-delay: 0.6s; }
-        .del-3 { animation-delay: 1.0s; }
-        .del-4 { animation-delay: 1.4s; }
+        .line-elegant { 
+          animation: lineGrowCenter 2s cubic-bezier(0.85, 0, 0.15, 1) 1s both; 
+          transform-origin: center; 
+        }
 
         /* Original Environment Animations */
         @keyframes sunGlow {
@@ -288,23 +324,14 @@ export default function HomeExperience({ properties, locale }: Props) {
 
         {/* ESTRELLAS */}
         <div ref={starsRef} style={{
-          position: "absolute", inset: 0,
-          opacity: 0,
-          pointerEvents: "none",
-          transition: "opacity 0.5s ease",
+          position: "absolute", inset: 0, opacity: 0, pointerEvents: "none", transition: "opacity 0.5s ease",
         }}>
           {stars.map((s, i) => (
             <div key={i} className="star" style={{
-              position: "absolute",
-              left: `${s.left}%`,
-              top: `${s.top}%`,
-              width: `${s.size}px`,
-              height: `${s.size}px`,
-              borderRadius: "50%",
-              background: s.bright ? "rgba(255,255,255,1)" : "rgba(220,230,255,0.7)",
+              position: "absolute", left: `${s.left}%`, top: `${s.top}%`, width: `${s.size}px`, height: `${s.size}px`,
+              borderRadius: "50%", background: s.bright ? "rgba(255,255,255,1)" : "rgba(220,230,255,0.7)",
               boxShadow: s.bright ? "0 0 4px rgba(255,255,255,0.8)" : "none",
-              animationDuration: `${2 + s.delay}s`,
-              animationDelay: `${s.delay}s`,
+              animationDuration: `${2 + s.delay}s`, animationDelay: `${s.delay}s`,
             }} />
           ))}
         </div>
@@ -325,119 +352,104 @@ export default function HomeExperience({ properties, locale }: Props) {
           <div style={{ position: "absolute", top: "30%", left: "25%", width: "12px", height: "12px", borderRadius: "50%", background: "rgba(120,140,170,0.4)" }} />
           <div style={{ position: "absolute", top: "55%", left: "55%", width: "8px", height: "8px", borderRadius: "50%", background: "rgba(120,140,170,0.3)" }} />
           <div style={{ position: "absolute", top: "20%", left: "60%", width: "6px", height: "6px", borderRadius: "50%", background: "rgba(120,140,170,0.35)" }} />
-          <div style={{ position: "absolute", top: "65%", left: "20%", width: "10px", height: "10px", borderRadius: "50%", background: "rgba(120,140,170,0.3)" }} />
         </div>
 
-        {/* CONTENIDO TIPOGRAFICO DE ALTO IMPACTO (BRUTALISMO EDITORIAL) */}
-        <div style={{
+        {/* CONTENIDO TIPOGRAFICO DE ALTO IMPACTO (ETÉREO / BRUTALISTA EDITORIAL) */}
+        <div className="hero-breathe" style={{
           position: "relative", zIndex: 10,
           display: "flex", flexDirection: "column",
           alignItems: "center", padding: "0 2rem",
-          userSelect: "none"
+          userSelect: "none", width: "100%"
         }}>
-          <div className="line-elegant del-1" style={{
-            width: "1px", height: "4rem",
-            background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.3), transparent)",
-            marginBottom: "2rem",
-          }} />
-
-          <p className="typo-breathe del-1" style={{
-            fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
-            fontSize: "clamp(0.5rem, 0.8vw, 0.75rem)",
-            fontWeight: 300,
-            color: "rgba(255,255,255,0.7)",
-            textTransform: "uppercase",
-            margin: "0 0 1rem",
-          }}>
-            The Apex Of Mediterranean Living
-          </p>
-
-          <div style={{ overflow: "hidden", padding: "10px 0" }}>
-            <div className="typo-liquid del-2 typo-glow" style={{
-              display: "flex", alignItems: "center", justifyContent: "center", gap: "0.15em",
-              lineHeight: 0.8,
+          
+          {/* Slogan Superior Rotativo */}
+          <div style={{ height: "2rem", display: "flex", alignItems: "flex-end", overflow: "visible", marginBottom: "1.5rem" }}>
+            <p key={sloganIdx} className="slogan-anim" style={{
+              fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
+              fontSize: "clamp(0.55rem, 0.9vw, 0.85rem)",
+              fontWeight: 300,
+              color: "rgba(255,255,255,0.85)",
+              textTransform: "uppercase",
+              margin: 0,
+              textAlign: "center"
             }}>
-              {/* Tensión tipográfica: Outline Sans vs Solid Serif Italic */}
-              <span style={{
-                fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
-                fontSize: "clamp(4.5rem, 12vw, 11rem)",
-                fontWeight: 200,
-                color: "transparent",
-                WebkitTextStroke: "1px rgba(255, 255, 255, 0.9)",
-                letterSpacing: "0.02em"
-              }}>MAR</span>
-              <span style={{
-                fontFamily: "'Playfair Display', 'Didot', 'Bodoni MT', serif",
-                fontSize: "clamp(5rem, 13vw, 12rem)",
-                fontWeight: 700,
-                fontStyle: "italic",
-                color: "#ffffff",
-                letterSpacing: "-0.04em",
-                paddingRight: "0.1em"
-              }}>BELLA</span>
-            </div>
+              {slogans[sloganIdx]}
+            </p>
           </div>
 
-          <p className="typo-cinematic del-3" style={{
-            fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
-            fontSize: "clamp(0.65rem, 1vw, 0.9rem)",
-            fontWeight: 300, letterSpacing: "0.4em",
-            color: "rgba(255,255,255,0.5)",
-            margin: "2rem 0 3rem",
-            textTransform: "uppercase",
-            display: "flex", alignItems: "center", gap: "0.5rem"
+          {/* Bloque Central Tipográfico */}
+          <div className="cinematic-enter title-optical-glow" style={{ 
+            display: "flex", alignItems: "baseline", justifyContent: "center",
+            lineHeight: 0.85, padding: "10px 0", gap: "0.05em",
+            animationDelay: "0.5s"
           }}>
-            <span style={{ 
-              fontFamily: "'Playfair Display', 'Didot', serif", 
-              fontStyle: "italic", 
-              color: "#c9a96e", 
-              fontSize: "1.2em",
-              textTransform: "lowercase",
-              letterSpacing: "0.05em"
-            }}>curated</span> 
-            Estates Of Uncompromising Vision
-          </p>
+            {/* Tensión Corregida: Outline ultrafino + Serif super bold */}
+            <span style={{
+              fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
+              fontSize: "clamp(4.5rem, 13vw, 12rem)",
+              fontWeight: 100, // Extra fino
+              color: "transparent",
+              WebkitTextStroke: "1px rgba(255, 255, 255, 0.95)",
+              letterSpacing: "-0.01em", // Ajuste óptico
+              transform: "translateY(1%)" // Alineación de línea base
+            }}>MAR</span>
+            
+            <span style={{
+              fontFamily: "'Playfair Display', 'Didot', 'Bodoni MT', serif",
+              fontSize: "clamp(4.8rem, 13.8vw, 12.8rem)", // Ligeramente más grande para balance de masa óptica
+              fontWeight: 700,
+              fontStyle: "italic",
+              color: "#ffffff",
+              letterSpacing: "-0.05em",
+              paddingLeft: "0.02em" // Kerning manual
+            }}>BELLA</span>
+          </div>
 
-          <div className="typo-cinematic del-4" style={{
-            display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap", justifyContent: "center",
-            color: "rgba(255,255,255,0.4)",
+          {/* Subtítulo y Separador */}
+          <div className="line-elegant" style={{
+            width: "1px", height: "4rem",
+            background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.8), transparent)",
+            margin: "2.5rem 0 2rem",
+          }} />
+
+          <div className="cinematic-enter" style={{
+            display: "flex", alignItems: "center", gap: "1.2rem", flexWrap: "wrap", justifyContent: "center",
+            color: "rgba(255,255,255,0.5)",
             fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
-            fontSize: "clamp(0.4rem, 0.6vw, 0.55rem)",
+            fontSize: "clamp(0.45rem, 0.65vw, 0.6rem)",
             fontWeight: 400,
-            letterSpacing: "0.3em",
+            letterSpacing: "0.35em",
             textTransform: "uppercase",
+            animationDelay: "1s"
           }}>
             {["Golden Mile", "Puerto Banús", "Nueva Andalucía", "Sierra Blanca"].map((loc, i, arr) => (
-              <span key={loc} style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <span key={loc} style={{ display: "flex", alignItems: "center", gap: "1.2rem" }}>
                 {loc}
                 {i < arr.length - 1 && (
                   <span style={{
                     fontFamily: "'Playfair Display', serif",
-                    color: "#c9a96e",
+                    color: "#c9a96e", // Toque de lujo dorado
                     fontSize: "1.2em",
-                    opacity: 0.6
+                    opacity: 0.8
                   }}>✦</span>
                 )}
               </span>
             ))}
           </div>
 
-          <div className="line-elegant del-4" style={{
-            width: "1px", height: "4rem",
-            background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.3), transparent)",
-            marginTop: "2rem",
-          }} />
         </div>
 
-        <div style={{
+        {/* Indicador de Scroll Inferior */}
+        <div className="cinematic-enter" style={{
           position: "absolute", bottom: "2rem", left: "50%",
           transform: "translateX(-50%)",
           display: "flex", flexDirection: "column",
           alignItems: "center", gap: "1rem",
           pointerEvents: "none", zIndex: 20,
+          animationDelay: "1.5s"
         }}>
-          <span className="scroll-pulse" style={{
-            color: "rgba(255,255,255,0.6)", fontSize: "0.45rem",
+          <span style={{
+            color: "rgba(255,255,255,0.4)", fontSize: "0.45rem",
             letterSpacing: "0.6em", fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
             fontWeight: 300, textTransform: "uppercase",
           }}>DISCOVER</span>
@@ -480,7 +492,6 @@ export default function HomeExperience({ properties, locale }: Props) {
                 pointerEvents: "none",
               }} />
               
-              {/* Numeración Brutalista/Editorial */}
               <div style={{
                 position: "absolute", top: "-2rem", left: "-1rem",
                 color: "rgba(255,255,255,0.08)", 
@@ -502,7 +513,6 @@ export default function HomeExperience({ properties, locale }: Props) {
                 VOL. 0{i + 1}
               </div>
 
-              {/* Info de Propiedad */}
               <div style={{
                 position: "absolute", bottom: "3rem",
                 left: "3rem", right: "3rem",
