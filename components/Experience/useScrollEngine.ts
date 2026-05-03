@@ -4,13 +4,11 @@ import gsap from "gsap";
 
 export type Phase = "video" | "transition" | "gallery";
 
-// Modificada: Mantiene el fade-in original pero elimina el fade-out.
+// Lógica de opacidad original intacta: hace fade-in y se bloquea en 1 (100%)
 export function infographicOpacity(progress: number, center: number, width = 0.35): number {
   const dist = progress - center;
   if (dist < -width) return 0;
   if (dist < -width * 0.3) return Math.max(0, 1 - (Math.abs(dist) - width * 0.3) / (width * 0.7));
-  
-  // En lugar de calcular el desvanecimiento, una vez que llega aquí se queda al 100%
   return 1; 
 }
 
@@ -33,8 +31,6 @@ export function useScrollEngine({
   const videoProgressRef = useRef(0);
   const transitionProgressRef = useRef(0);
   const galleryProgressRef = useRef(0);
-  const inf1LockedRef = useRef(false);
-  const inf2LockedRef = useRef(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -42,6 +38,7 @@ export function useScrollEngine({
     const galleryTrack = galleryTrackRef.current;
     if (!video || !stage || !galleryTrack) return;
 
+    // Control absoluto del Single Canvas
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
     gsap.set(stage, { height: "100vh" });
@@ -83,22 +80,28 @@ export function useScrollEngine({
 
         const p = videoProgressRef.current;
 
+        // INFOGRAFÍA 1: Asciende (Vector Y negativo)
         if (infographic1Ref.current) {
           const op1 = infographicOpacity(p, 0.25);
-          // Modificado: Usamos Math.min para que frene al llegar al tope (1) y no siga subiendo al infinito
           const relPos = Math.min((p - 0.25) / 0.35, 1);
+          
+          // Se desplaza hacia arriba hasta -120px
           const yOff1 = relPos * -120;
           const xOff1 = (1 - Math.min(1, op1 * 2)) * -50;
+          
           infographic1Ref.current.style.opacity = String(Math.max(0, op1));
           infographic1Ref.current.style.transform = `translate3d(${xOff1}px, ${yOff1}px, 0)`;
         }
 
+        // INFOGRAFÍA 2: Desciende (Vector Y positivo) creando contraste narrativo
         if (infographic2Ref.current) {
           const op2 = infographicOpacity(p, 0.65);
-          // Modificado: Ancla la posición máxima para la infografía 2
           const relPos2 = Math.min((p - 0.65) / 0.35, 1);
-          const yOff2 = relPos2 * -120;
+          
+          // Se desplaza hacia abajo hasta +120px (o el valor que equilibre tu diseño)
+          const yOff2 = relPos2 * 120; 
           const xOff2 = (1 - Math.min(1, op2 * 2)) * 50;
+          
           infographic2Ref.current.style.opacity = String(Math.max(0, op2));
           infographic2Ref.current.style.transform = `translate3d(${xOff2}px, ${yOff2}px, 0)`;
         }
