@@ -448,7 +448,7 @@ export default function HomeExperience({ properties, locale }: Props) {
         </div>
       </div>
 
-      {/* ── PROPIEDADES Z-AXIS (UNIFORMIDAD CONCEPTUAL APLICADA) ──────── */}
+      {/* ── PROPIEDADES Z-AXIS (CATÁLOGO ARQUITECTÓNICO PURO) ──────── */}
       <div ref={propertiesRef} style={{
         position: "absolute", inset: 0, opacity: 0, pointerEvents: "none",
         perspective: "1200px", perspectiveOrigin: "center center",
@@ -484,7 +484,7 @@ export default function HomeExperience({ properties, locale }: Props) {
                 pointerEvents: "none",
               }} />
               
-              {/* NÚMERO BRUTALISTA: Hereda el Outline Extra-fino del Header */}
+              {/* NÚMERO BRUTALISTA DE FONDO */}
               <div style={{
                 position: "absolute", top: "-5%", left: "-3%",
                 fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
@@ -500,7 +500,6 @@ export default function HomeExperience({ properties, locale }: Props) {
                 0{i + 1}
               </div>
 
-              {/* VOLUMEN: Hereda Tracking y Peso Ligero */}
               <div style={{
                 position: "absolute", top: "2.5rem", right: "2.5rem",
                 color: "rgba(255,255,255,0.6)", fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
@@ -514,7 +513,6 @@ export default function HomeExperience({ properties, locale }: Props) {
                 left: "3rem", right: "3rem",
                 display: "flex", flexDirection: "column"
               }}>
-                {/* UBICACIÓN: Detalles dorados y tracking expansivo */}
                 <p style={{ 
                   fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
                   fontSize: "0.55rem", fontWeight: 300, letterSpacing: "0.4em", 
@@ -523,14 +521,15 @@ export default function HomeExperience({ properties, locale }: Props) {
                   {property.ubicacion}
                 </p>
                 
-                {/* TÍTULO: Hereda la elegancia pesada (Serif Italic) del Header */}
+                {/* TÍTULO LIMPIO: Sin cursivas, Sans-Serif moderna y mayúsculas */}
                 <h2 style={{ 
-                  fontFamily: "'Playfair Display', 'Didot', 'Bodoni MT', serif",
-                  fontSize: "clamp(2.5rem, 5vw, 4rem)", 
-                  fontWeight: 600, fontStyle: "italic", 
+                  fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
+                  fontSize: "clamp(2rem, 4vw, 3.2rem)", 
+                  fontWeight: 300, 
+                  textTransform: "uppercase",
                   color: "#ffffff",
-                  letterSpacing: "-0.02em",
-                  lineHeight: 1.05, margin: "0 0 2rem" 
+                  letterSpacing: "0.02em",
+                  lineHeight: 1.1, margin: "0 0 2rem" 
                 }}>
                   {property.titulo[lang]}
                 </h2>
@@ -540,38 +539,33 @@ export default function HomeExperience({ properties, locale }: Props) {
                   borderTop: "1px solid rgba(255,255,255,0.15)", paddingTop: "1.5rem"
                 }}>
                   
-                  {/* PRECIO: Aquí aplicamos la tensión (Euro Serif Dorado vs Números Sans-Serif Fino) */}
+                  {/* PRECIO LIMPIO: Todo en Sans-Serif */}
                   <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem" }}>
                     <span style={{ 
-                      fontFamily: "'Playfair Display', serif", 
-                      fontStyle: "italic", fontWeight: 600, fontSize: "1.2rem", color: "#c9a96e" 
+                      fontFamily: "'Helvetica Neue', 'Inter', sans-serif", 
+                      fontWeight: 300, fontSize: "1.2rem", color: "#c9a96e" 
                     }}>€</span>
                     <p style={{ 
                       fontFamily: "'Helvetica Neue', 'Inter', sans-serif", 
                       color: "white", fontSize: "clamp(1.5rem, 2.5vw, 2rem)", 
-                      fontWeight: 100, letterSpacing: "0.05em", margin: 0 
+                      fontWeight: 200, letterSpacing: "0.05em", margin: 0 
                     }}>
                       {(property.precio / 1000000).toFixed(1)}
                       <span style={{ 
-                        fontFamily: "'Playfair Display', serif", fontStyle: "italic", 
-                        color: "#c9a96e", fontSize: "0.7em", fontWeight: 600, marginLeft: "0.2rem" 
+                        color: "#c9a96e", fontSize: "0.7em", fontWeight: 300, marginLeft: "0.2rem" 
                       }}>M</span>
                     </p>
                   </div>
                   
-                  {/* EXPLORE LINK: Tensión final (Texto Sans vs Flecha Serif) */}
+                  {/* EXPLORE LINK: Flecha limpia */}
                   <span style={{ 
                     fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
                     fontSize: "0.55rem", fontWeight: 400, letterSpacing: "0.4em", 
                     color: "#ffffff", textTransform: "uppercase",
                     display: "flex", alignItems: "center", gap: "0.8rem",
-                    transition: "opacity 0.3s ease"
                   }}>
                     DISCOVER 
-                    <span style={{ 
-                      fontFamily: "'Playfair Display', serif", 
-                      fontStyle: "italic", color: "#c9a96e", fontSize: "1.5em", fontWeight: 400 
-                    }}>→</span>
+                    <span style={{ color: "#c9a96e", fontSize: "1.5em", fontWeight: 300 }}>→</span>
                   </span>
                 </div>
               </div>
