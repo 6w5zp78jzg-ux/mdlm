@@ -4,14 +4,6 @@ import gsap from "gsap";
 
 export type Phase = "video" | "transition" | "gallery";
 
-// Lógica de opacidad original intacta: hace fade-in y se bloquea en 1 (100%)
-export function infographicOpacity(progress: number, center: number, width = 0.35): number {
-  const dist = progress - center;
-  if (dist < -width) return 0;
-  if (dist < -width * 0.3) return Math.max(0, 1 - (Math.abs(dist) - width * 0.3) / (width * 0.7));
-  return 1; 
-}
-
 interface ScrollEngineProps {
   videoRef: React.RefObject<HTMLVideoElement | null>;
   stageRef: React.RefObject<HTMLDivElement | null>;
@@ -31,6 +23,8 @@ export function useScrollEngine({
   const videoProgressRef = useRef(0);
   const transitionProgressRef = useRef(0);
   const galleryProgressRef = useRef(0);
+  const inf1LockedRef = useRef(false);
+  const inf2LockedRef = useRef(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -38,7 +32,6 @@ export function useScrollEngine({
     const galleryTrack = galleryTrackRef.current;
     if (!video || !stage || !galleryTrack) return;
 
-    // Control absoluto del Single Canvas
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
     gsap.set(stage, { height: "100vh" });
@@ -74,36 +67,45 @@ export function useScrollEngine({
       e.preventDefault();
       const delta = e.deltaY;
 
+      // ── FASE 1: VIDEO ────────────────────────────────────────────────────
       if (phaseRef.current === "video") {
-        videoProgressRef.current = Math.max(0, Math.min(1, videoProgressRef.current + delta * 0.0006));
+        videoProgressRef.current = Math.max(0, Math.min(1,
+          videoProgressRef.current + delta * 0.0006
+        ));
         if (video.duration) video.currentTime = videoProgressRef.current * video.duration;
 
         const p = videoProgressRef.current;
 
-        // INFOGRAFÍA 1: Asciende (Vector Y negativo)
-        if (infographic1Ref.current) {
-          const op1 = infographicOpacity(p, 0.25);
-          const relPos = Math.min((p - 0.25) / 0.35, 1);
-          
-          // Se desplaza hacia arriba hasta -120px
-          const yOff1 = relPos * -120;
-          const xOff1 = (1 - Math.min(1, op1 * 2)) * -50;
-          
-          infographic1Ref.current.style.opacity = String(Math.max(0, op1));
-          infographic1Ref.current.style.transform = `translate3d(${xOff1}px, ${yOff1}px, 0)`;
+        // Infografico 1 — entra al 10-25%, luego FIJO para siempre
+        if (infographic1Ref.current && !inf1LockedRef.current) {
+          if (p < 0.10) {
+            infographic1Ref.current.style.opacity = "0";
+            infographic1Ref.current.style.transform = "translate3d(0px, 120px, 0)";
+          } else if (p < 0.25) {
+            const t = (p - 0.10) / 0.15;
+            infographic1Ref.current.style.opacity = String(t);
+            infographic1Ref.current.style.transform = `translate3d(0px, ${120 - t * 120}px, 0)`;
+          } else {
+            infographic1Ref.current.style.opacity = "1";
+            infographic1Ref.current.style.transform = "translate3d(0px, 0px, 0)";
+            inf1LockedRef.current = true;
+          }
         }
 
-        // INFOGRAFÍA 2: Desciende (Vector Y positivo) creando contraste narrativo
-        if (infographic2Ref.current) {
-          const op2 = infographicOpacity(p, 0.65);
-          const relPos2 = Math.min((p - 0.65) / 0.35, 1);
-          
-          // Se desplaza hacia abajo hasta +120px (o el valor que equilibre tu diseño)
-          const yOff2 = relPos2 * 120; 
-          const xOff2 = (1 - Math.min(1, op2 * 2)) * 50;
-          
-          infographic2Ref.current.style.opacity = String(Math.max(0, op2));
-          infographic2Ref.current.style.transform = `translate3d(${xOff2}px, ${yOff2}px, 0)`;
+        // Infografico 2 — entra al 50-65%, luego FIJO para siempre
+        if (infographic2Ref.current && !inf2LockedRef.current) {
+          if (p < 0.50) {
+            infographic2Ref.current.style.opacity = "0";
+            infographic2Ref.current.style.transform = "translate3d(0px, 120px, 0)";
+          } else if (p < 0.65) {
+            const t = (p - 0.50) / 0.15;
+            infographic2Ref.current.style.opacity = String(t);
+            infographic2Ref.current.style.transform = `translate3d(0px, ${120 - t * 120}px, 0)`;
+          } else {
+            infographic2Ref.current.style.opacity = "1";
+            infographic2Ref.current.style.transform = "translate3d(0px, 0px, 0)";
+            inf2LockedRef.current = true;
+          }
         }
 
         if (videoProgressRef.current >= 0.999 && delta > 0) {
@@ -113,8 +115,11 @@ export function useScrollEngine({
         }
       }
 
+      // ── FASE 2: TRANSICION ───────────────────────────────────────────────
       else if (phaseRef.current === "transition") {
-        transitionProgressRef.current = Math.max(0, Math.min(1, transitionProgressRef.current + delta * 0.004));
+        transitionProgressRef.current = Math.max(0, Math.min(1,
+          transitionProgressRef.current + delta * 0.004
+        ));
         targetTransition = transitionProgressRef.current;
 
         if (transitionProgressRef.current >= 0.999 && delta > 0) {
@@ -128,8 +133,11 @@ export function useScrollEngine({
         }
       }
 
+      // ── FASE 3: GALERIA ──────────────────────────────────────────────────
       else if (phaseRef.current === "gallery") {
-        galleryProgressRef.current = Math.max(0, Math.min(1, galleryProgressRef.current + delta * 0.0006));
+        galleryProgressRef.current = Math.max(0, Math.min(1,
+          galleryProgressRef.current + delta * 0.0006
+        ));
         targetGallery = galleryProgressRef.current;
 
         if (galleryProgressRef.current <= 0.001 && delta < 0) {
