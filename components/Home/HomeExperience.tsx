@@ -13,8 +13,6 @@ export default function HomeExperience({ properties, locale }: Props) {
   const propertiesRef = useRef<HTMLDivElement>(null);
   const propertyRefs = useRef<(HTMLDivElement | null)[]>([]);
   const skyRef = useRef<HTMLDivElement>(null);
-  const sunRef = useRef<HTMLDivElement>(null);
-  const moonRef = useRef<HTMLDivElement>(null);
   const starsRef = useRef<HTMLDivElement>(null);
   const phaseRef = useRef<"header" | "properties">("header");
   const headerProgressRef = useRef(0);
@@ -76,17 +74,15 @@ export default function HomeExperience({ properties, locale }: Props) {
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
     const tick = () => {
-      // CICLO SOLAR 360 — duracion 60 segundos
+      // CICLO ATMOSFÉRICO 360 — duracion 60 segundos
       cycleTime += 1 / 60 / 90; 
       cycleTime = cycleTime % 1;
 
       const t = cycleTime;
+      // Mantenemos la matemática del ángulo para desplazar el foco del gradiente (iluminación global)
       const angle = t * 360 - 90; 
-      const sunX = 50 + Math.cos(angle * Math.PI / 180) * 60;
-      const sunY = 50 + Math.sin(angle * Math.PI / 180) * 80;
-
-      const isNight = t > 0.5;
-      const nightProgress = isNight ? (t - 0.5) * 2 : 0; 
+      const lightX = 50 + Math.cos(angle * Math.PI / 180) * 60;
+      const lightY = 50 + Math.sin(angle * Math.PI / 180) * 80;
 
       const lerpColor = (a: number[], b: number[], k: number) =>
         `rgb(${Math.round(a[0] + (b[0] - a[0]) * k)}, ${Math.round(a[1] + (b[1] - a[1]) * k)}, ${Math.round(a[2] + (b[2] - a[2]) * k)})`;
@@ -112,7 +108,8 @@ export default function HomeExperience({ properties, locale }: Props) {
       const c3 = lerpColor(pA[3], pB[3], k);
       const c4 = lerpColor(pA[4], pB[4], k);
 
-      const skyGradient = `radial-gradient(ellipse 130% 90% at ${sunX}% ${sunY}%,
+      // El cielo actúa como un lienzo lumínico de James Turrell
+      const skyGradient = `radial-gradient(ellipse 130% 90% at ${lightX}% ${lightY}%,
         ${c0} 0%,
         ${c1} 12%,
         ${c2} 30%,
@@ -121,34 +118,7 @@ export default function HomeExperience({ properties, locale }: Props) {
 
       if (skyRef.current) skyRef.current.style.background = skyGradient;
 
-      // SOL
-      if (sunRef.current) {
-        let sunVisible = 0;
-        if (t < 0.45) sunVisible = 1;
-        else if (t < 0.55) sunVisible = 1 - (t - 0.45) / 0.10;
-        else if (t > 0.95) sunVisible = (t - 0.95) / 0.05;
-        sunRef.current.style.opacity = String(sunVisible);
-        sunRef.current.style.left = `${sunX}%`;
-        sunRef.current.style.top = `${sunY}%`;
-      }
-
-      // LUNA
-      if (moonRef.current) {
-        let moonVisible = 0;
-        if (t > 0.55 && t < 0.95) {
-          if (t < 0.65) moonVisible = (t - 0.55) / 0.10;
-          else if (t > 0.85) moonVisible = 1 - (t - 0.85) / 0.10;
-          else moonVisible = 1;
-        }
-        const moonAngle = (t - 0.5) * 2 * 180 - 90;
-        const moonX = 50 + Math.cos(moonAngle * Math.PI / 180) * 35;
-        const moonY = 30 + Math.sin(moonAngle * Math.PI / 180) * 20;
-        moonRef.current.style.opacity = String(moonVisible);
-        moonRef.current.style.left = `${moonX}%`;
-        moonRef.current.style.top = `${moonY}%`;
-      }
-
-      // ESTRELLAS
+      // ESTRELLAS — Visibilidad orgánica ligada a la oscuridad del lienzo
       if (starsRef.current) {
         let starOp = 0;
         if (t > 0.5 && t < 0.95) {
@@ -305,25 +275,15 @@ export default function HomeExperience({ properties, locale }: Props) {
         }
         .ui-enter { animation: uiFadeIn 2.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
-        /* Original Environment Animations */
-        @keyframes sunGlow {
-          0%, 100% { box-shadow: 0 0 30px 8px rgba(255,200,100,0.5), 0 0 60px 18px rgba(255,140,40,0.2); }
-          50%       { box-shadow: 0 0 45px 12px rgba(255,220,140,0.7), 0 0 80px 25px rgba(255,160,60,0.3); }
-        }
-        @keyframes moonGlow {
-          0%, 100% { box-shadow: 0 0 40px 10px rgba(220,230,255,0.4), 0 0 80px 20px rgba(180,200,255,0.2); }
-          50%       { box-shadow: 0 0 60px 15px rgba(240,245,255,0.6), 0 0 120px 30px rgba(200,220,255,0.3); }
-        }
+        /* Estrellas Ambientales */
         @keyframes starTwinkle {
           0%, 100% { opacity: 0.3; transform: scale(1); }
           50%       { opacity: 1; transform: scale(1.5); }
         }
-        .sun-orb { animation: sunGlow 4s ease-in-out infinite; }
-        .moon-orb { animation: moonGlow 5s ease-in-out infinite; }
         .star { animation: starTwinkle ease-in-out infinite; }
       `}</style>
 
-      {/* ── HEADER ─────────────────────────────────────────────────────── */}
+      {/* ── HEADER ATMOSFÉRICO ─────────────────────────────────────────── */}
       <div ref={headerRef} style={{
         position: "absolute", inset: 0, zIndex: 20,
         willChange: "opacity, transform",
@@ -332,8 +292,10 @@ export default function HomeExperience({ properties, locale }: Props) {
         overflow: "hidden",
       }}>
 
+        {/* LIENZO LUMÍNICO (Atmósfera) */}
         <div ref={skyRef} style={{ position: "absolute", inset: 0, transition: "background 0.1s linear" }} />
 
+        {/* PROFUNDIDAD ESTELAR */}
         <div ref={starsRef} style={{ position: "absolute", inset: 0, opacity: 0, pointerEvents: "none", transition: "opacity 0.5s ease" }}>
           {stars.map((s, i) => (
             <div key={i} className="star" style={{
@@ -343,22 +305,6 @@ export default function HomeExperience({ properties, locale }: Props) {
               animationDuration: `${2 + s.delay}s`, animationDelay: `${s.delay}s`,
             }} />
           ))}
-        </div>
-
-        <div ref={sunRef} className="sun-orb" style={{
-          position: "absolute", width: "80px", height: "80px", borderRadius: "50%",
-          background: "radial-gradient(circle, #fff5b8 0%, #ffd54f 40%, #ff8c00 80%, transparent 100%)",
-          transform: "translate(-50%, -50%)", pointerEvents: "none", transition: "opacity 1s ease",
-        }} />
-
-        <div ref={moonRef} className="moon-orb" style={{
-          position: "absolute", width: "100px", height: "100px", borderRadius: "50%",
-          background: "radial-gradient(circle at 35% 35%, #ffffff 0%, #f0f4ff 40%, #c8d4f0 70%, #8090b0 100%)",
-          transform: "translate(-50%, -50%)", pointerEvents: "none", opacity: 0, transition: "opacity 1s ease",
-        }}>
-          <div style={{ position: "absolute", top: "30%", left: "25%", width: "12px", height: "12px", borderRadius: "50%", background: "rgba(120,140,170,0.4)" }} />
-          <div style={{ position: "absolute", top: "55%", left: "55%", width: "8px", height: "8px", borderRadius: "50%", background: "rgba(120,140,170,0.3)" }} />
-          <div style={{ position: "absolute", top: "20%", left: "60%", width: "6px", height: "6px", borderRadius: "50%", background: "rgba(120,140,170,0.35)" }} />
         </div>
 
         {/* CONTENIDO TIPOGRÁFICO DE ALTO IMPACTO (COREOGRAFÍA) */}
