@@ -32,6 +32,8 @@ export function useScrollEngine({
   const videoProgressRef = useRef(0);
   const transitionProgressRef = useRef(0);
   const galleryProgressRef = useRef(0);
+  const inf1LockedRef = useRef(false);  // true cuando llego a posicion final
+  const inf2LockedRef = useRef(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -117,6 +119,7 @@ export function useScrollEngine({
         if (transitionProgressRef.current <= 0.001 && delta < 0) {
           phaseRef.current = "video";
           videoProgressRef.current = 1;
+          // NO reseteamos los flags — las infografias se quedan fijas
         }
       }
 
