@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Property } from "@/types/property";
 import { useRouter } from "next/navigation";
 
@@ -12,6 +12,10 @@ export default function HomeExperience({ properties, locale }: Props) {
   const headerRef = useRef<HTMLDivElement>(null);
   const propertiesRef = useRef<HTMLDivElement>(null);
   const propertyRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const skyRef = useRef<HTMLDivElement>(null);
+  const sunRef = useRef<HTMLDivElement>(null);
+  const moonRef = useRef<HTMLDivElement>(null);
+  const starsRef = useRef<HTMLDivElement>(null);
   const phaseRef = useRef<"header" | "properties">("header");
   const headerProgressRef = useRef(0);
   const progressRef = useRef(0);
@@ -19,6 +23,7 @@ export default function HomeExperience({ properties, locale }: Props) {
   const router = useRouter();
   const lang = locale as "es" | "en" | "fr" | "ru";
   const SECTION_LENGTH = 1.0;
+  const [skyTime, setSkyTime] = useState(0); // 0 a 1 = ciclo completo
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -27,11 +32,121 @@ export default function HomeExperience({ properties, locale }: Props) {
     let rafId: number;
     let smoothHeader = 0;
     let targetHeader = 0;
+    let cycleTime = 0;
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
     const tick = () => {
-      smoothHeader = lerp(smoothHeader, targetHeader, 0.055);
+      // CICLO SOLAR 360 — duracion 60 segundos
+      cycleTime += 1 / 60 / 60; // 1 frame / 60fps / 60s
+      cycleTime = cycleTime % 1;
 
+      // Calcular el cielo segun la fase del ciclo
+      // 0.0 = amanecer | 0.25 = mediodia | 0.5 = atardecer | 0.75 = medianoche | 1.0 = amanecer
+      const t = cycleTime;
+      const angle = t * 360 - 90; // sol arranca abajo izquierda
+      const sunX = 50 + Math.cos(angle * Math.PI / 180) * 60;
+      const sunY = 50 + Math.sin(angle * Math.PI / 180) * 80;
+
+      // Determinar si es de dia o de noche
+      const isNight = t > 0.5;
+      const nightProgress = isNight ? (t - 0.5) * 2 : 0; // 0 a 1 durante la noche
+
+      // Color del cielo dinamico
+      let skyGradient = "";
+      if (t < 0.15) {
+        // AMANECER — rosa profundo a naranja
+        const k = t / 0.15;
+        skyGradient = `radial-gradient(ellipse 120% 80% at ${sunX}% ${sunY}%,
+          #ff6b1a ${0 + k * 5}%,
+          #ff3d00 ${8 + k * 5}%,
+          #c2185b ${20 + k * 5}%,
+          #6a1b9a ${35 + k * 5}%,
+          #1a237e 55%,
+          #0d1135 75%,
+          #060818 100%)`;
+      } else if (t < 0.35) {
+        // MEDIODIA — azul brillante
+        skyGradient = `radial-gradient(ellipse 150% 100% at ${sunX}% ${sunY}%,
+          #fff5b8 0%,
+          #ffd54f 4%,
+          #ffa726 12%,
+          #4fc3f7 30%,
+          #1976d2 50%,
+          #0d47a1 75%,
+          #061a3a 100%)`;
+      } else if (t < 0.5) {
+        // ATARDECER — naranja a violeta intenso
+        const k = (t - 0.35) / 0.15;
+        skyGradient = `radial-gradient(ellipse 120% 80% at ${sunX}% ${sunY}%,
+          #ffa726 0%,
+          #ff6f00 ${5 + k * 5}%,
+          #d84315 ${15 + k * 5}%,
+          #6a1b9a ${30 + k * 5}%,
+          #311b92 ${50 + k * 5}%,
+          #0d1135 75%,
+          #060818 100%)`;
+      } else if (t < 0.65) {
+        // CREPUSCULO — transicion al azul nocturno
+        const k = (t - 0.5) / 0.15;
+        skyGradient = `radial-gradient(ellipse at 50% 50%,
+          rgba(40,30,80,${0.6 - k * 0.4}) 0%,
+          #1a1245 ${20}%,
+          #0a0a2a ${50}%,
+          #050518 80%,
+          #000000 100%)`;
+      } else if (t < 0.9) {
+        // NOCHE PROFUNDA
+        skyGradient = `radial-gradient(ellipse at 50% 30%,
+          #0a0a3a 0%,
+          #050524 30%,
+          #02021a 60%,
+          #000000 100%)`;
+      } else {
+        // PRE-AMANECER — azul a rosa
+        const k = (t - 0.9) / 0.1;
+        skyGradient = `radial-gradient(ellipse 120% 80% at ${sunX}% ${sunY}%,
+          rgba(255,107,26,${k}) 0%,
+          rgba(194,24,91,${k * 0.8}) ${15}%,
+          #1a237e ${35}%,
+          #0d1135 70%,
+          #060818 100%)`;
+      }
+
+      if (skyRef.current) skyRef.current.style.background = skyGradient;
+
+      // SOL — visible solo durante el dia (0 - 0.5)
+      if (sunRef.current) {
+        const sunVisible = t < 0.5 ? 1 : 0;
+        sunRef.current.style.opacity = String(sunVisible);
+        sunRef.current.style.left = `${sunX}%`;
+        sunRef.current.style.top = `${sunY}%`;
+      }
+
+      // LUNA — visible solo de noche (0.55 - 0.95)
+      if (moonRef.current) {
+        const moonVisible = t > 0.55 && t < 0.95 ? 1 : 0;
+        // Luna recorre el cielo en sentido opuesto
+        const moonAngle = (t - 0.5) * 2 * 180 - 90;
+        const moonX = 50 + Math.cos(moonAngle * Math.PI / 180) * 35;
+        const moonY = 30 + Math.sin(moonAngle * Math.PI / 180) * 20;
+        moonRef.current.style.opacity = String(moonVisible);
+        moonRef.current.style.left = `${moonX}%`;
+        moonRef.current.style.top = `${moonY}%`;
+      }
+
+      // ESTRELLAS — opacidad segun la profundidad de la noche
+      if (starsRef.current) {
+        let starOp = 0;
+        if (t > 0.5 && t < 0.95) {
+          // Pico de visibilidad en medianoche
+          const nightT = (t - 0.5) / 0.45;
+          starOp = Math.sin(nightT * Math.PI);
+        }
+        starsRef.current.style.opacity = String(starOp);
+      }
+
+      // ── HEADER FADE OUT al hacer scroll ──────────────────────────────────
+      smoothHeader = lerp(smoothHeader, targetHeader, 0.055);
       if (headerRef.current) {
         headerRef.current.style.opacity = String(1 - smoothHeader);
         headerRef.current.style.transform = `translate3d(0, ${-smoothHeader * 80}px, 0) scale(${1 - smoothHeader * 0.03})`;
@@ -43,6 +158,7 @@ export default function HomeExperience({ properties, locale }: Props) {
         propertiesRef.current.style.pointerEvents = pOp > 0.3 ? "auto" : "none";
       }
 
+      // ── PROPIEDADES Z-AXIS ───────────────────────────────────────────────
       progressRef.current = lerp(progressRef.current, targetProgressRef.current, 0.06);
       properties.forEach((_, i) => {
         const el = propertyRefs.current[i];
@@ -50,13 +166,13 @@ export default function HomeExperience({ properties, locale }: Props) {
         const dist = progressRef.current - i * SECTION_LENGTH;
         let opacity = 0, scale = 0.4, zPos = -2000, blur = 30;
         if (dist >= -SECTION_LENGTH && dist < -SECTION_LENGTH * 0.3) {
-          const t = (dist + SECTION_LENGTH) / (SECTION_LENGTH * 0.7);
-          opacity = t * t; scale = 0.4 + t * 0.6; zPos = -2000 + t * 2000; blur = 30 - t * 30;
+          const tt = (dist + SECTION_LENGTH) / (SECTION_LENGTH * 0.7);
+          opacity = tt * tt; scale = 0.4 + tt * 0.6; zPos = -2000 + tt * 2000; blur = 30 - tt * 30;
         } else if (dist >= -SECTION_LENGTH * 0.3 && dist < SECTION_LENGTH * 0.3) {
           opacity = 1; scale = 1; zPos = 0; blur = 0;
         } else if (dist >= SECTION_LENGTH * 0.3 && dist < SECTION_LENGTH) {
-          const t = (dist - SECTION_LENGTH * 0.3) / (SECTION_LENGTH * 0.7);
-          opacity = 1 - t; scale = 1 + t * 0.5; zPos = t * 800; blur = t * 20;
+          const tt = (dist - SECTION_LENGTH * 0.3) / (SECTION_LENGTH * 0.7);
+          opacity = 1 - tt; scale = 1 + tt * 0.5; zPos = tt * 800; blur = tt * 20;
         } else if (dist >= SECTION_LENGTH) {
           opacity = 0; scale = 1.5; zPos = 800; blur = 20;
         }
@@ -99,41 +215,48 @@ export default function HomeExperience({ properties, locale }: Props) {
     };
   }, [properties.length]);
 
+  // Generar 80 estrellas con posiciones aleatorias estables
+  const stars = Array.from({ length: 80 }, (_, i) => ({
+    left: ((i * 37) % 100),
+    top: ((i * 71) % 70),
+    size: (i % 3 === 0) ? 2 : 1,
+    delay: (i * 0.13) % 4,
+    bright: i % 5 === 0,
+  }));
+
   return (
     <div style={{ position: "fixed", inset: 0, width: "100%", height: "100vh", overflow: "hidden", background: "#000" }}>
 
       <style>{`
-        @keyframes sunriseShift {
-          0%   { background-position: 0% 100%; }
-          50%  { background-position: 100% 0%; }
-          100% { background-position: 0% 100%; }
-        }
-        @keyframes particleDrift {
-          0%   { transform: translateY(0px) translateX(0px); opacity: 0; }
-          20%  { opacity: 1; }
-          80%  { opacity: 0.6; }
-          100% { transform: translateY(-120vh) translateX(40px); opacity: 0; }
+        @keyframes wordReveal {
+          0% { clip-path: inset(0 100% 0 0); opacity: 0; }
+          100% { clip-path: inset(0 0% 0 0); opacity: 1; }
         }
         @keyframes lineGrow {
-          0%   { transform: scaleY(0); opacity: 0; }
+          0% { transform: scaleY(0); opacity: 0; }
           100% { transform: scaleY(1); opacity: 1; }
-        }
-        @keyframes wordReveal {
-          0%   { clip-path: inset(0 100% 0 0); opacity: 0; }
-          100% { clip-path: inset(0 0% 0 0); opacity: 1; }
         }
         @keyframes glowPulse {
           0%, 100% { text-shadow: 0 0 40px rgba(255,160,50,0.2), 0 0 80px rgba(255,100,20,0.1); }
           50%       { text-shadow: 0 0 60px rgba(255,180,80,0.5), 0 0 120px rgba(255,120,30,0.3); }
         }
+        @keyframes sunGlow {
+          0%, 100% { box-shadow: 0 0 60px 20px rgba(255,200,100,0.6), 0 0 120px 40px rgba(255,140,40,0.3); }
+          50%       { box-shadow: 0 0 90px 30px rgba(255,220,140,0.8), 0 0 180px 60px rgba(255,160,60,0.4); }
+        }
+        @keyframes moonGlow {
+          0%, 100% { box-shadow: 0 0 40px 10px rgba(220,230,255,0.4), 0 0 80px 20px rgba(180,200,255,0.2); }
+          50%       { box-shadow: 0 0 60px 15px rgba(240,245,255,0.6), 0 0 120px 30px rgba(200,220,255,0.3); }
+        }
+        @keyframes starTwinkle {
+          0%, 100% { opacity: 0.3; transform: scale(1); }
+          50%       { opacity: 1; transform: scale(1.5); }
+        }
         @keyframes neonBreath {
           0%,100% { height:1.5rem; opacity:0.3; box-shadow:0 0 4px 1px rgba(255,255,255,0.3); }
           50%     { height:3.5rem; opacity:1;   box-shadow:0 0 12px 3px rgba(255,255,255,0.9); }
         }
-        @keyframes subtleFade {
-          0%,100% { opacity: 0.3; }
-          50%     { opacity: 0.8; }
-        }
+        @keyframes subtleFade { 0%,100% { opacity: 0.3; } 50% { opacity: 0.8; } }
         .neon-home { animation: neonBreath 2.4s ease-in-out infinite; }
         .scroll-fade { animation: subtleFade 2.4s ease-in-out infinite; }
         .mar-glow { animation: glowPulse 4s ease-in-out infinite; }
@@ -142,15 +265,12 @@ export default function HomeExperience({ properties, locale }: Props) {
         .reveal-3 { animation: wordReveal 1s cubic-bezier(0.16,1,0.3,1) 1.4s both; }
         .reveal-4 { animation: wordReveal 0.8s cubic-bezier(0.16,1,0.3,1) 1.8s both; }
         .line-grow { animation: lineGrow 1s ease-out 0.1s both; transform-origin: top; }
-        .particle {
-          position: absolute;
-          border-radius: 50%;
-          animation: particleDrift linear infinite;
-          pointer-events: none;
-        }
+        .sun-orb { animation: sunGlow 4s ease-in-out infinite; }
+        .moon-orb { animation: moonGlow 5s ease-in-out infinite; }
+        .star { animation: starTwinkle ease-in-out infinite; }
       `}</style>
 
-      {/* ── HEADER ────────────────────────────────────────────────────────── */}
+      {/* ── HEADER ─────────────────────────────────────────────────────── */}
       <div ref={headerRef} style={{
         position: "absolute", inset: 0, zIndex: 20,
         willChange: "opacity, transform",
@@ -159,69 +279,78 @@ export default function HomeExperience({ properties, locale }: Props) {
         overflow: "hidden",
       }}>
 
-        {/* FONDO — orbita solar: amanecer/anochecer mediterraneo */}
-        <div style={{
+        {/* CIELO DINAMICO */}
+        <div ref={skyRef} style={{
           position: "absolute", inset: 0,
-          background: `
-            radial-gradient(ellipse 120% 60% at 50% 110%,
-              #ff6b1a 0%,
-              #ff3d00 8%,
-              #c2185b 20%,
-              #7b1fa2 35%,
-              #1a237e 55%,
-              #0a0a1a 75%,
-              #000000 100%
-            )
-          `,
-          backgroundSize: "200% 200%",
-          animation: "sunriseShift 12s ease-in-out infinite",
+          transition: "background 0.1s linear",
         }} />
 
-        {/* Capa de niebla costera */}
-        <div style={{
+        {/* ESTRELLAS */}
+        <div ref={starsRef} style={{
           position: "absolute", inset: 0,
-          background: `
-            radial-gradient(ellipse 80% 40% at 50% 100%,
-              rgba(255,120,50,0.15) 0%,
-              transparent 70%
-            ),
-            radial-gradient(ellipse 60% 30% at 30% 80%,
-              rgba(255,60,20,0.08) 0%,
-              transparent 60%
-            )
-          `,
+          opacity: 0,
           pointerEvents: "none",
+          transition: "opacity 0.5s ease",
+        }}>
+          {stars.map((s, i) => (
+            <div key={i} className="star" style={{
+              position: "absolute",
+              left: `${s.left}%`,
+              top: `${s.top}%`,
+              width: `${s.size}px`,
+              height: `${s.size}px`,
+              borderRadius: "50%",
+              background: s.bright ? "rgba(255,255,255,1)" : "rgba(220,230,255,0.7)",
+              boxShadow: s.bright ? "0 0 4px rgba(255,255,255,0.8)" : "none",
+              animationDuration: `${2 + s.delay}s`,
+              animationDelay: `${s.delay}s`,
+            }} />
+          ))}
+        </div>
+
+        {/* SOL */}
+        <div ref={sunRef} className="sun-orb" style={{
+          position: "absolute",
+          width: "140px",
+          height: "140px",
+          borderRadius: "50%",
+          background: "radial-gradient(circle, #fff5b8 0%, #ffd54f 30%, #ff8c00 70%, transparent 100%)",
+          transform: "translate(-50%, -50%)",
+          pointerEvents: "none",
+          transition: "opacity 1s ease",
         }} />
 
-        {/* Particulas de luz — polvo dorado mediterraneo */}
-        {[...Array(12)].map((_, i) => (
-          <div key={i} className="particle" style={{
-            width: i % 3 === 0 ? "2px" : "1px",
-            height: i % 3 === 0 ? "2px" : "1px",
-            background: i % 2 === 0 ? "rgba(255,200,100,0.8)" : "rgba(255,255,255,0.6)",
-            left: `${8 + i * 7.5}%`,
-            bottom: `${10 + (i % 4) * 8}%`,
-            animationDuration: `${6 + i * 1.3}s`,
-            animationDelay: `${i * 0.7}s`,
-          }} />
-        ))}
+        {/* LUNA */}
+        <div ref={moonRef} className="moon-orb" style={{
+          position: "absolute",
+          width: "100px",
+          height: "100px",
+          borderRadius: "50%",
+          background: "radial-gradient(circle at 35% 35%, #ffffff 0%, #f0f4ff 40%, #c8d4f0 70%, #8090b0 100%)",
+          transform: "translate(-50%, -50%)",
+          pointerEvents: "none",
+          opacity: 0,
+          transition: "opacity 1s ease",
+        }}>
+          {/* Crateres */}
+          <div style={{ position: "absolute", top: "30%", left: "25%", width: "12px", height: "12px", borderRadius: "50%", background: "rgba(120,140,170,0.4)" }} />
+          <div style={{ position: "absolute", top: "55%", left: "55%", width: "8px", height: "8px", borderRadius: "50%", background: "rgba(120,140,170,0.3)" }} />
+          <div style={{ position: "absolute", top: "20%", left: "60%", width: "6px", height: "6px", borderRadius: "50%", background: "rgba(120,140,170,0.35)" }} />
+          <div style={{ position: "absolute", top: "65%", left: "20%", width: "10px", height: "10px", borderRadius: "50%", background: "rgba(120,140,170,0.3)" }} />
+        </div>
 
         {/* CONTENIDO TIPOGRAFICO */}
         <div style={{
           position: "relative", zIndex: 10,
           display: "flex", flexDirection: "column",
-          alignItems: "center",
-          padding: "0 2rem",
+          alignItems: "center", padding: "0 2rem",
         }}>
-
-          {/* Linea vertical superior */}
           <div className="line-grow" style={{
             width: "1px", height: "5rem",
             background: "linear-gradient(to bottom, transparent, rgba(255,180,80,0.5))",
             marginBottom: "2.5rem",
           }} />
 
-          {/* Tagline — ultra tracking */}
           <p className="reveal-1" style={{
             color: "rgba(255,180,80,0.8)",
             fontFamily: "Georgia, serif",
@@ -229,31 +358,21 @@ export default function HomeExperience({ properties, locale }: Props) {
             letterSpacing: "0.7em",
             textTransform: "uppercase",
             margin: "0 0 2rem",
-            fontWeight: 300,
-            fontStyle: "italic",
+            fontWeight: 300, fontStyle: "italic",
           }}>
             WHERE THE MEDITERRANEAN BECOMES EPIC
           </p>
 
-          {/* MARBELLA — monumental con mix tipografico */}
           <div className="reveal-2 mar-glow" style={{
-            display: "flex",
-            alignItems: "baseline",
-            gap: "0.02em",
-            lineHeight: 0.85,
-            marginBottom: "0.5rem",
+            display: "flex", alignItems: "baseline", gap: "0.02em",
+            lineHeight: 0.85, marginBottom: "0.5rem",
           }}>
-            {/* MAR — serif light, enorme */}
             <span style={{
               fontFamily: "Georgia, serif",
               fontSize: "clamp(5rem, 14vw, 13rem)",
-              fontWeight: 300,
-              color: "white",
+              fontWeight: 300, color: "white",
               letterSpacing: "-0.02em",
-            }}>
-              MAR
-            </span>
-            {/* BELLA — condensed, dorado, rotado ligeramente */}
+            }}>MAR</span>
             <span style={{
               fontFamily: "Georgia, serif",
               fontSize: "clamp(5rem, 14vw, 13rem)",
@@ -263,18 +382,14 @@ export default function HomeExperience({ properties, locale }: Props) {
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
               letterSpacing: "-0.04em",
-            }}>
-              BELLA
-            </span>
+            }}>BELLA</span>
           </div>
 
-          {/* Ultra Luxury — italic, espaciado, blanco translucido */}
           <p className="reveal-3" style={{
             color: "rgba(255,255,255,0.45)",
             fontFamily: "Georgia, serif",
             fontSize: "clamp(0.8rem, 2vw, 1.5rem)",
-            fontWeight: 300,
-            letterSpacing: "0.5em",
+            fontWeight: 300, letterSpacing: "0.5em",
             fontStyle: "italic",
             margin: "1.5rem 0 2.5rem",
             textTransform: "uppercase",
@@ -282,7 +397,6 @@ export default function HomeExperience({ properties, locale }: Props) {
             Ultra · Luxury · Real Estate
           </p>
 
-          {/* Ubicaciones — separadas por destellos */}
           <div className="reveal-4" style={{
             display: "flex", alignItems: "center", gap: "0.8rem",
             color: "rgba(255,180,80,0.55)",
@@ -306,7 +420,6 @@ export default function HomeExperience({ properties, locale }: Props) {
             ))}
           </div>
 
-          {/* Linea vertical inferior */}
           <div className="line-grow" style={{
             width: "1px", height: "5rem",
             background: "linear-gradient(to bottom, rgba(255,180,80,0.4), transparent)",
@@ -314,7 +427,6 @@ export default function HomeExperience({ properties, locale }: Props) {
           }} />
         </div>
 
-        {/* Scroll indicator */}
         <div style={{
           position: "absolute", bottom: "2rem", left: "50%",
           transform: "translateX(-50%)",
@@ -331,7 +443,7 @@ export default function HomeExperience({ properties, locale }: Props) {
         </div>
       </div>
 
-      {/* ── PROPIEDADES Z-AXIS ───────────────────────────────────────────── */}
+      {/* ── PROPIEDADES Z-AXIS ───────────────────────────────────────── */}
       <div ref={propertiesRef} style={{
         position: "absolute", inset: 0, opacity: 0, pointerEvents: "none",
         perspective: "1200px", perspectiveOrigin: "center center",
