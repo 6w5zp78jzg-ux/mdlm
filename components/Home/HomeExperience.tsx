@@ -26,25 +26,44 @@ export default function HomeExperience({ properties, locale }: Props) {
   
   const [skyTime, setSkyTime] = useState(0); 
 
-  // --- MOTOR TIPOGRÁFICO ROTATIVO CENTRAL ---
+  // --- MOTOR TIPOGRÁFICO ROTATIVO AVANZADO ---
   const [titleIdx, setTitleIdx] = useState(0);
   
-  // Array de pares de palabras para mantener la tensión tipográfica
-  const dynamicTitles = [
-    { p1: "MAR", p2: "BELLA" },
-    { p1: "THE", p2: "APEX" },
-    { p1: "PURE", p2: "VISION" },
-    { p1: "EPIC", p2: "ESTATES" },
-    { p1: "ULTRA", p2: "LUXURY" }
+  // Estructura narrativa orquestada: Micro-copy + Tensión Principal (Sans/Serif) + Sub-copy
+  const dynamicPhrases = [
+    { 
+      top: "THE APEX OF", 
+      mainLeft: "MEDITERRANEAN", 
+      mainRight: "LIVING", 
+      bottom: "ULTRA LUXURY ESTATES" 
+    },
+    { 
+      top: "CURATED FOR", 
+      mainLeft: "UNCOMPROMISING", 
+      mainRight: "VISION", 
+      bottom: "ARCHITECTURAL POETRY" 
+    },
+    { 
+      top: "WHERE ETERNITY", 
+      mainLeft: "MEETS", 
+      mainRight: "THE SEA", 
+      bottom: "COASTAL MASTERPIECES" 
+    },
+    { 
+      top: "REDEFINING", 
+      mainLeft: "MODERN", 
+      mainRight: "OPULENCE", 
+      bottom: "EXCLUSIVE SANCTUARIES" 
+    }
   ];
 
   useEffect(() => {
-    // Rotación de la pieza central cada 5.5 segundos para acoplarse con la duración de la animación CSS
+    // Ciclo extendido a 7 segundos para permitir la lectura y la contemplación de las físicas de animación
     const titleInterval = setInterval(() => {
-      setTitleIdx((prev) => (prev + 1) % dynamicTitles.length);
-    }, 5500);
+      setTitleIdx((prev) => (prev + 1) % dynamicPhrases.length);
+    }, 7000);
     return () => clearInterval(titleInterval);
-  }, [dynamicTitles.length]);
+  }, [dynamicPhrases.length]);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -221,67 +240,72 @@ export default function HomeExperience({ properties, locale }: Props) {
     <div style={{ position: "fixed", inset: 0, width: "100%", height: "100vh", overflow: "hidden", background: "#000" }}>
 
       <style>{`
-        /* --- HIGH-END TYPOGRAPHY & CINEMATIC ANIMATIONS --- */
+        /* --- ORQUESTACIÓN CINEMÁTICA Y REFRACCIÓN TIPOGRÁFICA --- */
         
-        /* 1. Transición principal del bloque tipográfico central */
-        @keyframes coreTitleReveal {
-          0% { opacity: 0; filter: blur(20px); transform: scale(0.95) translateY(15px); }
-          15% { opacity: 1; filter: blur(0px); transform: scale(1) translateY(0); }
-          85% { opacity: 1; filter: blur(0px); transform: scale(1) translateY(0); }
-          100% { opacity: 0; filter: blur(15px); transform: scale(1.05) translateY(-15px); }
+        /* Contenedor Global: Genera la tensión espacial */
+        .stage-perspective {
+          perspective: 1000px;
+          transform-style: preserve-3d;
         }
 
-        .core-title-anim {
-          animation: coreTitleReveal 5.5s cubic-bezier(0.25, 1, 0.5, 1) both;
-          will-change: opacity, filter, transform;
+        /* 1. Revelado del Micro-Copy Superior (Tracking Dinámico) */
+        @keyframes revealTopText {
+          0% { opacity: 0; transform: translateY(20px); letter-spacing: 0.1em; filter: blur(8px); }
+          15% { opacity: 1; transform: translateY(0); letter-spacing: 0.5em; filter: blur(0px); }
+          85% { opacity: 1; transform: translateY(0); letter-spacing: 0.6em; filter: blur(0px); }
+          100% { opacity: 0; transform: translateY(-20px); letter-spacing: 0.8em; filter: blur(12px); }
         }
 
-        /* 2. Respiración suave del contenedor */
-        @keyframes heroBreathe {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.015); }
-        }
-        .hero-breathe {
-          animation: heroBreathe 8s ease-in-out infinite;
-        }
-
-        /* 3. Optical Bloom para un resplandor elegante y sin cortes */
-        @keyframes opticalBloom {
-          0%, 100% { 
-            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4)) 
-                    drop-shadow(0 0 40px rgba(201, 169, 110, 0.15));
-            opacity: 0.9;
-          }
-          50% { 
-            filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.6)) 
-                    drop-shadow(0 0 60px rgba(201, 169, 110, 0.3));
-            opacity: 1;
-          }
-        }
-        .title-optical-glow {
-          animation: opticalBloom 6s ease-in-out infinite;
-          mix-blend-mode: screen; 
+        /* 2. Entrada Colisión Izquierda (Outline) */
+        @keyframes slideImpactLeft {
+          0% { opacity: 0; transform: translate3d(-100px, 0, -100px) rotateY(15deg); filter: blur(20px); clip-path: inset(0 100% 0 0); }
+          15% { opacity: 1; transform: translate3d(0, 0, 0) rotateY(0deg); filter: blur(0px); clip-path: inset(0 0% 0 0); }
+          85% { opacity: 1; transform: translate3d(0, 0, 0) rotateY(0deg); filter: blur(0px); clip-path: inset(0 0% 0 0); }
+          100% { opacity: 0; transform: translate3d(100px, 0, 100px) rotateY(-15deg); filter: blur(20px); clip-path: inset(0 0 0 100%); }
         }
 
-        /* 4. Entrada Cinemática Estática */
-        @keyframes cinematicFadeIn {
-          0% { opacity: 0; transform: translateY(20px); filter: blur(10px); }
-          100% { opacity: 1; transform: translateY(0); filter: blur(0px); }
-        }
-        .cinematic-enter {
-          animation: cinematicFadeIn 2s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        @keyframes lineGrowCenter {
-          0% { transform: scaleY(0); opacity: 0; }
-          100% { transform: scaleY(1); opacity: 0.5; }
-        }
-        .line-elegant { 
-          animation: lineGrowCenter 2s cubic-bezier(0.85, 0, 0.15, 1) 0.5s both; 
-          transform-origin: center; 
+        /* 3. Entrada Colisión Derecha (Serif Italic) */
+        @keyframes slideImpactRight {
+          0% { opacity: 0; transform: translate3d(100px, 0, 100px) rotateY(-15deg); filter: blur(20px); clip-path: inset(0 0 0 100%); }
+          15% { opacity: 1; transform: translate3d(0, 0, 0) rotateY(0deg); filter: blur(0px); clip-path: inset(0 0% 0 0); }
+          85% { opacity: 1; transform: translate3d(0, 0, 0) rotateY(0deg); filter: blur(0px); clip-path: inset(0 0% 0 0); }
+          100% { opacity: 0; transform: translate3d(-100px, 0, -100px) rotateY(15deg); filter: blur(20px); clip-path: inset(0 100% 0 0); }
         }
 
-        /* Entorno Solar Original */
+        /* 4. Revelado del Micro-Copy Inferior (Surgimiento Líquido) */
+        @keyframes revealBottomText {
+          0% { opacity: 0; transform: translateY(30px) scale(0.95); clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%); filter: blur(10px); }
+          20% { opacity: 1; transform: translateY(0) scale(1); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); filter: blur(0px); }
+          80% { opacity: 1; transform: translateY(0) scale(1); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); filter: blur(0px); }
+          100% { opacity: 0; transform: translateY(-30px) scale(1.05); clip-path: polygon(0 0, 100% 0, 100% 0, 0 0); filter: blur(10px); }
+        }
+
+        /* Aplicación de las Clases de Orquestación */
+        .anim-top-text { animation: revealTopText 7s cubic-bezier(0.19, 1, 0.22, 1) both; will-change: transform, opacity, filter, letter-spacing; }
+        .anim-left-text { animation: slideImpactLeft 7s cubic-bezier(0.16, 1, 0.3, 1) both; will-change: transform, opacity, filter, clip-path; }
+        .anim-right-text { animation: slideImpactRight 7s cubic-bezier(0.16, 1, 0.3, 1) both; will-change: transform, opacity, filter, clip-path; }
+        .anim-bottom-text { animation: revealBottomText 7s cubic-bezier(0.25, 1, 0.5, 1) both; will-change: transform, opacity, filter, clip-path; }
+
+        /* Delays internos para generar ritmo orgánico */
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.3s; }
+        .delay-3 { animation-delay: 0.4s; }
+
+        /* Optical Bloom unificado */
+        @keyframes masterBloom {
+          0%, 100% { filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2)) drop-shadow(0 0 50px rgba(201, 169, 110, 0.1)); }
+          50% { filter: drop-shadow(0 0 35px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 80px rgba(201, 169, 110, 0.25)); }
+        }
+        .master-glow { animation: masterBloom 8s ease-in-out infinite; mix-blend-mode: screen; }
+
+        /* Entrada Estática de la UI periférica */
+        @keyframes uiFadeIn {
+          0% { opacity: 0; filter: blur(10px); transform: translateY(15px); }
+          100% { opacity: 1; filter: blur(0px); transform: translateY(0); }
+        }
+        .ui-enter { animation: uiFadeIn 2.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+        /* Original Environment Animations */
         @keyframes sunGlow {
           0%, 100% { box-shadow: 0 0 30px 8px rgba(255,200,100,0.5), 0 0 60px 18px rgba(255,140,40,0.2); }
           50%       { box-shadow: 0 0 45px 12px rgba(255,220,140,0.7), 0 0 80px 25px rgba(255,160,60,0.3); }
@@ -308,13 +332,9 @@ export default function HomeExperience({ properties, locale }: Props) {
         overflow: "hidden",
       }}>
 
-        <div ref={skyRef} style={{
-          position: "absolute", inset: 0, transition: "background 0.1s linear",
-        }} />
+        <div ref={skyRef} style={{ position: "absolute", inset: 0, transition: "background 0.1s linear" }} />
 
-        <div ref={starsRef} style={{
-          position: "absolute", inset: 0, opacity: 0, pointerEvents: "none", transition: "opacity 0.5s ease",
-        }}>
+        <div ref={starsRef} style={{ position: "absolute", inset: 0, opacity: 0, pointerEvents: "none", transition: "opacity 0.5s ease" }}>
           {stars.map((s, i) => (
             <div key={i} className="star" style={{
               position: "absolute", left: `${s.left}%`, top: `${s.top}%`, width: `${s.size}px`, height: `${s.size}px`,
@@ -341,69 +361,100 @@ export default function HomeExperience({ properties, locale }: Props) {
           <div style={{ position: "absolute", top: "20%", left: "60%", width: "6px", height: "6px", borderRadius: "50%", background: "rgba(120,140,170,0.35)" }} />
         </div>
 
-        {/* CONTENIDO TIPOGRAFICO DE ALTO IMPACTO (NARRATIVA ROTATIVA CENTRAL) */}
-        <div className="hero-breathe" style={{
+        {/* CONTENIDO TIPOGRÁFICO DE ALTO IMPACTO (COREOGRAFÍA) */}
+        <div className="stage-perspective master-glow" style={{
           position: "relative", zIndex: 10,
           display: "flex", flexDirection: "column",
           alignItems: "center", padding: "0 2rem",
-          userSelect: "none", width: "100%"
+          userSelect: "none", width: "100%",
         }}>
 
-          {/* Renderizado Condicional Vinculado a key={titleIdx} para relanzar la animación CSS */}
-          <div key={titleIdx} className="core-title-anim title-optical-glow" style={{ 
-            display: "flex", alignItems: "baseline", justifyContent: "center", flexWrap: "nowrap",
-            lineHeight: 0.85, padding: "10px 0", gap: "0.05em", whiteSpace: "nowrap"
-          }}>
-            <span style={{
-              fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
-              fontSize: "clamp(3.5rem, 11vw, 11rem)",
-              fontWeight: 100,
-              color: "transparent",
-              WebkitTextStroke: "1px rgba(255, 255, 255, 0.95)",
-              letterSpacing: "-0.01em",
-              transform: "translateY(1%)" 
-            }}>
-              {dynamicTitles[titleIdx].p1}
-            </span>
+          {/* Wrapper vinculado a key={titleIdx} para reiniciar la coreografía */}
+          <div key={titleIdx} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             
-            <span style={{
-              fontFamily: "'Playfair Display', 'Didot', 'Bodoni MT', serif",
-              fontSize: "clamp(3.8rem, 11.8vw, 11.8rem)", 
-              fontWeight: 700,
-              fontStyle: "italic",
-              color: "#ffffff",
-              letterSpacing: "-0.05em",
-              paddingLeft: "0.02em" 
+            {/* Micro-Copy Superior */}
+            <p className="anim-top-text" style={{
+              fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
+              fontSize: "clamp(0.6rem, 1vw, 0.9rem)",
+              fontWeight: 300,
+              color: "rgba(255,255,255,0.7)",
+              textTransform: "uppercase",
+              margin: "0 0 1.5rem 0",
+              textAlign: "center"
             }}>
-              {dynamicTitles[titleIdx].p2}
-            </span>
+              {dynamicPhrases[titleIdx].top}
+            </p>
+
+            {/* Impacto Central: Colisión de estilos */}
+            <div style={{ 
+              display: "flex", alignItems: "baseline", justifyContent: "center", flexWrap: "wrap",
+              lineHeight: 0.85, padding: "10px 0", gap: "0.15em"
+            }}>
+              <span className="anim-left-text delay-1" style={{
+                fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
+                fontSize: "clamp(3rem, 9vw, 9rem)",
+                fontWeight: 100,
+                color: "transparent",
+                WebkitTextStroke: "1px rgba(255, 255, 255, 0.95)",
+                letterSpacing: "-0.01em",
+                transformOrigin: "right center"
+              }}>
+                {dynamicPhrases[titleIdx].mainLeft}
+              </span>
+              
+              <span className="anim-right-text delay-2" style={{
+                fontFamily: "'Playfair Display', 'Didot', 'Bodoni MT', serif",
+                fontSize: "clamp(3.5rem, 10vw, 10rem)", 
+                fontWeight: 700,
+                fontStyle: "italic",
+                color: "#ffffff",
+                letterSpacing: "-0.04em",
+                transformOrigin: "left center"
+              }}>
+                {dynamicPhrases[titleIdx].mainRight}
+              </span>
+            </div>
+
+            {/* Micro-Copy Inferior */}
+            <p className="anim-bottom-text delay-3" style={{
+              fontFamily: "'Playfair Display', 'Didot', serif",
+              fontStyle: "italic",
+              fontSize: "clamp(0.8rem, 1.5vw, 1.2rem)",
+              color: "#c9a96e", // Toque Gold
+              margin: "2.5rem 0 0 0",
+              textAlign: "center",
+              letterSpacing: "0.2em"
+            }}>
+              {dynamicPhrases[titleIdx].bottom}
+            </p>
+
           </div>
 
-          <div className="line-elegant" style={{
+          <div className="ui-enter" style={{
             width: "1px", height: "4rem",
-            background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.8), transparent)",
-            margin: "2.5rem 0 2rem",
+            background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.3), transparent)",
+            margin: "3rem 0 2rem",
+            animationDelay: "1.5s"
           }} />
 
-          <div className="cinematic-enter" style={{
-            display: "flex", alignItems: "center", gap: "1.2rem", flexWrap: "wrap", justifyContent: "center",
-            color: "rgba(255,255,255,0.5)",
+          <div className="ui-enter" style={{
+            display: "flex", alignItems: "center", gap: "1.5rem", flexWrap: "wrap", justifyContent: "center",
+            color: "rgba(255,255,255,0.4)",
             fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
             fontSize: "clamp(0.45rem, 0.65vw, 0.6rem)",
             fontWeight: 400,
             letterSpacing: "0.35em",
             textTransform: "uppercase",
-            animationDelay: "0.8s"
+            animationDelay: "1.7s"
           }}>
             {["Golden Mile", "Puerto Banús", "Nueva Andalucía", "Sierra Blanca"].map((loc, i, arr) => (
-              <span key={loc} style={{ display: "flex", alignItems: "center", gap: "1.2rem" }}>
+              <span key={loc} style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
                 {loc}
                 {i < arr.length - 1 && (
                   <span style={{
                     fontFamily: "'Playfair Display', serif",
-                    color: "#c9a96e", 
+                    color: "rgba(201, 169, 110, 0.6)", 
                     fontSize: "1.2em",
-                    opacity: 0.8
                   }}>✦</span>
                 )}
               </span>
@@ -412,13 +463,13 @@ export default function HomeExperience({ properties, locale }: Props) {
 
         </div>
 
-        <div className="cinematic-enter" style={{
+        <div className="ui-enter" style={{
           position: "absolute", bottom: "2rem", left: "50%",
           transform: "translateX(-50%)",
           display: "flex", flexDirection: "column",
           alignItems: "center", gap: "1rem",
           pointerEvents: "none", zIndex: 20,
-          animationDelay: "1.2s"
+          animationDelay: "2s"
         }}>
           <span style={{
             color: "rgba(255,255,255,0.4)", fontSize: "0.45rem",
