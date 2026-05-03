@@ -21,7 +21,7 @@ export default function VideoSection({ videoRef, infographic1Ref, infographic2Re
       {/* INFOGRAFICO 1 — izquierda */}
       <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "flex-start", padding: "0 8vw", pointerEvents: "none" }}>
         <div ref={infographic1Ref} style={{
-          opacity: 0, transform: "translate3d(-50px, 60px, 0)", transition: "none",
+          opacity: 0, transform: "perspective(1200px) rotateY(-90deg)", transition: "none", transformStyle: "preserve-3d",
           background: "rgba(0,0,0,0.09)", border: "1px solid rgba(255,255,255,0.15)",
           padding: "3rem 4rem", maxWidth: "36rem", borderRadius: "2px",
         }}>
@@ -42,7 +42,7 @@ export default function VideoSection({ videoRef, infographic1Ref, infographic2Re
       {/* INFOGRAFICO 2 — derecha */}
       <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "flex-end", padding: "0 8vw", pointerEvents: "none" }}>
         <div ref={infographic2Ref} style={{
-          opacity: 0, transform: "translate3d(50px, 60px, 0)", transition: "none",
+          opacity: 0, transform: "perspective(1200px) rotateY(90deg)", transition: "none", transformStyle: "preserve-3d",
           background: "rgba(0,0,0,0.09)", border: "1px solid rgba(255,255,255,0.15)",
           padding: "3rem 4rem", maxWidth: "36rem", borderRadius: "2px", textAlign: "right",
         }}>
