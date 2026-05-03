@@ -109,11 +109,6 @@ export function useScrollEngine({
         transitionProgressRef.current = Math.max(0, Math.min(1, transitionProgressRef.current + delta * 0.004));
         targetTransition = transitionProgressRef.current;
 
-        // Fade out de infografias durante la transicion
-        const fadeOut = 1 - transitionProgressRef.current;
-        if (infographic1Ref.current) infographic1Ref.current.style.opacity = String(fadeOut);
-        if (infographic2Ref.current) infographic2Ref.current.style.opacity = String(fadeOut);
-
         if (transitionProgressRef.current >= 0.999 && delta > 0) {
           phaseRef.current = "gallery";
           galleryProgressRef.current = 0;
