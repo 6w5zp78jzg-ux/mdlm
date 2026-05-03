@@ -216,18 +216,44 @@ export default function HomeExperience({ properties, locale }: Props) {
     <div style={{ position: "fixed", inset: 0, width: "100%", height: "100vh", overflow: "hidden", background: "#000" }}>
 
       <style>{`
-        @keyframes wordReveal {
-          0% { clip-path: inset(0 100% 0 0); opacity: 0; }
-          100% { clip-path: inset(0 0% 0 0); opacity: 1; }
+        /* --- HIGH-END TYPOGRAPHY ANIMATIONS --- */
+        @keyframes cinematicBlurIn {
+          0% { filter: blur(20px); opacity: 0; transform: scale(1.05) translateY(15px); }
+          100% { filter: blur(0px); opacity: 1; transform: scale(1) translateY(0); }
         }
-        @keyframes lineGrow {
+        @keyframes letterSpacingBreathe {
+          0% { letter-spacing: 0.8em; opacity: 0; }
+          10% { opacity: 1; }
+          100% { letter-spacing: 0.4em; opacity: 0.8; }
+        }
+        @keyframes liquidMaskReveal {
+          0% { clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%); transform: translateY(30px); }
+          100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transform: translateY(0); }
+        }
+        @keyframes elegantGlow {
+          0%, 100% { text-shadow: 0 0 30px rgba(201, 169, 110, 0.2), 0 0 60px rgba(201, 169, 110, 0.05); }
+          50% { text-shadow: 0 0 50px rgba(201, 169, 110, 0.5), 0 0 90px rgba(201, 169, 110, 0.2); }
+        }
+        @keyframes lineGrowCenter {
           0% { transform: scaleY(0); opacity: 0; }
           100% { transform: scaleY(1); opacity: 1; }
         }
-        @keyframes glowPulse {
-          0%, 100% { text-shadow: 0 0 40px rgba(255,160,50,0.2), 0 0 80px rgba(255,100,20,0.1); }
-          50%       { text-shadow: 0 0 60px rgba(255,180,80,0.5), 0 0 120px rgba(255,120,30,0.3); }
-        }
+        @keyframes subtleFade { 0%,100% { opacity: 0.2; } 50% { opacity: 0.7; } }
+        
+        .typo-cinematic { animation: cinematicBlurIn 2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .typo-breathe { animation: letterSpacingBreathe 3s cubic-bezier(0.215, 0.61, 0.355, 1) both; }
+        .typo-liquid { animation: liquidMaskReveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .typo-glow { animation: elegantGlow 5s ease-in-out infinite; }
+        .line-elegant { animation: lineGrowCenter 1.5s cubic-bezier(0.85, 0, 0.15, 1) both; transform-origin: center; }
+        .scroll-pulse { animation: subtleFade 3s ease-in-out infinite; }
+        
+        /* Delays */
+        .del-1 { animation-delay: 0.2s; }
+        .del-2 { animation-delay: 0.6s; }
+        .del-3 { animation-delay: 1.0s; }
+        .del-4 { animation-delay: 1.4s; }
+
+        /* Original Environment Animations */
         @keyframes sunGlow {
           0%, 100% { box-shadow: 0 0 30px 8px rgba(255,200,100,0.5), 0 0 60px 18px rgba(255,140,40,0.2); }
           50%       { box-shadow: 0 0 45px 12px rgba(255,220,140,0.7), 0 0 80px 25px rgba(255,160,60,0.3); }
@@ -240,19 +266,6 @@ export default function HomeExperience({ properties, locale }: Props) {
           0%, 100% { opacity: 0.3; transform: scale(1); }
           50%       { opacity: 1; transform: scale(1.5); }
         }
-        @keyframes neonBreath {
-          0%,100% { height:1.5rem; opacity:0.3; box-shadow:0 0 4px 1px rgba(255,255,255,0.3); }
-          50%     { height:3.5rem; opacity:1;   box-shadow:0 0 12px 3px rgba(255,255,255,0.9); }
-        }
-        @keyframes subtleFade { 0%,100% { opacity: 0.3; } 50% { opacity: 0.8; } }
-        .neon-home { animation: neonBreath 2.4s ease-in-out infinite; }
-        .scroll-fade { animation: subtleFade 2.4s ease-in-out infinite; }
-        .mar-glow { animation: glowPulse 4s ease-in-out infinite; }
-        .reveal-1 { animation: wordReveal 1.2s cubic-bezier(0.16,1,0.3,1) 0.3s both; }
-        .reveal-2 { animation: wordReveal 1.4s cubic-bezier(0.16,1,0.3,1) 0.8s both; }
-        .reveal-3 { animation: wordReveal 1s cubic-bezier(0.16,1,0.3,1) 1.4s both; }
-        .reveal-4 { animation: wordReveal 0.8s cubic-bezier(0.16,1,0.3,1) 1.8s both; }
-        .line-grow { animation: lineGrow 1s ease-out 0.1s both; transform-origin: top; }
         .sun-orb { animation: sunGlow 4s ease-in-out infinite; }
         .moon-orb { animation: moonGlow 5s ease-in-out infinite; }
         .star { animation: starTwinkle ease-in-out infinite; }
@@ -298,120 +311,121 @@ export default function HomeExperience({ properties, locale }: Props) {
 
         {/* SOL */}
         <div ref={sunRef} className="sun-orb" style={{
-          position: "absolute",
-          width: "80px",
-          height: "80px",
-          borderRadius: "50%",
+          position: "absolute", width: "80px", height: "80px", borderRadius: "50%",
           background: "radial-gradient(circle, #fff5b8 0%, #ffd54f 40%, #ff8c00 80%, transparent 100%)",
-          transform: "translate(-50%, -50%)",
-          pointerEvents: "none",
-          transition: "opacity 1s ease",
+          transform: "translate(-50%, -50%)", pointerEvents: "none", transition: "opacity 1s ease",
         }} />
 
         {/* LUNA */}
         <div ref={moonRef} className="moon-orb" style={{
-          position: "absolute",
-          width: "100px",
-          height: "100px",
-          borderRadius: "50%",
+          position: "absolute", width: "100px", height: "100px", borderRadius: "50%",
           background: "radial-gradient(circle at 35% 35%, #ffffff 0%, #f0f4ff 40%, #c8d4f0 70%, #8090b0 100%)",
-          transform: "translate(-50%, -50%)",
-          pointerEvents: "none",
-          opacity: 0,
-          transition: "opacity 1s ease",
+          transform: "translate(-50%, -50%)", pointerEvents: "none", opacity: 0, transition: "opacity 1s ease",
         }}>
-          {/* Crateres */}
           <div style={{ position: "absolute", top: "30%", left: "25%", width: "12px", height: "12px", borderRadius: "50%", background: "rgba(120,140,170,0.4)" }} />
           <div style={{ position: "absolute", top: "55%", left: "55%", width: "8px", height: "8px", borderRadius: "50%", background: "rgba(120,140,170,0.3)" }} />
           <div style={{ position: "absolute", top: "20%", left: "60%", width: "6px", height: "6px", borderRadius: "50%", background: "rgba(120,140,170,0.35)" }} />
           <div style={{ position: "absolute", top: "65%", left: "20%", width: "10px", height: "10px", borderRadius: "50%", background: "rgba(120,140,170,0.3)" }} />
         </div>
 
-        {/* CONTENIDO TIPOGRAFICO */}
+        {/* CONTENIDO TIPOGRAFICO DE ALTO IMPACTO (BRUTALISMO EDITORIAL) */}
         <div style={{
           position: "relative", zIndex: 10,
           display: "flex", flexDirection: "column",
           alignItems: "center", padding: "0 2rem",
+          userSelect: "none"
         }}>
-          <div className="line-grow" style={{
-            width: "1px", height: "5rem",
-            background: "linear-gradient(to bottom, transparent, rgba(255,180,80,0.5))",
-            marginBottom: "2.5rem",
+          <div className="line-elegant del-1" style={{
+            width: "1px", height: "4rem",
+            background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.3), transparent)",
+            marginBottom: "2rem",
           }} />
 
-          <p className="reveal-1" style={{
-            color: "rgba(255,180,80,0.8)",
-            fontFamily: "Georgia, serif",
-            fontSize: "clamp(0.45rem, 0.9vw, 0.7rem)",
-            letterSpacing: "0.7em",
+          <p className="typo-breathe del-1" style={{
+            fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
+            fontSize: "clamp(0.5rem, 0.8vw, 0.75rem)",
+            fontWeight: 300,
+            color: "rgba(255,255,255,0.7)",
             textTransform: "uppercase",
-            margin: "0 0 2rem",
-            fontWeight: 300, fontStyle: "italic",
+            margin: "0 0 1rem",
           }}>
-            WHERE THE MEDITERRANEAN BECOMES EPIC
+            The Apex Of Mediterranean Living
           </p>
 
-          <div className="reveal-2 mar-glow" style={{
-            display: "flex", alignItems: "baseline", gap: "0.02em",
-            lineHeight: 0.85, marginBottom: "0.5rem",
-          }}>
-            <span style={{
-              fontFamily: "Georgia, serif",
-              fontSize: "clamp(5rem, 14vw, 13rem)",
-              fontWeight: 300, color: "white",
-              letterSpacing: "-0.02em",
-            }}>MAR</span>
-            <span style={{
-              fontFamily: "Georgia, serif",
-              fontSize: "clamp(5rem, 14vw, 13rem)",
-              fontWeight: 700,
-              background: "linear-gradient(135deg, #ffd700 0%, #ff8c00 40%, #ff4500 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              letterSpacing: "-0.04em",
-            }}>BELLA</span>
+          <div style={{ overflow: "hidden", padding: "10px 0" }}>
+            <div className="typo-liquid del-2 typo-glow" style={{
+              display: "flex", alignItems: "center", justifyContent: "center", gap: "0.15em",
+              lineHeight: 0.8,
+            }}>
+              {/* Tensión tipográfica: Outline Sans vs Solid Serif Italic */}
+              <span style={{
+                fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
+                fontSize: "clamp(4.5rem, 12vw, 11rem)",
+                fontWeight: 200,
+                color: "transparent",
+                WebkitTextStroke: "1px rgba(255, 255, 255, 0.9)",
+                letterSpacing: "0.02em"
+              }}>MAR</span>
+              <span style={{
+                fontFamily: "'Playfair Display', 'Didot', 'Bodoni MT', serif",
+                fontSize: "clamp(5rem, 13vw, 12rem)",
+                fontWeight: 700,
+                fontStyle: "italic",
+                color: "#ffffff",
+                letterSpacing: "-0.04em",
+                paddingRight: "0.1em"
+              }}>BELLA</span>
+            </div>
           </div>
 
-          <p className="reveal-3" style={{
-            color: "rgba(255,255,255,0.45)",
-            fontFamily: "Georgia, serif",
-            fontSize: "clamp(0.8rem, 2vw, 1.5rem)",
-            fontWeight: 300, letterSpacing: "0.5em",
-            fontStyle: "italic",
-            margin: "1.5rem 0 2.5rem",
+          <p className="typo-cinematic del-3" style={{
+            fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
+            fontSize: "clamp(0.65rem, 1vw, 0.9rem)",
+            fontWeight: 300, letterSpacing: "0.4em",
+            color: "rgba(255,255,255,0.5)",
+            margin: "2rem 0 3rem",
             textTransform: "uppercase",
+            display: "flex", alignItems: "center", gap: "0.5rem"
           }}>
-            Ultra · Luxury · Real Estate
+            <span style={{ 
+              fontFamily: "'Playfair Display', 'Didot', serif", 
+              fontStyle: "italic", 
+              color: "#c9a96e", 
+              fontSize: "1.2em",
+              textTransform: "lowercase",
+              letterSpacing: "0.05em"
+            }}>curated</span> 
+            Estates Of Uncompromising Vision
           </p>
 
-          <div className="reveal-4" style={{
-            display: "flex", alignItems: "center", gap: "0.8rem",
-            color: "rgba(255,180,80,0.55)",
-            fontFamily: "Georgia, serif",
-            fontSize: "clamp(0.35rem, 0.65vw, 0.55rem)",
-            letterSpacing: "0.45em",
+          <div className="typo-cinematic del-4" style={{
+            display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap", justifyContent: "center",
+            color: "rgba(255,255,255,0.4)",
+            fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
+            fontSize: "clamp(0.4rem, 0.6vw, 0.55rem)",
+            fontWeight: 400,
+            letterSpacing: "0.3em",
             textTransform: "uppercase",
           }}>
             {["Golden Mile", "Puerto Banús", "Nueva Andalucía", "Sierra Blanca"].map((loc, i, arr) => (
-              <span key={loc} style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
+              <span key={loc} style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                 {loc}
                 {i < arr.length - 1 && (
                   <span style={{
-                    width: "3px", height: "3px",
-                    borderRadius: "50%",
-                    background: "rgba(255,180,80,0.4)",
-                    display: "inline-block",
-                  }} />
+                    fontFamily: "'Playfair Display', serif",
+                    color: "#c9a96e",
+                    fontSize: "1.2em",
+                    opacity: 0.6
+                  }}>✦</span>
                 )}
               </span>
             ))}
           </div>
 
-          <div className="line-grow" style={{
-            width: "1px", height: "5rem",
-            background: "linear-gradient(to bottom, rgba(255,180,80,0.4), transparent)",
-            marginTop: "2.5rem",
+          <div className="line-elegant del-4" style={{
+            width: "1px", height: "4rem",
+            background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.3), transparent)",
+            marginTop: "2rem",
           }} />
         </div>
 
@@ -419,15 +433,14 @@ export default function HomeExperience({ properties, locale }: Props) {
           position: "absolute", bottom: "2rem", left: "50%",
           transform: "translateX(-50%)",
           display: "flex", flexDirection: "column",
-          alignItems: "center", gap: "0.7rem",
+          alignItems: "center", gap: "1rem",
           pointerEvents: "none", zIndex: 20,
         }}>
-          <span className="scroll-fade" style={{
-            color: "rgba(255,255,255,0.5)", fontSize: "0.4rem",
-            letterSpacing: "0.5em", fontFamily: "Georgia, serif",
-            textTransform: "uppercase",
-          }}>SCROLL</span>
-          <div className="neon-home" style={{ width: "1px", background: "rgba(255,200,100,0.8)" }} />
+          <span className="scroll-pulse" style={{
+            color: "rgba(255,255,255,0.6)", fontSize: "0.45rem",
+            letterSpacing: "0.6em", fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
+            fontWeight: 300, textTransform: "uppercase",
+          }}>DISCOVER</span>
         </div>
       </div>
 
@@ -457,39 +470,82 @@ export default function HomeExperience({ properties, locale }: Props) {
               />
               <div style={{
                 position: "absolute", inset: 0,
-                background: "linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.9) 100%)",
+                background: "linear-gradient(180deg, transparent 20%, rgba(0,0,0,0.95) 100%)",
                 pointerEvents: "none",
               }} />
               <div style={{
                 position: "absolute", inset: 0,
-                border: "1px solid rgba(201,169,110,0.3)",
-                boxShadow: "0 0 80px rgba(201,169,110,0.15), inset 0 0 40px rgba(201,169,110,0.05)",
+                border: "1px solid rgba(255,255,255,0.05)",
+                boxShadow: "inset 0 0 100px rgba(0,0,0,0.5)",
                 pointerEvents: "none",
               }} />
+              
+              {/* Numeración Brutalista/Editorial */}
               <div style={{
-                position: "absolute", top: "2rem", left: "2rem",
-                color: "#c9a96e", fontFamily: "Georgia, serif",
-                fontSize: "0.55rem", letterSpacing: "0.5em", opacity: 0.7,
+                position: "absolute", top: "-2rem", left: "-1rem",
+                color: "rgba(255,255,255,0.08)", 
+                fontFamily: "'Helvetica Neue', 'Inter', sans-serif",
+                fontSize: "clamp(6rem, 15vw, 12rem)", 
+                fontWeight: 100, 
+                letterSpacing: "-0.05em", 
+                lineHeight: 1,
+                pointerEvents: "none"
               }}>
-                0{i + 1} / 0{properties.length}
+                0{i + 1}
               </div>
+
               <div style={{
-                position: "absolute", bottom: "2.5rem",
-                left: "2.5rem", right: "2.5rem",
-                color: "white", fontFamily: "Georgia, serif",
+                position: "absolute", top: "2.5rem", right: "2.5rem",
+                color: "#c9a96e", fontFamily: "'Helvetica Neue', sans-serif",
+                fontSize: "0.55rem", fontWeight: 300, letterSpacing: "0.4em", opacity: 0.8,
               }}>
-                <p style={{ fontSize: "0.55rem", letterSpacing: "0.45em", opacity: 0.6, textTransform: "uppercase", margin: "0 0 0.8rem" }}>
+                VOL. 0{i + 1}
+              </div>
+
+              {/* Info de Propiedad */}
+              <div style={{
+                position: "absolute", bottom: "3rem",
+                left: "3rem", right: "3rem",
+                color: "white", 
+                display: "flex", flexDirection: "column"
+              }}>
+                <p style={{ 
+                  fontFamily: "'Helvetica Neue', sans-serif",
+                  fontSize: "0.55rem", fontWeight: 400, letterSpacing: "0.5em", 
+                  opacity: 0.6, textTransform: "uppercase", margin: "0 0 1rem" 
+                }}>
                   {property.ubicacion}
                 </p>
-                <h2 style={{ fontSize: "clamp(1.5rem, 3vw, 2.8rem)", fontWeight: 300, lineHeight: 1.1, margin: "0 0 1rem" }}>
+                <h2 style={{ 
+                  fontFamily: "'Playfair Display', 'Didot', serif",
+                  fontSize: "clamp(2rem, 4vw, 3.5rem)", 
+                  fontWeight: 400, fontStyle: "italic", 
+                  lineHeight: 1.05, margin: "0 0 1.5rem" 
+                }}>
                   {property.titulo[lang]}
                 </h2>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <p style={{ color: "#c9a96e", fontSize: "clamp(0.9rem, 1.4vw, 1.2rem)", letterSpacing: "0.1em", margin: 0 }}>
-                    €{(property.precio / 1000000).toFixed(1)}M
-                  </p>
-                  <span style={{ fontSize: "0.5rem", letterSpacing: "0.4em", opacity: 0.5, textTransform: "uppercase" }}>
-                    Explorar →
+                
+                <div style={{ 
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1.5rem"
+                }}>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: "0.3rem" }}>
+                    <span style={{ fontFamily: "'Helvetica Neue', sans-serif", fontWeight: 200, fontSize: "1rem", color: "#c9a96e" }}>€</span>
+                    <p style={{ 
+                      fontFamily: "'Helvetica Neue', sans-serif", 
+                      color: "white", fontSize: "clamp(1.2rem, 2vw, 1.6rem)", 
+                      fontWeight: 200, letterSpacing: "0.05em", margin: 0 
+                    }}>
+                      {(property.precio / 1000000).toFixed(1)}<span style={{ color: "#c9a96e", fontSize: "0.8em" }}>M</span>
+                    </p>
+                  </div>
+                  <span style={{ 
+                    fontFamily: "'Helvetica Neue', sans-serif",
+                    fontSize: "0.55rem", fontWeight: 500, letterSpacing: "0.3em", 
+                    color: "#c9a96e", textTransform: "uppercase",
+                    display: "flex", alignItems: "center", gap: "0.5rem"
+                  }}>
+                    Explore <span style={{ fontSize: "1.2em" }}>→</span>
                   </span>
                 </div>
               </div>
