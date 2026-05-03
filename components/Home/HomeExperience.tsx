@@ -188,9 +188,31 @@ export default function HomeExperience({ properties, locale }: Props) {
     };
     rafId = requestAnimationFrame(tick);
 
+    // --- LÓGICA DE SCROLL (DESKTOP) ---
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       const delta = e.deltaY;
+      processScroll(delta);
+    };
+
+    // --- LÓGICA DE SCROLL (MÓVIL / TÁCTIL) ---
+    let touchStartY = 0;
+    
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault(); // Crítico: Evita el comportamiento de arrastre nativo de iOS (rubber-banding)
+      const touchY = e.touches[0].clientY;
+      // Multiplicador 1.5 para igualar la sensibilidad táctil a la del ratón
+      const delta = (touchStartY - touchY) * 1.5; 
+      touchStartY = touchY; // Actualizamos para un scroll continuo y suave
+      processScroll(delta);
+    };
+
+    // Función centralizada para procesar el delta tanto de Wheel como de Touch
+    const processScroll = (delta: number) => {
       if (phaseRef.current === "header") {
         headerProgressRef.current = Math.max(0, Math.min(1, headerProgressRef.current + delta * 0.003));
         targetHeader = headerProgressRef.current;
@@ -209,8 +231,13 @@ export default function HomeExperience({ properties, locale }: Props) {
     };
 
     window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: false });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
       cancelAnimationFrame(rafId);
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
