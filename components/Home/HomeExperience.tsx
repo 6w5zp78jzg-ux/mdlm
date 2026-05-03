@@ -37,7 +37,7 @@ export default function HomeExperience({ properties, locale }: Props) {
 
     const tick = () => {
       // CICLO SOLAR 360 — duracion 60 segundos
-      cycleTime += 1 / 60 / 60; // 1 frame / 60fps / 60s
+      cycleTime += 1 / 60 / 90; // 1 frame / 60fps / 90s
       cycleTime = cycleTime % 1;
 
       // Calcular el cielo segun la fase del ciclo
@@ -51,80 +51,68 @@ export default function HomeExperience({ properties, locale }: Props) {
       const isNight = t > 0.5;
       const nightProgress = isNight ? (t - 0.5) * 2 : 0; // 0 a 1 durante la noche
 
-      // Color del cielo dinamico
-      let skyGradient = "";
-      if (t < 0.15) {
-        // AMANECER — rosa profundo a naranja
-        const k = t / 0.15;
-        skyGradient = `radial-gradient(ellipse 120% 80% at ${sunX}% ${sunY}%,
-          #ff6b1a ${0 + k * 5}%,
-          #ff3d00 ${8 + k * 5}%,
-          #c2185b ${20 + k * 5}%,
-          #6a1b9a ${35 + k * 5}%,
-          #1a237e 55%,
-          #0d1135 75%,
-          #060818 100%)`;
-      } else if (t < 0.35) {
-        // MEDIODIA — azul brillante
-        skyGradient = `radial-gradient(ellipse 150% 100% at ${sunX}% ${sunY}%,
-          #fff5b8 0%,
-          #ffd54f 4%,
-          #ffa726 12%,
-          #4fc3f7 30%,
-          #1976d2 50%,
-          #0d47a1 75%,
-          #061a3a 100%)`;
-      } else if (t < 0.5) {
-        // ATARDECER — naranja a violeta intenso
-        const k = (t - 0.35) / 0.15;
-        skyGradient = `radial-gradient(ellipse 120% 80% at ${sunX}% ${sunY}%,
-          #ffa726 0%,
-          #ff6f00 ${5 + k * 5}%,
-          #d84315 ${15 + k * 5}%,
-          #6a1b9a ${30 + k * 5}%,
-          #311b92 ${50 + k * 5}%,
-          #0d1135 75%,
-          #060818 100%)`;
-      } else if (t < 0.65) {
-        // CREPUSCULO — transicion al azul nocturno
-        const k = (t - 0.5) / 0.15;
-        skyGradient = `radial-gradient(ellipse at 50% 50%,
-          rgba(40,30,80,${0.6 - k * 0.4}) 0%,
-          #1a1245 ${20}%,
-          #0a0a2a ${50}%,
-          #050518 80%,
-          #000000 100%)`;
-      } else if (t < 0.9) {
-        // NOCHE PROFUNDA
-        skyGradient = `radial-gradient(ellipse at 50% 30%,
-          #0a0a3a 0%,
-          #050524 30%,
-          #02021a 60%,
-          #000000 100%)`;
-      } else {
-        // PRE-AMANECER — azul a rosa
-        const k = (t - 0.9) / 0.1;
-        skyGradient = `radial-gradient(ellipse 120% 80% at ${sunX}% ${sunY}%,
-          rgba(255,107,26,${k}) 0%,
-          rgba(194,24,91,${k * 0.8}) ${15}%,
-          #1a237e ${35}%,
-          #0d1135 70%,
-          #060818 100%)`;
-      }
+      // Interpolacion suave entre 6 fases del ciclo solar
+      // Definimos paletas como puntos clave y blendeamos
+      const lerpColor = (a: number[], b: number[], k: number) =>
+        `rgb(${Math.round(a[0] + (b[0] - a[0]) * k)}, ${Math.round(a[1] + (b[1] - a[1]) * k)}, ${Math.round(a[2] + (b[2] - a[2]) * k)})`;
+
+      // 6 fases con 5 colores cada una (de cerca al sol al fondo)
+      const palettes = [
+        // 0.0 AMANECER
+        [[255,107,26],[255,61,0],[194,24,91],[26,35,126],[6,8,24]],
+        // 0.2 MEDIODIA TEMPRANO
+        [[255,245,184],[255,213,79],[79,195,247],[25,118,210],[6,26,58]],
+        // 0.4 ATARDECER
+        [[255,167,38],[216,67,21],[106,27,154],[26,18,69],[6,8,24]],
+        // 0.6 CREPUSCULO
+        [[80,40,120],[40,30,80],[26,18,69],[10,10,42],[0,0,0]],
+        // 0.8 NOCHE PROFUNDA
+        [[10,10,58],[5,5,36],[2,2,26],[0,0,0],[0,0,0]],
+        // 1.0 = vuelta a 0.0 (amanecer)
+        [[255,107,26],[255,61,0],[194,24,91],[26,35,126],[6,8,24]],
+      ];
+
+      // Calcular fase actual y k de interpolacion
+      const phaseFloat = t * 5; // 0-5 (5 transiciones, vuelve al inicio)
+      const phaseIdx = Math.floor(phaseFloat) % 5;
+      const k = phaseFloat - Math.floor(phaseFloat);
+      const pA = palettes[phaseIdx];
+      const pB = palettes[phaseIdx + 1];
+
+      const c0 = lerpColor(pA[0], pB[0], k);
+      const c1 = lerpColor(pA[1], pB[1], k);
+      const c2 = lerpColor(pA[2], pB[2], k);
+      const c3 = lerpColor(pA[3], pB[3], k);
+      const c4 = lerpColor(pA[4], pB[4], k);
+
+      const skyGradient = `radial-gradient(ellipse 130% 90% at ${sunX}% ${sunY}%,
+        ${c0} 0%,
+        ${c1} 12%,
+        ${c2} 30%,
+        ${c3} 60%,
+        ${c4} 100%)`;
 
       if (skyRef.current) skyRef.current.style.background = skyGradient;
 
-      // SOL — visible solo durante el dia (0 - 0.5)
+      // SOL — visible solo durante el dia con fade suave
       if (sunRef.current) {
-        const sunVisible = t < 0.5 ? 1 : 0;
+        let sunVisible = 0;
+        if (t < 0.45) sunVisible = 1;
+        else if (t < 0.55) sunVisible = 1 - (t - 0.45) / 0.10;
+        else if (t > 0.95) sunVisible = (t - 0.95) / 0.05;
         sunRef.current.style.opacity = String(sunVisible);
         sunRef.current.style.left = `${sunX}%`;
         sunRef.current.style.top = `${sunY}%`;
       }
 
-      // LUNA — visible solo de noche (0.55 - 0.95)
+      // LUNA — fade suave en transiciones
       if (moonRef.current) {
-        const moonVisible = t > 0.55 && t < 0.95 ? 1 : 0;
+        let moonVisible = 0;
+        if (t > 0.55 && t < 0.95) {
+          if (t < 0.65) moonVisible = (t - 0.55) / 0.10;
+          else if (t > 0.85) moonVisible = 1 - (t - 0.85) / 0.10;
+          else moonVisible = 1;
+        }
         // Luna recorre el cielo en sentido opuesto
         const moonAngle = (t - 0.5) * 2 * 180 - 90;
         const moonX = 50 + Math.cos(moonAngle * Math.PI / 180) * 35;
@@ -241,8 +229,8 @@ export default function HomeExperience({ properties, locale }: Props) {
           50%       { text-shadow: 0 0 60px rgba(255,180,80,0.5), 0 0 120px rgba(255,120,30,0.3); }
         }
         @keyframes sunGlow {
-          0%, 100% { box-shadow: 0 0 60px 20px rgba(255,200,100,0.6), 0 0 120px 40px rgba(255,140,40,0.3); }
-          50%       { box-shadow: 0 0 90px 30px rgba(255,220,140,0.8), 0 0 180px 60px rgba(255,160,60,0.4); }
+          0%, 100% { box-shadow: 0 0 30px 8px rgba(255,200,100,0.5), 0 0 60px 18px rgba(255,140,40,0.2); }
+          50%       { box-shadow: 0 0 45px 12px rgba(255,220,140,0.7), 0 0 80px 25px rgba(255,160,60,0.3); }
         }
         @keyframes moonGlow {
           0%, 100% { box-shadow: 0 0 40px 10px rgba(220,230,255,0.4), 0 0 80px 20px rgba(180,200,255,0.2); }
@@ -311,10 +299,10 @@ export default function HomeExperience({ properties, locale }: Props) {
         {/* SOL */}
         <div ref={sunRef} className="sun-orb" style={{
           position: "absolute",
-          width: "140px",
-          height: "140px",
+          width: "80px",
+          height: "80px",
           borderRadius: "50%",
-          background: "radial-gradient(circle, #fff5b8 0%, #ffd54f 30%, #ff8c00 70%, transparent 100%)",
+          background: "radial-gradient(circle, #fff5b8 0%, #ffd54f 40%, #ff8c00 80%, transparent 100%)",
           transform: "translate(-50%, -50%)",
           pointerEvents: "none",
           transition: "opacity 1s ease",
