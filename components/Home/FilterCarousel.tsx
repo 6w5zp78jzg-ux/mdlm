@@ -57,10 +57,10 @@ const FILTERS = [
 interface Props {
   locale: string;
   panelRefs: React.RefObject<(HTMLDivElement | null)[]>;
-  onPanelChange: (i: number) => void;
+  activePanelRef: React.RefObject<number>;
 }
 
-export default function FilterCarousel({ locale, panelRefs, onPanelChange }: Props) {
+export default function FilterCarousel({ locale, panelRefs, activePanelRef }: Props) {
   const [activePanel, setActivePanel] = useState(0);
   const [selected, setSelected] = useState<Record<string, string>>({});
   const [transitioning, setTransitioning] = useState(false);
@@ -75,7 +75,7 @@ export default function FilterCarousel({ locale, panelRefs, onPanelChange }: Pro
       const next = activePanel + 1;
       setTimeout(() => {
         setActivePanel(next);
-        onPanelChange(next);
+        activePanelRef.current = next; // RAF lee esto directamente
         setTransitioning(false);
       }, 100);
     }

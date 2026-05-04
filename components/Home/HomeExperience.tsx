@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useHomeScroll } from "./useHomeScroll";
 import SkyCanvas from "./SkyCanvas";
 import HeaderTypography from "./HeaderTypography";
@@ -11,15 +11,9 @@ export default function HomeExperience({ locale }: Props) {
   const headerRef = useRef<HTMLDivElement>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [activePanel, setActivePanel] = useState(0);
+  const activePanelRef = useRef<number>(0);
 
-  useHomeScroll({
-    headerRef,
-    filtersRef,
-    panelRefs,
-    activePanel,
-    onPanelChange: setActivePanel,
-  });
+  useHomeScroll({ headerRef, filtersRef, panelRefs, activePanelRef });
 
   return (
     <div style={{ position:"fixed", inset:0, width:"100%", height:"100vh", overflow:"hidden", background:"#000" }}>
@@ -28,7 +22,7 @@ export default function HomeExperience({ locale }: Props) {
         <HeaderTypography />
       </div>
       <div ref={filtersRef} style={{ position:"absolute", inset:0, zIndex:10, opacity:0, pointerEvents:"none" }}>
-        <FilterCarousel locale={locale} panelRefs={panelRefs} onPanelChange={setActivePanel} />
+        <FilterCarousel locale={locale} panelRefs={panelRefs} activePanelRef={activePanelRef} />
       </div>
     </div>
   );
