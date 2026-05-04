@@ -9,6 +9,8 @@ interface Props {
 export function useHomeScroll({ headerRef, filtersRef }: Props) {
   const phaseRef = useRef<"header" | "filters">("header");
   const headerProgressRef = useRef(0);
+  const filterProgressRef = useRef(0);
+  const targetFilterRef = useRef(0);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -17,10 +19,13 @@ export function useHomeScroll({ headerRef, filtersRef }: Props) {
     let rafId: number;
     let smoothHeader = 0;
     let targetHeader = 0;
+    let smoothFilter = 0;
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
     const tick = () => {
       smoothHeader = lerp(smoothHeader, targetHeader, 0.055);
+      smoothFilter = lerp(smoothFilter, targetFilterRef.current, 0.06);
+
       if (headerRef.current) {
         headerRef.current.style.opacity = String(1 - smoothHeader);
         headerRef.current.style.transform = `translate3d(0, ${-smoothHeader * 80}px, 0) scale(${1 - smoothHeader * 0.03})`;
@@ -31,6 +36,7 @@ export function useHomeScroll({ headerRef, filtersRef }: Props) {
         filtersRef.current.style.opacity = String(fOp);
         filtersRef.current.style.pointerEvents = fOp > 0.3 ? "auto" : "none";
       }
+
       rafId = requestAnimationFrame(tick);
     };
     rafId = requestAnimationFrame(tick);
@@ -41,7 +47,7 @@ export function useHomeScroll({ headerRef, filtersRef }: Props) {
         targetHeader = headerProgressRef.current;
         if (headerProgressRef.current >= 1) phaseRef.current = "filters";
       } else {
-        if (delta < 0) {
+        if (delta < 0 && filterProgressRef.current <= 0) {
           phaseRef.current = "header";
           headerProgressRef.current = 1;
           targetHeader = 1;

@@ -3,12 +3,11 @@ import { useEffect, useRef } from "react";
 
 export default function SkyCanvas() {
   const skyRef = useRef<HTMLDivElement>(null);
-  const sunRef = useRef<HTMLDivElement>(null);
-  const moonRef = useRef<HTMLDivElement>(null);
   const starsRef = useRef<HTMLDivElement>(null);
 
   const stars = Array.from({ length: 80 }, (_, i) => ({
-    left: (i * 37) % 100, top: (i * 71) % 70,
+    left: (i * 37) % 100,
+    top: (i * 71) % 70,
     size: i % 3 === 0 ? 2 : 1,
     delay: (i * 0.13) % 4,
     bright: i % 5 === 0,
@@ -46,27 +45,6 @@ export default function SkyCanvas() {
           ${lerpColor(pA[2],pB[2],k)} 30%, ${lerpColor(pA[3],pB[3],k)} 60%,
           ${lerpColor(pA[4],pB[4],k)} 100%)`;
       }
-      if (sunRef.current) {
-        let v = 0;
-        if (t < 0.45) v = 1;
-        else if (t < 0.55) v = 1 - (t - 0.45) / 0.10;
-        else if (t > 0.95) v = (t - 0.95) / 0.05;
-        sunRef.current.style.opacity = String(v);
-        sunRef.current.style.left = `${lx}%`;
-        sunRef.current.style.top = `${ly}%`;
-      }
-      if (moonRef.current) {
-        let v = 0;
-        if (t > 0.55 && t < 0.95) {
-          if (t < 0.65) v = (t - 0.55) / 0.10;
-          else if (t > 0.85) v = 1 - (t - 0.85) / 0.10;
-          else v = 1;
-        }
-        const ma = (t - 0.5) * 2 * 180 - 90;
-        moonRef.current.style.opacity = String(v);
-        moonRef.current.style.left = `${50 + Math.cos(ma * Math.PI / 180) * 35}%`;
-        moonRef.current.style.top = `${30 + Math.sin(ma * Math.PI / 180) * 20}%`;
-      }
       if (starsRef.current) {
         let v = 0;
         if (t > 0.5 && t < 0.95) v = Math.sin(((t - 0.5) / 0.45) * Math.PI);
@@ -81,31 +59,20 @@ export default function SkyCanvas() {
   return (
     <>
       <style>{`
-        @keyframes sunGlow { 0%,100%{box-shadow:0 0 30px 8px rgba(255,200,100,0.5),0 0 60px 18px rgba(255,140,40,0.2);} 50%{box-shadow:0 0 45px 12px rgba(255,220,140,0.7),0 0 80px 25px rgba(255,160,60,0.3);} }
-        @keyframes moonGlow { 0%,100%{box-shadow:0 0 40px 10px rgba(220,230,255,0.4);} 50%{box-shadow:0 0 60px 15px rgba(240,245,255,0.6);} }
         @keyframes starTwinkle { 0%,100%{opacity:0.3;transform:scale(1);} 50%{opacity:1;transform:scale(1.5);} }
-        .sun-orb{animation:sunGlow 4s ease-in-out infinite;}
-        .moon-orb{animation:moonGlow 5s ease-in-out infinite;}
-        .star{animation:starTwinkle ease-in-out infinite;}
+        .star { animation: starTwinkle ease-in-out infinite; }
       `}</style>
-
-      <div ref={skyRef} style={{ position:"absolute", inset:0 }} />
-
-      <div ref={starsRef} style={{ position:"absolute", inset:0, opacity:0, pointerEvents:"none" }}>
+      <div ref={skyRef} style={{ position:"absolute", inset:0, transition:"background 0.1s linear" }} />
+      <div ref={starsRef} style={{ position:"absolute", inset:0, opacity:0, pointerEvents:"none", transition:"opacity 0.5s ease" }}>
         {stars.map((s, i) => (
-          <div key={i} className="star" style={{ position:"absolute", left:`${s.left}%`, top:`${s.top}%`, width:`${s.size}px`, height:`${s.size}px`, borderRadius:"50%", background: s.bright ? "rgba(255,255,255,1)" : "rgba(220,230,255,0.7)", boxShadow: s.bright ? "0 0 4px rgba(255,255,255,0.8)" : "none", animationDuration:`${2+s.delay}s`, animationDelay:`${s.delay}s` }} />
+          <div key={i} className="star" style={{
+            position:"absolute", left:`${s.left}%`, top:`${s.top}%`,
+            width:`${s.size}px`, height:`${s.size}px`, borderRadius:"50%",
+            background: s.bright ? "rgba(255,255,255,1)" : "rgba(220,230,255,0.7)",
+            boxShadow: s.bright ? "0 0 4px rgba(255,255,255,0.8)" : "none",
+            animationDuration:`${2+s.delay}s`, animationDelay:`${s.delay}s`,
+          }} />
         ))}
-      </div>
-
-      <div ref={sunRef} className="sun-orb" style={{ position:"absolute", width:"80px", height:"80px", borderRadius:"50%", background:"radial-gradient(circle, #fff5b8 0%, #ffd54f 40%, #ff8c00 80%, transparent 100%)", transform:"translate(-50%,-50%)", pointerEvents:"none" }}>
-        <div style={{ position:"absolute", inset:"-20px", borderRadius:"50%", background:"radial-gradient(circle, rgba(255,200,80,0.3) 0%, transparent 70%)" }} />
-      </div>
-
-      <div ref={moonRef} className="moon-orb" style={{ position:"absolute", width:"100px", height:"100px", borderRadius:"50%", background:"radial-gradient(circle at 35% 35%, #ffffff 0%, #f0f4ff 40%, #c8d4f0 70%, #8090b0 100%)", transform:"translate(-50%,-50%)", pointerEvents:"none", opacity:0 }}>
-        <div style={{ position:"absolute", top:"30%", left:"25%", width:"12px", height:"12px", borderRadius:"50%", background:"rgba(120,140,170,0.4)" }} />
-        <div style={{ position:"absolute", top:"55%", left:"55%", width:"8px",  height:"8px",  borderRadius:"50%", background:"rgba(120,140,170,0.3)" }} />
-        <div style={{ position:"absolute", top:"20%", left:"60%", width:"6px",  height:"6px",  borderRadius:"50%", background:"rgba(120,140,170,0.35)" }} />
-        <div style={{ position:"absolute", top:"65%", left:"20%", width:"10px", height:"10px", borderRadius:"50%", background:"rgba(120,140,170,0.3)" }} />
       </div>
     </>
   );
