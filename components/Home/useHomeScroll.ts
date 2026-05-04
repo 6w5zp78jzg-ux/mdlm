@@ -5,17 +5,12 @@ interface Props {
   headerRef: React.RefObject<HTMLDivElement | null>;
   filtersRef: React.RefObject<HTMLDivElement | null>;
   panelRefs: React.RefObject<(HTMLDivElement | null)[]>;
-  activePanel: number;
-  onPanelChange: (i: number) => void;
+  activePanelRef: React.RefObject<number>;
 }
 
-export function useHomeScroll({ headerRef, filtersRef, panelRefs, activePanel, onPanelChange }: Props) {
+export function useHomeScroll({ headerRef, filtersRef, panelRefs, activePanelRef }: Props) {
   const phaseRef = useRef<"header" | "filters">("header");
   const headerProgressRef = useRef(0);
-  const activePanelRef = useRef(activePanel);
-
-  // Mantener ref sincronizada con el state de React
-  activePanelRef.current = activePanel;
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -24,17 +19,14 @@ export function useHomeScroll({ headerRef, filtersRef, panelRefs, activePanel, o
     let rafId: number;
     let smoothHeader = 0;
     let targetHeader = 0;
-    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-
-    // Posiciones Z suavizadas por panel — igual que hacíamos con propiedades
-    const smoothZ = [0, -2000, -2000];
+    const smoothZ = [-0, -2000, -2000];
     const targetZ = [0, -2000, -2000];
-    const TOTAL_PANELS = 3;
+    const TOTAL = 3;
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
     const tick = () => {
       smoothHeader = lerp(smoothHeader, targetHeader, 0.055);
 
-      // HEADER
       if (headerRef.current) {
         headerRef.current.style.opacity = String(1 - smoothHeader);
         headerRef.current.style.transform = `translate3d(0, ${-smoothHeader * 80}px, 0) scale(${1 - smoothHeader * 0.03})`;
@@ -46,30 +38,23 @@ export function useHomeScroll({ headerRef, filtersRef, panelRefs, activePanel, o
         filtersRef.current.style.pointerEvents = fOp > 0.3 ? "auto" : "none";
       }
 
-      // Z-AXIS — motor idéntico al de propiedades
+      // Z-AXIS — lee directamente de la ref mutable, siempre actualizada
       const current = activePanelRef.current;
-      for (let i = 0; i < TOTAL_PANELS; i++) {
+      for (let i = 0; i < TOTAL; i++) {
         const diff = i - current;
-        if (diff === 0) {
-          targetZ[i] = 0;
-        } else if (diff < 0) {
-          // Panel pasado — se aleja hacia atrás en Z positivo
-          targetZ[i] = Math.abs(diff) * 800;
-        } else {
-          // Panel futuro — espera en Z negativo profundo
-          targetZ[i] = diff * -2000;
-        }
+        if (diff === 0) targetZ[i] = 0;
+        else if (diff < 0) targetZ[i] = Math.abs(diff) * 800;
+        else targetZ[i] = diff * -2000;
+
         smoothZ[i] = lerp(smoothZ[i], targetZ[i], 0.07);
 
         const el = panelRefs.current[i];
         if (!el) continue;
 
         const zPos = smoothZ[i];
-        // Escala y opacidad proporcionales a la distancia en Z
-        const distNorm = Math.abs(diff);
-        const scale = diff === 0 ? 1 : diff < 0 ? 1 + distNorm * 0.05 : Math.max(0.4, 1 - distNorm * 0.6);
-        const opacity = diff === 0 ? 1 : diff < 0 ? Math.max(0, 1 - distNorm * 0.9) : 0;
-        const blur = diff === 0 ? 0 : diff < 0 ? distNorm * 6 : distNorm * 30;
+        const scale = diff === 0 ? 1 : diff < 0 ? 1 + Math.abs(diff) * 0.05 : Math.max(0.4, 1 - diff * 0.6);
+        const opacity = diff === 0 ? 1 : diff < 0 ? Math.max(0, 1 - Math.abs(diff) * 0.9) : 0;
+        const blur = diff === 0 ? 0 : diff < 0 ? Math.abs(diff) * 6 : diff * 30;
 
         el.style.transform = `translate3d(0, 0, ${zPos}px) scale(${scale})`;
         el.style.opacity = String(opacity);
