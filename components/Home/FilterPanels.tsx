@@ -122,7 +122,7 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
           {/* Pregunta — tipografia arquitectonica pura */}
           <div style={{
             position:"absolute",
-            top:"50%", transform:"translateY(-65%)",
+            top:"30%", transform:"translateY(-50%)",
             left:"4rem", right:"4rem",
           }}>
             <h2 style={{
