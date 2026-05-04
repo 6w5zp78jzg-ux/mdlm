@@ -5,10 +5,10 @@ interface Props {
   headerRef: React.RefObject<HTMLDivElement | null>;
   filtersRef: React.RefObject<HTMLDivElement | null>;
   panelRefs: React.RefObject<(HTMLDivElement | null)[]>;
-  activePanelRef: React.RefObject<number>;
+  totalPanels: number;
 }
 
-export function useHomeScroll({ headerRef, filtersRef, panelRefs, activePanelRef }: Props) {
+export function useHomeScroll({ headerRef, filtersRef, panelRefs, totalPanels }: Props) {
   const phaseRef = useRef<"header" | "filters">("header");
   const headerProgressRef = useRef(0);
   const progressRef = useRef(0);
@@ -38,10 +38,11 @@ export function useHomeScroll({ headerRef, filtersRef, panelRefs, activePanelRef
         filtersRef.current.style.pointerEvents = fOp > 0.3 ? "auto" : "none";
       }
 
-      // Z-AXIS — motor identico al de propiedades original
+      // Z-AXIS — motor identico al de propiedades
       progressRef.current = lerp(progressRef.current, targetProgressRef.current, 0.06);
-      panelRefs.current.forEach((el, i) => {
-        if (!el) return;
+      for (let i = 0; i < totalPanels; i++) {
+        const el = panelRefs.current[i];
+        if (!el) continue;
         const dist = progressRef.current - i * SECTION_LENGTH;
         let opacity = 0, scale = 0.4, zPos = -2000, blur = 30;
         if (dist >= -SECTION_LENGTH && dist < -SECTION_LENGTH * 0.3) {
@@ -59,17 +60,20 @@ export function useHomeScroll({ headerRef, filtersRef, panelRefs, activePanelRef
         el.style.transform = `translate3d(0,0,${zPos}px) scale(${scale})`;
         el.style.filter = `blur(${blur}px)`;
         el.style.pointerEvents = opacity > 0.7 ? "auto" : "none";
-      });
+      }
 
       rafId = requestAnimationFrame(tick);
     };
     rafId = requestAnimationFrame(tick);
 
+    // Funcion expuesta para avanzar panel desde click
     (window as any).__advancePanel = (next: number) => {
-      targetProgressRef.current = next;
+      targetProgressRef.current = Math.max(0, Math.min(totalPanels - 1, next));
     };
 
-    const processScroll = (delta: number) => {
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const delta = e.deltaY;
       if (phaseRef.current === "header") {
         headerProgressRef.current = Math.max(0, Math.min(1, headerProgressRef.current + delta * 0.003));
         targetHeader = headerProgressRef.current;
@@ -83,14 +87,23 @@ export function useHomeScroll({ headerRef, filtersRef, panelRefs, activePanelRef
       }
     };
 
-    const handleWheel = (e: WheelEvent) => { e.preventDefault(); processScroll(e.deltaY); };
     let touchStartY = 0;
     const handleTouchStart = (e: TouchEvent) => { touchStartY = e.touches[0].clientY; };
     const handleTouchMove = (e: TouchEvent) => {
       e.preventDefault();
       const delta = (touchStartY - e.touches[0].clientY) * 1.5;
       touchStartY = e.touches[0].clientY;
-      processScroll(delta);
+      if (phaseRef.current === "header") {
+        headerProgressRef.current = Math.max(0, Math.min(1, headerProgressRef.current + delta * 0.003));
+        targetHeader = headerProgressRef.current;
+        if (headerProgressRef.current >= 1) phaseRef.current = "filters";
+      } else {
+        if (targetProgressRef.current <= 0 && delta < 0) {
+          phaseRef.current = "header";
+          headerProgressRef.current = 1;
+          targetHeader = 1;
+        }
+      }
     };
 
     window.addEventListener("wheel", handleWheel, { passive: false });
