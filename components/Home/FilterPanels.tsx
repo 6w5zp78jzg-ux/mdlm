@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 const FILTERS = [
   {
     id:"zona", index:"01", label:"ZONA",
-    question:"Where.",
+    question:"Where do you\nwant to live?",
     accent:"#c9a96e", accentRgb:"201,169,110",
     options:[
       { v:"marbella",   l:"Marbella",   sub:"36°30'N · 4°53'W" },
@@ -17,7 +17,7 @@ const FILTERS = [
   },
   {
     id:"tipo", index:"02", label:"TIPO",
-    question:"What.",
+    question:"What defines\nyour vision?",
     accent:"#d4c4a8", accentRgb:"212,196,168",
     options:[
       { v:"villa",     l:"Villa",     sub:"Private Estate" },
@@ -28,13 +28,13 @@ const FILTERS = [
   },
   {
     id:"precio", index:"03", label:"INVERSIÓN",
-    question:"How much.",
+    question:"Define the scale\nof your ambition.",
     accent:"#b8a898", accentRgb:"184,168,152",
     options:[
-      { v:"500k-1m", l:"500K – 1M",  sub:"€" },
-      { v:"1m-2m",   l:"1M – 2M",    sub:"€€" },
-      { v:"2m-5m",   l:"2M – 5M",    sub:"€€€" },
-      { v:"5m+",     l:"5M+",        sub:"€€€€" },
+      { v:"500k-1m", l:"500K–1M",  sub:"€" },
+      { v:"1m-2m",   l:"1M–2M",    sub:"€€" },
+      { v:"2m-5m",   l:"2M–5M",    sub:"€€€" },
+      { v:"5m+",     l:"5M+",      sub:"€€€€" },
     ],
   },
 ];
@@ -63,10 +63,17 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
         .aopt {
           cursor: pointer;
           transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
-          border-bottom: 1px solid rgba(255,255,255,0.04);
+          position: relative;
         }
-        .aopt:hover { background: rgba(255,255,255,0.03) !important; }
-        .aopt:hover .aopt-label { opacity: 1 !important; letter-spacing: 0.12em !important; }
+        .aopt::after {
+          content: '';
+          position: absolute;
+          bottom: 0; left: 0; right: 0;
+          height: 1px;
+          background: rgba(255,255,255,0.04);
+          transition: all 0.4s;
+        }
+        .aopt:hover .opt-label { opacity: 1 !important; transform: translateY(-3px); }
       `}</style>
 
       {FILTERS.map((filter, i) => (
@@ -75,78 +82,58 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
           ref={el => { panelRefs.current[i] = el; }}
           style={{
             position:"absolute", top:"50%", left:"50%",
-            width:"72vw", height:"76vh",
-            marginLeft:"-36vw", marginTop:"-38vh",
+            width:"75vw", height:"72vh",
+            marginLeft:"-37.5vw", marginTop:"-36vh",
             transformStyle:"preserve-3d",
             willChange:"transform,opacity,filter",
-            background:"rgba(10,9,8,0.82)",
-            backdropFilter:"blur(60px) saturate(120%)",
-            WebkitBackdropFilter:"blur(60px) saturate(120%)",
-            border:`1px solid rgba(${filter.accentRgb},0.12)`,
+            background:"rgba(8,7,6,0.75)",
+            backdropFilter:"blur(80px) saturate(110%)",
+            WebkitBackdropFilter:"blur(80px) saturate(110%)",
+            border:`1px solid rgba(${filter.accentRgb},0.1)`,
             boxShadow:`
-              0 40px 120px rgba(0,0,0,0.8),
+              0 50px 150px rgba(0,0,0,0.9),
               0 0 0 1px rgba(255,255,255,0.03),
-              inset 0 1px 0 rgba(255,255,255,0.05)
+              inset 0 1px 0 rgba(255,255,255,0.04),
+              0 0 200px rgba(${filter.accentRgb},0.06)
             `,
           }}
         >
-          {/* Linea superior de acento */}
-          <div style={{
-            position:"absolute", top:0, left:0, right:0, height:"1px",
-            background:`linear-gradient(90deg, transparent, rgba(${filter.accentRgb},0.6), transparent)`,
-          }}/>
+          {/* Linea acento superior */}
+          <div style={{position:"absolute",top:0,left:"10%",right:"10%",height:"1px",background:`linear-gradient(90deg,transparent,rgba(${filter.accentRgb},0.5),transparent)`}}/>
 
-          {/* Header del panel */}
-          <div style={{
-            position:"absolute", top:"3.5rem", left:"4rem", right:"4rem",
-            display:"flex", justifyContent:"space-between", alignItems:"baseline",
-          }}>
-            <span style={{
-              fontFamily:"'Helvetica Neue',sans-serif",
-              fontSize:"0.5rem", fontWeight:300,
-              color:`rgba(${filter.accentRgb},0.8)`,
-              letterSpacing:"0.6em", textTransform:"uppercase",
-            }}>
+          {/* Header */}
+          <div style={{position:"absolute",top:"2.5rem",left:"3.5rem",right:"3.5rem",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <span style={{fontFamily:"'Helvetica Neue',sans-serif",fontSize:"0.45rem",fontWeight:300,color:`rgba(${filter.accentRgb},0.7)`,letterSpacing:"0.6em",textTransform:"uppercase"}}>
               {filter.label}
             </span>
-            <span style={{
-              fontFamily:"'Helvetica Neue',sans-serif",
-              fontSize:"0.5rem", fontWeight:200,
-              color:"rgba(255,255,255,0.15)",
-              letterSpacing:"0.3em",
-            }}>
-              {filter.index} / 03
+            <span style={{fontFamily:"'Helvetica Neue',sans-serif",fontSize:"0.45rem",fontWeight:200,color:"rgba(255,255,255,0.12)",letterSpacing:"0.3em"}}>
+              {filter.index} — 03
             </span>
           </div>
 
-          {/* Pregunta — tipografia arquitectonica pura */}
-          <div style={{
-            position:"absolute",
-            top:"30%", transform:"translateY(-50%)",
-            left:"4rem", right:"4rem",
-          }}>
+          {/* Pregunta */}
+          <div style={{position:"absolute",top:"18%",left:"3.5rem",right:"3.5rem"}}>
             <h2 style={{
               fontFamily:"'Helvetica Neue','Arial',sans-serif",
-              fontSize:"clamp(4rem,9vw,8rem)",
+              fontSize:"clamp(2.2rem,5vw,4.5rem)",
               fontWeight:100,
-              color:"rgba(255,255,255,0.9)",
-              letterSpacing:"-0.03em",
-              lineHeight:1,
+              color:"rgba(255,255,255,0.88)",
+              letterSpacing:"-0.02em",
+              lineHeight:1.15,
               margin:0,
+              whiteSpace:"pre-line",
             }}>
               {filter.question}
             </h2>
-            <div style={{
-              height:"1px",
-              width:"3rem",
-              background:`rgba(${filter.accentRgb},0.6)`,
-              marginTop:"2rem",
-            }}/>
+            <div style={{height:"1px",width:"2.5rem",background:`rgba(${filter.accentRgb},0.5)`,marginTop:"1.5rem"}}/>
           </div>
 
-          {/* Opciones — lista arquitectonica */}
+          {/* Opciones HORIZONTAL */}
           <div style={{
             position:"absolute", bottom:0, left:0, right:0,
+            display:"grid",
+            gridTemplateColumns:`repeat(${filter.options.length},1fr)`,
+            borderTop:`1px solid rgba(255,255,255,0.05)`,
           }}>
             {filter.options.map((opt, oi) => {
               const isSel = selected[filter.id] === opt.v;
@@ -156,77 +143,78 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
                   className="aopt"
                   onClick={() => handleSelect(filter.id, opt.v, i)}
                   style={{
-                    display:"flex",
-                    alignItems:"center",
-                    justifyContent:"space-between",
-                    padding:"1.4rem 4rem",
+                    padding:"2.5rem 2rem 3rem",
+                    borderRight:`1px solid rgba(255,255,255,0.04)`,
                     background: isSel ? `rgba(${filter.accentRgb},0.07)` : "transparent",
-                    borderLeft: isSel ? `2px solid ${filter.accent}` : "2px solid transparent",
-                    transition:"all 0.4s cubic-bezier(0.16,1,0.3,1)",
+                    borderTop: isSel ? `1px solid rgba(${filter.accentRgb},0.3)` : "1px solid transparent",
+                    marginTop: isSel ? "-1px" : "0",
+                    transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",
                   }}
                 >
-                  <div style={{display:"flex", alignItems:"baseline", gap:"2rem"}}>
-                    <span style={{
-                      fontFamily:"'Helvetica Neue',sans-serif",
-                      fontSize:"0.4rem", fontWeight:300,
-                      color:`rgba(${filter.accentRgb},${isSel?0.8:0.3})`,
-                      letterSpacing:"0.3em",
-                      minWidth:"1.5rem",
-                      transition:"color 0.4s",
-                    }}>
-                      {String(oi+1).padStart(2,"0")}
-                    </span>
-                    <span className="aopt-label" style={{
-                      fontFamily:"'Helvetica Neue',sans-serif",
-                      fontSize:"clamp(1.2rem,2.2vw,2rem)",
-                      fontWeight:200,
-                      color: isSel ? "#fff" : "rgba(255,255,255,0.45)",
-                      letterSpacing: isSel ? "0.08em" : "0.04em",
-                      textTransform:"uppercase",
-                      transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",
-                    }}>
-                      {opt.l}
-                    </span>
-                  </div>
-                  <span style={{
+                  <div style={{
                     fontFamily:"'Helvetica Neue',sans-serif",
-                    fontSize:"0.45rem", fontWeight:200,
-                    color: isSel ? `rgba(${filter.accentRgb},0.9)` : "rgba(255,255,255,0.2)",
+                    fontSize:"0.4rem", fontWeight:200,
+                    color:`rgba(${filter.accentRgb},${isSel?0.7:0.25})`,
+                    letterSpacing:"0.4em", marginBottom:"1.2rem",
+                    transition:"color 0.4s",
+                  }}>
+                    {String(oi+1).padStart(2,"0")}
+                  </div>
+
+                  <div className="opt-label" style={{
+                    fontFamily:"'Helvetica Neue',sans-serif",
+                    fontSize:"clamp(1rem,1.8vw,1.7rem)",
+                    fontWeight:200,
+                    textTransform:"uppercase",
+                    color: isSel ? "#fff" : "rgba(255,255,255,0.4)",
+                    letterSpacing:"0.04em",
+                    marginBottom:"1.2rem",
+                    transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",
+                    display:"block",
+                  }}>
+                    {opt.l}
+                  </div>
+
+                  <div style={{
+                    height:"1px",
+                    width: isSel ? "80%" : "20%",
+                    background: isSel ? `rgba(${filter.accentRgb},0.6)` : "rgba(255,255,255,0.08)",
+                    marginBottom:"1rem",
+                    transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",
+                  }}/>
+
+                  <div style={{
+                    fontFamily:"'Helvetica Neue',sans-serif",
+                    fontSize:"0.4rem", fontWeight:200,
+                    color: isSel ? `rgba(${filter.accentRgb},0.7)` : "rgba(255,255,255,0.15)",
                     letterSpacing:"0.25em",
+                    textTransform:"uppercase",
                     transition:"color 0.4s",
                   }}>
                     {opt.sub}
-                  </span>
+                  </div>
                 </div>
               );
             })}
-
-            {/* CTA */}
-            {i===FILTERS.length-1 && allSelected && (
-              <div style={{padding:"2rem 4rem", borderTop:`1px solid rgba(${filter.accentRgb},0.1)`}}>
-                <button
-                  onClick={() => router.push(`/${locale}/propiedades?${new URLSearchParams(selected).toString()}`)}
-                  style={{
-                    background:"none",
-                    border:`1px solid rgba(${filter.accentRgb},0.5)`,
-                    color:filter.accent,
-                    fontFamily:"'Helvetica Neue',sans-serif",
-                    fontSize:"0.5rem",
-                    letterSpacing:"0.6em",
-                    textTransform:"uppercase",
-                    padding:"1.2rem 3rem",
-                    cursor:"pointer",
-                    transition:"all 0.4s ease",
-                    width:"100%",
-                  }}
-                  onMouseEnter={e=>{e.currentTarget.style.background=`rgba(${filter.accentRgb},0.1)`;}}
-                  onMouseLeave={e=>{e.currentTarget.style.background="none";}}
-                >
-                  Discover Properties →
-                </button>
-              </div>
-            )}
           </div>
+
+          {/* CTA */}
+          {i===FILTERS.length-1&&allSelected&&(
+            <button
+              onClick={()=>router.push(`/${locale}/propiedades?${new URLSearchParams(selected).toString()}`)}
+              style={{
+                position:"absolute", bottom:"calc(33% + 1.5rem)", right:"3.5rem",
+                background:"none",
+                border:`1px solid rgba(${filter.accentRgb},0.4)`,
+                color:filter.accent,
+                fontFamily:"'Helvetica Neue',sans-serif",
+                fontSize:"0.45rem", letterSpacing:"0.6em",
+                textTransform:"uppercase", padding:"1rem 2.5rem",
+                cursor:"pointer",
+              }}>
+              Discover Properties →
+            </button>
+          )}
         </div>
       ))}
     </>
