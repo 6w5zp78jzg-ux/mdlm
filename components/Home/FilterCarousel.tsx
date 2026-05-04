@@ -66,6 +66,11 @@ export default function FilterCarousel({ locale, panelRefs, activePanelRef }: Pr
         .fopt:hover{transform:translateY(-5px);background:rgba(255,255,255,0.04) !important;}
       `}</style>
 
+      <div style={{
+        position:"absolute", inset:0,
+        perspective:"1200px",
+        perspectiveOrigin:"50% 50%",
+      }}>
       {FILTERS.map((filter, i) => (
         <div
           key={filter.id}
@@ -153,6 +158,7 @@ export default function FilterCarousel({ locale, panelRefs, activePanelRef }: Pr
           )}
         </div>
       ))}
+      </div>
     </>
   );
 }

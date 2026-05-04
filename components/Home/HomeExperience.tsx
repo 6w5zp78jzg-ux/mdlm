@@ -21,10 +21,8 @@ export default function HomeExperience({ locale }: Props) {
         <SkyCanvas />
         <HeaderTypography />
       </div>
-      <div ref={filtersRef} style={{position:"absolute",inset:0,zIndex:10,opacity:0,pointerEvents:"none",perspective:"1200px",perspectiveOrigin:"center center",background:"radial-gradient(ellipse at center,#0a0a0a 0%,#000000 100%)"}}>
-        <div style={{position:"absolute",inset:0,transformStyle:"preserve-3d"}}>
+      <div ref={filtersRef} style={{position:"absolute",inset:0,zIndex:10,opacity:0,pointerEvents:"none",background:"radial-gradient(ellipse at center,#0a0a0a 0%,#000000 100%)"}}>
           <FilterCarousel locale={locale} panelRefs={panelRefs} activePanelRef={activePanelRef} />
-        </div>
       </div>
     </div>
   );
