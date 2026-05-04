@@ -16,8 +16,8 @@ export default function HomeExperience({ locale }: Props) {
   useHomeScroll({ headerRef, filtersRef, panelRefs, activePanelRef });
 
   return (
-    <div style={{position:"fixed",inset:0,width:"100%",height:"100vh",overflow:"hidden",background:"#000"}}>
-      <div ref={headerRef} style={{position:"absolute",inset:0,zIndex:20,willChange:"opacity,transform",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+    <div style={{position:"fixed",inset:0,width:"100%",height:"100vh",background:"#000"}}>
+      <div ref={headerRef} style={{position:"absolute",inset:0,zIndex:20,willChange:"opacity,transform",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
         <SkyCanvas />
         <HeaderTypography />
       </div>
