@@ -75,6 +75,8 @@ export default function FilterCarousel({ locale, panelRefs, activePanelRef }: Pr
             width:"80vw", height:"78vh",
             marginLeft:"-40vw", marginTop:"-39vh",
             willChange:"transform,opacity,filter",
+            transform: `translate3d(0,0,${i * -2000}px) scale(${i === 0 ? 1 : 0.4})`,
+            opacity: i === 0 ? 1 : 0,
             background:`linear-gradient(135deg,rgba(${filter.accentRgb},0.06) 0%,rgba(8,8,8,0.97) 100%)`,
             border:`1px solid rgba(${filter.accentRgb},0.2)`,
             boxShadow:`0 0 120px rgba(${filter.accentRgb},0.08),inset 0 0 80px rgba(${filter.accentRgb},0.04)`,
