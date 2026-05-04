@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #000; overflow: hidden; }
+
+#scene {
+  position: fixed;
+  inset: 0;
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+}
+
+#track {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.panel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80vw;
+  height: 78vh;
+  margin-left: -40vw;
+  margin-top: -39vh;
+  border: 1px solid rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif;
+  font-size: 4rem;
+  color: white;
+  will-change: transform, opacity;
+}
+</style>
+</head>
+<body>
+<div id="scene">
+  <div id="track">
+    <div class="panel" style="background:rgba(201,169,110,0.2);" data-i="0">ZONA</div>
+    <div class="panel" style="background:rgba(168,196,212,0.2);" data-i="1">TIPO</div>
+    <div class="panel" style="background:rgba(232,168,124,0.2);" data-i="2">PRECIO</div>
+  </div>
+</div>
+
+<script>
+const panels = document.querySelectorAll('.panel');
+let progress = 0;
+let target = 0;
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function tick() {
+  progress = lerp(progress, target, 0.06);
+  
+  panels.forEach((el, i) => {
+    const dist = progress - i;
+    let opacity = 0, scale = 0.4, zPos = -2000, blur = 30;
+    
+    if (dist >= -1 && dist < -0.3) {
+      const tt = (dist + 1) / 0.7;
+      opacity = tt * tt; scale = 0.4 + tt * 0.6; zPos = -2000 + tt * 2000; blur = 30 - tt * 30;
+    } else if (dist >= -0.3 && dist < 0.3) {
+      opacity = 1; scale = 1; zPos = 0; blur = 0;
+    } else if (dist >= 0.3 && dist < 1) {
+      const tt = (dist - 0.3) / 0.7;
+      opacity = 1 - tt; scale = 1 + tt * 0.5; zPos = tt * 800; blur = tt * 20;
+    } else if (dist >= 1) {
+      opacity = 0; scale = 1.5; zPos = 800; blur = 20;
+    }
+    
+    el.style.transform = `translate3d(0,0,${zPos}px) scale(${scale})`;
+    el.style.opacity = opacity;
+    el.style.filter = `blur(${blur}px)`;
+  });
+  
+  requestAnimationFrame(tick);
+}
+tick();
+
+// Click para avanzar
+document.addEventListener('click', () => {
+  target = Math.min(2, target + 1);
+});
+document.addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+  target = Math.max(0, target - 1);
+});
+</script>
+</body>
+</html>
