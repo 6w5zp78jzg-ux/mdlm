@@ -246,7 +246,7 @@ export default function FilterCarousel({ locale, panelRefs, onPanelChange }: Pro
                           : "none",
                         transition:"all 0.4s cubic-bezier(0.16,1,0.3,1)",
                         position:"relative",
-                        overflow:"hidden",
+                        
                       }}
                     >
                       {/* Numero opcion */}
