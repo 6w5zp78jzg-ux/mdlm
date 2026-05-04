@@ -105,12 +105,14 @@ export default function FilterCarousel({ locale, panelRefs, onPanelChange }: Pro
         inset: 0,
         perspective: "1200px",
         perspectiveOrigin: "50% 40%",
+        overflow: "visible",
       }}>
         {/* preserve-3d — sin esto el browser aplana el Z y no se ve la profundidad */}
         <div style={{
           position: "absolute",
           inset: 0,
           transformStyle: "preserve-3d",
+          overflow: "visible",
         }}>
           {FILTERS.map((filter, fi) => (
             <div
@@ -125,7 +127,6 @@ export default function FilterCarousel({ locale, panelRefs, onPanelChange }: Pro
                 // Estado inicial: panel 0 activo, resto en profundidad Z negativa
                 transform: fi === 0 ? "translate3d(0,0,0px) scale(1)" : "translate3d(0,0,-2000px) scale(0.4)",
                 opacity: fi === 0 ? 1 : 0,
-                overflow: "hidden",
               }}
             >
               {/* ── VISUAL DE FONDO ────────────────────────────────────── */}
