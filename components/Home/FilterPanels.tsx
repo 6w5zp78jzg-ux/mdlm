@@ -31,9 +31,9 @@ const FILTERS = [
     question:"Define the scale of your ambition.",
     accent:"#b8a898", accentRgb:"184,168,152",
     options:[
-      { v:"500k-1m", l:"500K – 1M",  sub:"Entry" },
-      { v:"1m-2m",   l:"1M – 2M",    sub:"Prime" },
-      { v:"2m-5m",   l:"2M – 5M",    sub:"Ultra" },
+      { v:"500k-1m", l:"500K – 1M",  sub:"Entry Luxury" },
+      { v:"1m-2m",   l:"1M – 2M",    sub:"Prime Collection" },
+      { v:"2m-5m",   l:"2M – 5M",    sub:"Ultra Premium" },
       { v:"5m+",     l:"5M +",       sub:"No Limits" },
     ],
   },
@@ -47,6 +47,7 @@ interface Props {
 export default function FilterPanels({ locale, panelRefs }: Props) {
   const [activePanel, setActivePanel] = useState(0);
   const [selected, setSelected] = useState<Record<string,string>>({});
+  const [hoveredOpt, setHoveredOpt] = useState<string|null>(null);
   const router = useRouter();
 
   const handleSelect = (filterId: string, value: string, idx: number) => {
@@ -64,7 +65,6 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
     if (idx > 0) {
       const prev = idx - 1;
       setActivePanel(prev);
-      // Limpiar selección del panel actual para poder elegir de nuevo
       setSelected(prev2 => {
         const copy = { ...prev2 };
         delete copy[FILTERS[idx].id];
@@ -79,23 +79,32 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
   return (
     <>
       <style>{`
+        @keyframes questionReveal {
+          0%   { opacity:0; transform:translateY(22px) skewY(2deg); filter:blur(8px); }
+          100% { opacity:1; transform:translateY(0) skewY(0deg);   filter:blur(0); }
+        }
+        @keyframes lineExpand {
+          0%   { width:0; opacity:0; }
+          100% { width:2.5rem; opacity:1; }
+        }
+        .q-anim {
+          animation: questionReveal 0.8s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        .q-line {
+          animation: lineExpand 0.6s cubic-bezier(0.16,1,0.3,1) 0.3s both;
+        }
         .fopt {
           cursor: pointer;
-          transition: all 0.45s cubic-bezier(0.16,1,0.3,1);
+          transition: background 0.35s ease;
+          /* FIX 4: flex column con alineación centrada */
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
         }
-        .fopt:hover {
-          background: rgba(255,255,255,0.04) !important;
-        }
-        .fopt:hover .fname {
-          color: rgba(255,255,255,0.9) !important;
-        }
-        .back-btn {
-          transition: all 0.3s ease;
-          cursor: pointer;
-        }
-        .back-btn:hover {
-          color: rgba(255,255,255,0.7) !important;
-        }
+        .fopt:hover { background: rgba(255,255,255,0.05) !important; }
+        .back-btn { transition: all 0.3s ease; cursor:pointer; }
+        .back-btn:hover { color: rgba(255,255,255,0.7) !important; }
       `}</style>
 
       {FILTERS.map((filter, i) => (
@@ -108,156 +117,138 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
             width:"58vw", height:"80vh",
             marginLeft:"-29vw", marginTop:"-40vh",
             willChange:"transform,opacity,filter",
-            // GLASSMORPHISM real — transparente con blur
             background:"rgba(6,4,2,0.65)",
             backdropFilter:"blur(50px) saturate(150%)",
             WebkitBackdropFilter:"blur(50px) saturate(150%)",
             border:`1px solid rgba(${filter.accentRgb},0.18)`,
-            boxShadow:`
-              0 0 0 1px rgba(255,255,255,0.04),
-              0 40px 120px rgba(0,0,0,0.7),
-              inset 0 1px 0 rgba(255,255,255,0.08),
-              inset 0 -1px 0 rgba(0,0,0,0.3)
-            `,
+            boxShadow:`0 0 0 1px rgba(255,255,255,0.04),0 40px 120px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.08)`,
+            // FIX 1: overflow hidden para que opciones no salgan del panel
+            overflow:"hidden",
+            display:"flex",
+            flexDirection:"column",
           }}
         >
           {/* Barra acento superior */}
-          <div style={{
-            position:"absolute", top:0, left:"10%", right:"10%", height:"1px",
-            background:`linear-gradient(90deg,transparent,rgba(${filter.accentRgb},0.8),transparent)`,
-          }}/>
+          <div style={{position:"absolute",top:0,left:"10%",right:"10%",height:"1px",background:`linear-gradient(90deg,transparent,rgba(${filter.accentRgb},0.8),transparent)`}}/>
 
-          {/* Header — label + counter + back */}
+          {/* Header */}
           <div style={{
-            position:"absolute", top:"2.5rem", left:"3.5rem", right:"3.5rem",
+            padding:"2.5rem 3rem 0",
             display:"flex", justifyContent:"space-between", alignItems:"center",
+            flexShrink:0,
           }}>
-            <div style={{display:"flex", alignItems:"center", gap:"1.5rem"}}>
-              {/* Botón volver */}
+            <div style={{display:"flex",alignItems:"center",gap:"1.5rem"}}>
               {i > 0 && (
-                <button
-                  className="back-btn"
-                  onClick={() => handleBack(i)}
-                  style={{
-                    background:"none", border:"none", padding:0,
-                    color:"rgba(255,255,255,0.2)",
-                    fontFamily:"'Helvetica Neue',sans-serif",
-                    fontSize:"0.42rem", letterSpacing:"0.3em",
-                    textTransform:"uppercase",
-                    display:"flex", alignItems:"center", gap:"0.5rem",
-                  }}
-                >
+                <button className="back-btn" onClick={()=>handleBack(i)}
+                  style={{background:"none",border:"none",padding:0,color:"rgba(255,255,255,0.25)",fontFamily:"'Helvetica Neue',sans-serif",fontSize:"0.42rem",letterSpacing:"0.3em",textTransform:"uppercase",display:"flex",alignItems:"center",gap:"0.4rem",cursor:"pointer"}}>
                   ← back
                 </button>
               )}
-              <span style={{
-                fontFamily:"'Helvetica Neue',sans-serif",
-                fontSize:"0.42rem", fontWeight:300,
-                color:`rgba(${filter.accentRgb},0.8)`,
-                letterSpacing:"0.65em", textTransform:"uppercase",
-              }}>{filter.label}</span>
+              <span style={{fontFamily:"'Helvetica Neue',sans-serif",fontSize:"0.42rem",fontWeight:300,color:`rgba(${filter.accentRgb},0.8)`,letterSpacing:"0.65em",textTransform:"uppercase"}}>
+                {filter.label}
+              </span>
             </div>
-            <span style={{
-              fontFamily:"'Helvetica Neue',sans-serif",
-              fontSize:"0.42rem", fontWeight:200,
-              color:"rgba(255,255,255,0.1)",
-              letterSpacing:"0.3em",
-            }}>{filter.index} / 03</span>
+            <span style={{fontFamily:"'Helvetica Neue',sans-serif",fontSize:"0.42rem",fontWeight:200,color:"rgba(255,255,255,0.1)",letterSpacing:"0.3em"}}>
+              {filter.index} / 03
+            </span>
           </div>
 
-          {/* Pregunta */}
-          <div style={{
-            position:"absolute", top:"20%", left:"3.5rem", right:"3.5rem",
-          }}>
-            <h2 style={{
+          {/* FIX 5: Pregunta con animación por key — cambia al cambiar de panel */}
+          <div style={{padding:"2.5rem 3rem 0",flexShrink:0}} key={`q-${i}`}>
+            <h2 className="q-anim" style={{
               fontFamily:"'Helvetica Neue','Arial',sans-serif",
-              fontSize:"clamp(1.6rem,3vw,3rem)",
+              fontSize:"clamp(1.6rem,2.8vw,2.8rem)",
               fontWeight:100,
               color:"rgba(255,255,255,0.92)",
               letterSpacing:"-0.025em",
-              lineHeight:1.1,
+              lineHeight:1.15,
               margin:0,
             }}>{filter.question}</h2>
-            <div style={{
-              height:"1px", width:"2.5rem",
+            <div className="q-line" style={{
+              height:"1px",
               background:`rgba(${filter.accentRgb},0.55)`,
-              marginTop:"1.8rem",
+              marginTop:"1.5rem",
             }}/>
           </div>
 
-          {/* Opciones horizontal */}
+          {/* FIX 1+2: Opciones — flex que ocupa el espacio restante, altura uniforme */}
           <div style={{
-            position:"absolute", bottom:0, left:0, right:0,
+            flex:1,
             display:"grid",
             gridTemplateColumns:`repeat(${filter.options.length},1fr)`,
-            height:"42%",
             borderTop:`1px solid rgba(255,255,255,0.06)`,
+            marginTop:"auto",
+            // FIX 2: altura uniforme por row — no depende del contenido
+            alignItems:"stretch",
           }}>
             {filter.options.map((opt, oi) => {
               const isSel = selected[filter.id] === opt.v;
+              const isHov = hoveredOpt === `${i}-${oi}`;
+              const showSub = isSel || isHov;
               return (
                 <div key={opt.v} className="fopt"
-                  onClick={() => handleSelect(filter.id, opt.v, i)}
+                  onClick={()=>handleSelect(filter.id,opt.v,i)}
+                  onMouseEnter={()=>setHoveredOpt(`${i}-${oi}`)}
+                  onMouseLeave={()=>setHoveredOpt(null)}
                   style={{
-                    display:"flex", flexDirection:"column",
-                    justifyContent:"space-between",
-                    padding:"2rem 2rem 2.5rem",
+                    padding:"1.8rem 1rem",
                     borderRight:`1px solid rgba(255,255,255,0.04)`,
-                    background: isSel
-                      ? `rgba(${filter.accentRgb},0.09)`
-                      : "transparent",
-                    borderTop: isSel
-                      ? `1px solid rgba(${filter.accentRgb},0.5)`
-                      : "1px solid transparent",
-                    marginTop: isSel ? "-1px" : 0,
+                    background: isSel ? `rgba(${filter.accentRgb},0.09)` : "transparent",
+                    borderTop: isSel ? `1px solid rgba(${filter.accentRgb},0.5)` : "1px solid transparent",
                     position:"relative",
+                    justifyContent:"center",
+                    gap:"0.8rem",
                   }}
                 >
+                  {/* Numero */}
                   <span style={{
                     fontFamily:"'Helvetica Neue',sans-serif",
-                    fontSize:"0.38rem", fontWeight:200,
+                    fontSize:"0.38rem",fontWeight:200,
                     color:`rgba(${filter.accentRgb},${isSel?0.7:0.2})`,
                     letterSpacing:"0.35em",
                     transition:"color 0.4s",
                   }}>{String(oi+1).padStart(2,"0")}</span>
 
-                  <div>
-                    <div className="fname" style={{
-                      fontFamily:"'Helvetica Neue',sans-serif",
-                      fontSize:"clamp(0.9rem,1.4vw,1.4rem)",
-                      fontWeight:200,
-                      textTransform:"uppercase",
-                      color: isSel ? "#fff" : "rgba(255,255,255,0.35)",
-                      letterSpacing: isSel ? "0.06em" : "0.03em",
-                      marginBottom:"0.7rem",
-                      transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",
-                    }}>{opt.l}</div>
-                    <div style={{
-                      height:"1px",
-                      width: isSel ? "85%" : "15%",
-                      background: isSel
-                        ? `rgba(${filter.accentRgb},0.7)`
-                        : "rgba(255,255,255,0.07)",
-                      marginBottom:"0.7rem",
-                      transition:"all 0.6s cubic-bezier(0.16,1,0.3,1)",
-                    }}/>
-                    <span style={{
-                      fontFamily:"'Helvetica Neue',sans-serif",
-                      fontSize:"0.38rem", fontWeight:200,
-                      color: isSel
-                        ? `rgba(${filter.accentRgb},0.8)`
-                        : "rgba(255,255,255,0.1)",
-                      letterSpacing:"0.25em",
-                      textTransform:"uppercase",
-                      transition:"color 0.4s",
-                    }}>{opt.sub}</span>
-                  </div>
+                  {/* FIX 4: Label centrado */}
+                  <div className="fname" style={{
+                    fontFamily:"'Helvetica Neue',sans-serif",
+                    fontSize:"clamp(0.75rem,1.2vw,1.15rem)",
+                    fontWeight:200,
+                    textTransform:"uppercase",
+                    color: isSel ? "#fff" : "rgba(255,255,255,0.35)",
+                    letterSpacing:"0.05em",
+                    transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",
+                    textAlign:"center",
+                  }}>{opt.l}</div>
+
+                  {/* Linea */}
+                  <div style={{
+                    height:"1px",
+                    width: isSel ? "70%" : "20%",
+                    background: isSel ? `rgba(${filter.accentRgb},0.7)` : "rgba(255,255,255,0.07)",
+                    transition:"all 0.6s cubic-bezier(0.16,1,0.3,1)",
+                    alignSelf:"center",
+                  }}/>
+
+                  {/* FIX 3: Sub — visible en hover Y en seleccionado */}
+                  <span style={{
+                    fontFamily:"'Helvetica Neue',sans-serif",
+                    fontSize:"0.38rem",fontWeight:200,
+                    color: isSel
+                      ? `rgba(${filter.accentRgb},0.9)`
+                      : isHov
+                        ? "rgba(255,255,255,0.5)"
+                        : "rgba(255,255,255,0.0)",
+                    letterSpacing:"0.2em",
+                    textTransform:"uppercase",
+                    transition:"all 0.4s ease",
+                    textAlign:"center",
+                    opacity: showSub ? 1 : 0,
+                    transform: showSub ? "translateY(0)" : "translateY(4px)",
+                  }}>{opt.sub}</span>
 
                   {isSel && (
-                    <div style={{
-                      position:"absolute", bottom:0, left:0, right:0, height:"1px",
-                      background:`linear-gradient(90deg,rgba(${filter.accentRgb},0.6),transparent)`,
-                    }}/>
+                    <div style={{position:"absolute",bottom:0,left:0,right:0,height:"1px",background:`linear-gradient(90deg,transparent,rgba(${filter.accentRgb},0.6),transparent)`}}/>
                   )}
                 </div>
               );
@@ -266,21 +257,10 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
 
           {/* CTA */}
           {i===FILTERS.length-1&&allSelected&&(
-            <div style={{
-              position:"absolute",
-              bottom:"calc(42% + 2rem)", right:"3.5rem",
-            }}>
+            <div style={{padding:"1.5rem 3rem",flexShrink:0,display:"flex",justifyContent:"flex-end",borderTop:`1px solid rgba(${filter.accentRgb},0.08)`}}>
               <button
                 onClick={()=>router.push(`/${locale}/propiedades?${new URLSearchParams(selected).toString()}`)}
-                style={{
-                  background:"none",
-                  border:`1px solid rgba(${filter.accentRgb},0.45)`,
-                  color:filter.accent,
-                  fontFamily:"'Helvetica Neue',sans-serif",
-                  fontSize:"0.42rem", letterSpacing:"0.6em",
-                  textTransform:"uppercase", padding:"1.1rem 2.8rem",
-                  cursor:"pointer",
-                }}
+                style={{background:"none",border:`1px solid rgba(${filter.accentRgb},0.45)`,color:filter.accent,fontFamily:"'Helvetica Neue',sans-serif",fontSize:"0.42rem",letterSpacing:"0.6em",textTransform:"uppercase",padding:"1rem 2.5rem",cursor:"pointer",transition:"all 0.4s"}}
                 onMouseEnter={e=>{e.currentTarget.style.background=`rgba(${filter.accentRgb},0.12)`;}}
                 onMouseLeave={e=>{e.currentTarget.style.background="none";}}
               >
