@@ -8,7 +8,7 @@ const PHRASES = [
   { top:"REDEFINING",      mainLeft:"MODERN",         mainRight:"OPULENCE",bottom:"EXCLUSIVE SANCTUARIES" },
 ];
 
-export default function SkyHeader() {
+export default function SkyHeader({ permanentSkyId }: { permanentSkyId?: string } = {}) {
   const skyRef = useRef<HTMLDivElement>(null);
   const starsRef = useRef<HTMLDivElement>(null);
   const [idx, setIdx] = useState(0);
@@ -44,11 +44,14 @@ export default function SkyHeader() {
       const pi = Math.floor(t * 5) % 5;
       const k = (t * 5) - Math.floor(t * 5);
       const pA = palettes[pi], pB = palettes[pi + 1];
-      if (skyRef.current) {
-        skyRef.current.style.background = `radial-gradient(ellipse 130% 90% at ${lx}% ${ly}%,
+      const grad = `radial-gradient(ellipse 130% 90% at ${lx}% ${ly}%,
           ${lc(pA[0],pB[0],k)} 0%,${lc(pA[1],pB[1],k)} 12%,
           ${lc(pA[2],pB[2],k)} 30%,${lc(pA[3],pB[3],k)} 60%,
           ${lc(pA[4],pB[4],k)} 100%)`;
+      if (skyRef.current) skyRef.current.style.background = grad;
+      if (permanentSkyId) {
+        const el = document.getElementById(permanentSkyId);
+        if (el) el.style.background = grad;
       }
       if (starsRef.current) {
         let v = 0;
