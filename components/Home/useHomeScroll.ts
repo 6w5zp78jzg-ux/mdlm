@@ -13,7 +13,6 @@ export function useHomeScroll({ headerRef, filtersRef, panelRefs, totalPanels }:
   const headerProgressRef = useRef(0);
   const progressRef = useRef(0);
   const targetProgressRef = useRef(0);
-  const SECTION_LENGTH = 1.0;
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -38,35 +37,54 @@ export function useHomeScroll({ headerRef, filtersRef, panelRefs, totalPanels }:
         filtersRef.current.style.pointerEvents = fOp > 0.3 ? "auto" : "none";
       }
 
-      // Z-AXIS — motor identico al de propiedades
-      progressRef.current = lerp(progressRef.current, targetProgressRef.current, 0.06);
+      // Z-AXIS — tú avanzas hacia los paneles
+      // Panel activo: Z=0 (tamaño normal)
+      // Panel siguiente: Z=+600 (grande, cerca, delante) → se aleja a Z=0 al activarse
+      // Panel anterior: Z=-400 (pequeño, lejos, detrás)
+      progressRef.current = lerp(progressRef.current, targetProgressRef.current, 0.07);
+
       for (let i = 0; i < totalPanels; i++) {
         const el = panelRefs.current[i];
         if (!el) continue;
-        const dist = progressRef.current - i * SECTION_LENGTH;
-        let opacity = 0, scale = 0.4, zPos = -2000, blur = 30;
-        if (dist >= -SECTION_LENGTH && dist < -SECTION_LENGTH * 0.3) {
-          const tt = (dist + SECTION_LENGTH) / (SECTION_LENGTH * 0.7);
-          opacity = tt * tt; scale = 0.3 + tt * 0.7; zPos = -700 + tt * 700; blur = 12 - tt * 12;
-        } else if (dist >= -SECTION_LENGTH * 0.3 && dist < SECTION_LENGTH * 0.3) {
+
+        // diff: cuánto está este panel por delante del activo
+        // diff=0 → activo, diff=1 → siguiente, diff=-1 → anterior
+        const diff = i - progressRef.current;
+
+        let opacity = 0, scale = 1, zPos = 0, blur = 0;
+
+        if (diff > 1 || diff < -1.5) {
+          // Fuera de rango — invisible
+          opacity = 0; scale = 0.6; zPos = diff > 0 ? 800 : -600; blur = 20;
+        } else if (diff > 0 && diff <= 1) {
+          // Panel SIGUIENTE — grande y cerca, se acerca desde adelante
+          const t = diff; // 1→0
+          opacity = 1 - t * 0.85;
+          scale = 1 + t * 0.5;      // 1.5 → 1
+          zPos = t * 600;            // 600 → 0 (viene desde delante)
+          blur = t * 16;
+        } else if (diff === 0) {
+          // Panel ACTIVO
           opacity = 1; scale = 1; zPos = 0; blur = 0;
-        } else if (dist >= SECTION_LENGTH * 0.3 && dist < SECTION_LENGTH) {
-          const tt = (dist - SECTION_LENGTH * 0.3) / (SECTION_LENGTH * 0.7);
-          opacity = 1 - tt; scale = 1 + tt * 0.15; zPos = tt * 300; blur = tt * 8;
-        } else if (dist >= SECTION_LENGTH) {
-          opacity = 0; scale = 1.15; zPos = 300; blur = 8;
+        } else {
+          // Panel ANTERIOR — pequeño y lejos detrás
+          const t = Math.abs(diff); // 0→1
+          opacity = Math.max(0, 1 - t * 1.2);
+          scale = Math.max(0.5, 1 - t * 0.35);
+          zPos = -t * 400;
+          blur = t * 10;
         }
+
         el.style.opacity = String(opacity);
         el.style.transform = `translate3d(0,0,${zPos}px) scale(${scale})`;
-        el.style.filter = `blur(${blur}px)`;
-        el.style.pointerEvents = opacity > 0.7 ? "auto" : "none";
+        el.style.filter = blur > 0 ? `blur(${blur}px)` : "none";
+        el.style.pointerEvents = Math.abs(diff) < 0.4 ? "auto" : "none";
       }
 
       rafId = requestAnimationFrame(tick);
     };
     rafId = requestAnimationFrame(tick);
 
-    // Funcion expuesta para avanzar panel desde click
     (window as any).__advancePanel = (next: number) => {
       targetProgressRef.current = Math.max(0, Math.min(totalPanels - 1, next));
     };
