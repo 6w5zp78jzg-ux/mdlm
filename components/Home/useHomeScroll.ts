@@ -54,25 +54,23 @@ export function useHomeScroll({ headerRef, filtersRef, panelRefs, totalPanels }:
         let opacity = 0, scale = 1, zPos = 0, blur = 0;
 
         if (diff > 1 || diff < -1.5) {
-          // Fuera de rango — invisible
-          opacity = 0; scale = 0.6; zPos = diff > 0 ? 800 : -600; blur = 20;
+          opacity = 0; scale = 0.3; zPos = diff > 0 ? 450 : -450; blur = 30;
         } else if (diff > 0 && diff <= 1) {
-          // Panel SIGUIENTE — grande y cerca, se acerca desde adelante
-          const t = diff; // 1→0
-          opacity = 1 - t * 0.85;
-          scale = 1 + t * 0.5;      // 1.5 → 1
-          zPos = t * 600;            // 600 → 0 (viene desde delante)
-          blur = t * 16;
-        } else if (diff === 0) {
-          // Panel ACTIVO
+          // Siguiente — empieza MUY grande y cerca, se aleja hacia Z=0
+          const t = diff;
+          opacity = Math.max(0, 1 - t * 0.7);
+          scale = 1 + t * 1.5;   // 2.5 → 1 — efecto de aproximación dramático
+          zPos = t * 450;         // 450 → 0
+          blur = t * 20;
+        } else if (diff >= -0.05 && diff <= 0.05) {
           opacity = 1; scale = 1; zPos = 0; blur = 0;
         } else {
-          // Panel ANTERIOR — pequeño y lejos detrás
-          const t = Math.abs(diff); // 0→1
-          opacity = Math.max(0, 1 - t * 1.2);
-          scale = Math.max(0.5, 1 - t * 0.35);
-          zPos = -t * 400;
-          blur = t * 10;
+          // Anterior — se aleja detrás pequeño
+          const t = Math.abs(diff);
+          opacity = Math.max(0, 1 - t * 1.5);
+          scale = Math.max(0.4, 1 - t * 0.5);
+          zPos = -t * 350;
+          blur = t * 12;
         }
 
         el.style.opacity = String(opacity);

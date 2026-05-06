@@ -64,6 +64,12 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
     if (idx > 0) {
       const prev = idx - 1;
       setActivePanel(prev);
+      // Limpiar selección del panel actual para poder elegir de nuevo
+      setSelected(prev2 => {
+        const copy = { ...prev2 };
+        delete copy[FILTERS[idx].id];
+        return copy;
+      });
       (window as any).__advancePanel?.(prev);
     }
   };
