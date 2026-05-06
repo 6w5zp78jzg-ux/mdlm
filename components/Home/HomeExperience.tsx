@@ -11,6 +11,7 @@ const TOTAL_PANELS = 3;
 export default function HomeExperience({ locale }: Props) {
   const headerRef = useRef<HTMLDivElement>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
+  const skyRef = useRef<HTMLDivElement>(null);
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useHomeScroll({ headerRef, filtersRef, panelRefs, totalPanels: TOTAL_PANELS });
@@ -18,14 +19,17 @@ export default function HomeExperience({ locale }: Props) {
   return (
     <div style={{position:"fixed",inset:0,width:"100%",height:"100vh",overflow:"hidden",background:"#000"}}>
 
-      {/* Header — cielo + tipografia juntos, sin split */}
+      {/* Cielo permanente — zIndex 0, nunca desaparece */}
+      <div ref={skyRef} id="sky-permanent" style={{position:"absolute",inset:0,zIndex:0}}/>
+
+      {/* Header — solo tipografia, sin cielo */}
       <div ref={headerRef} style={{
         position:"absolute", inset:0, zIndex:20,
         willChange:"opacity,transform",
         display:"flex", flexDirection:"column",
         alignItems:"center", justifyContent:"center",
       }}>
-        <SkyHeader />
+        <SkyHeader permanentSkyId="sky-permanent" />
       </div>
 
       {/* Filtros */}
