@@ -17,15 +17,18 @@ export default function HomeExperience({ locale }: Props) {
 
   return (
     <div style={{position:"fixed",inset:0,width:"100%",height:"100vh",overflow:"hidden",background:"#000"}}>
-      {/* Cielo permanente — siempre visible detrás de todo */}
-      <div style={{position:"absolute",inset:0,zIndex:0}}>
-        <SkyHeader skyOnly />
+
+      {/* Header — cielo + tipografia juntos, sin split */}
+      <div ref={headerRef} style={{
+        position:"absolute", inset:0, zIndex:20,
+        willChange:"opacity,transform",
+        display:"flex", flexDirection:"column",
+        alignItems:"center", justifyContent:"center",
+      }}>
+        <SkyHeader />
       </div>
-      {/* Header con tipografia */}
-      <div ref={headerRef} style={{position:"absolute",inset:0,zIndex:20,willChange:"opacity,transform",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-        <SkyHeader textOnly />
-      </div>
-      {/* Filtros — fondo TRANSPARENTE para ver el cielo */}
+
+      {/* Filtros */}
       <div ref={filtersRef} style={{
         position:"absolute", inset:0, zIndex:10,
         opacity:0, pointerEvents:"none",
@@ -37,6 +40,7 @@ export default function HomeExperience({ locale }: Props) {
           <FilterPanels locale={locale} panelRefs={panelRefs} />
         </div>
       </div>
+
     </div>
   );
 }
