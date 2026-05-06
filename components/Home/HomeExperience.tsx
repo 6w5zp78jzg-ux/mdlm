@@ -20,7 +20,7 @@ export default function HomeExperience({ locale }: Props) {
       <div ref={headerRef} style={{position:"absolute",inset:0,zIndex:20,willChange:"opacity,transform",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
         <SkyHeader />
       </div>
-      <div ref={filtersRef} style={{position:"absolute",inset:0,zIndex:10,opacity:0,pointerEvents:"none",perspective:"1200px",perspectiveOrigin:"center center",background:"radial-gradient(ellipse 60% 60% at center, #1a1410 0%, #0d0b08 40%, #000 100%)"}}>
+      <div ref={filtersRef} style={{position:"absolute",inset:0,zIndex:10,opacity:0,pointerEvents:"none",perspective:"800px",perspectiveOrigin:"center center",background:"radial-gradient(ellipse 60% 60% at center, #1a1410 0%, #0d0b08 40%, #000 100%)"}}>
         <div style={{position:"absolute",inset:0,transformStyle:"preserve-3d"}}>
           <FilterPanels locale={locale} panelRefs={panelRefs} />
         </div>

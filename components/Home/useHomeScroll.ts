@@ -47,14 +47,14 @@ export function useHomeScroll({ headerRef, filtersRef, panelRefs, totalPanels }:
         let opacity = 0, scale = 0.4, zPos = -2000, blur = 30;
         if (dist >= -SECTION_LENGTH && dist < -SECTION_LENGTH * 0.3) {
           const tt = (dist + SECTION_LENGTH) / (SECTION_LENGTH * 0.7);
-          opacity = tt * tt; scale = 0.4 + tt * 0.6; zPos = -2000 + tt * 2000; blur = 30 - tt * 30;
+          opacity = tt * tt; scale = 0.3 + tt * 0.7; zPos = -700 + tt * 700; blur = 12 - tt * 12;
         } else if (dist >= -SECTION_LENGTH * 0.3 && dist < SECTION_LENGTH * 0.3) {
           opacity = 1; scale = 1; zPos = 0; blur = 0;
         } else if (dist >= SECTION_LENGTH * 0.3 && dist < SECTION_LENGTH) {
           const tt = (dist - SECTION_LENGTH * 0.3) / (SECTION_LENGTH * 0.7);
-          opacity = 1 - tt; scale = 1 + tt * 0.5; zPos = tt * 800; blur = tt * 20;
+          opacity = 1 - tt; scale = 1 + tt * 0.15; zPos = tt * 300; blur = tt * 8;
         } else if (dist >= SECTION_LENGTH) {
-          opacity = 0; scale = 1.5; zPos = 800; blur = 20;
+          opacity = 0; scale = 1.15; zPos = 300; blur = 8;
         }
         el.style.opacity = String(opacity);
         el.style.transform = `translate3d(0,0,${zPos}px) scale(${scale})`;
