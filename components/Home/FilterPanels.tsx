@@ -200,15 +200,6 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
                     gap:"0.8rem",
                   }}
                 >
-                  {/* Numero */}
-                  <span style={{
-                    fontFamily:"'Helvetica Neue',sans-serif",
-                    fontSize:"0.7rem",fontWeight:200,
-                    color:`rgba(${filter.accentRgb},${isSel?0.9:0.45})`,
-                    letterSpacing:"0.35em",
-                    transition:"color 0.4s",
-                  }}>{String(oi+1).padStart(2,"0")}</span>
-
                   {/* FIX 4: Label centrado */}
                   <div className="fname" style={{
                     fontFamily:"'Helvetica Neue',sans-serif",
