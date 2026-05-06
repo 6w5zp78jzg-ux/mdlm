@@ -70,28 +70,28 @@ export default function SkyHeader() {
         @keyframes starTwinkle{0%,100%{opacity:0.3;transform:scale(1);}50%{opacity:1;transform:scale(1.5);}}
         .star{animation:starTwinkle ease-in-out infinite;}
         @keyframes revealTopText{
-          0%{opacity:0;transform:translateY(20px);letter-spacing:0.1em;filter:blur(6px);}
-          15%{opacity:1;transform:translateY(0);letter-spacing:0.5em;filter:blur(0);}
-          85%{opacity:1;letter-spacing:0.6em;}
-          100%{opacity:0;transform:translateY(-20px);filter:blur(6px);}
+          0%{opacity:0;transform:translateY(16px);letter-spacing:0.1em;}
+          10%{opacity:1;transform:translateY(0);letter-spacing:0.5em;}
+          88%{opacity:1;letter-spacing:0.6em;}
+          100%{opacity:0;transform:translateY(-10px);}
         }
         @keyframes slideImpactLeft{
-          0%{opacity:0;transform:translate3d(-80px,0,0);filter:blur(12px);}
-          15%{opacity:1;transform:translate3d(0,0,0);filter:blur(0);}
-          85%{opacity:1;}
-          100%{opacity:0;transform:translate3d(80px,0,0);filter:blur(12px);}
+          0%{opacity:0;transform:translate3d(-60px,0,0);}
+          10%{opacity:1;transform:translate3d(0,0,0);}
+          88%{opacity:1;}
+          100%{opacity:0;transform:translate3d(40px,0,0);}
         }
         @keyframes slideImpactRight{
-          0%{opacity:0;transform:translate3d(80px,0,0);filter:blur(12px);}
-          15%{opacity:1;transform:translate3d(0,0,0);filter:blur(0);}
-          85%{opacity:1;}
-          100%{opacity:0;transform:translate3d(-80px,0,0);filter:blur(12px);}
+          0%{opacity:0;transform:translate3d(60px,0,0);}
+          10%{opacity:1;transform:translate3d(0,0,0);}
+          88%{opacity:1;}
+          100%{opacity:0;transform:translate3d(-40px,0,0);}
         }
         @keyframes revealBottomText{
-          0%{opacity:0;transform:translateY(20px);filter:blur(6px);}
-          20%{opacity:1;transform:translateY(0);filter:blur(0);}
-          80%{opacity:1;}
-          100%{opacity:0;transform:translateY(-20px);filter:blur(6px);}
+          0%{opacity:0;transform:translateY(16px);}
+          12%{opacity:1;transform:translateY(0);}
+          88%{opacity:1;}
+          100%{opacity:0;transform:translateY(-10px);}
         }
         @keyframes uiFadeIn{
           0%{opacity:0;transform:translateY(12px);}
