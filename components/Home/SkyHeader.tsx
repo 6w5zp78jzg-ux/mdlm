@@ -2,19 +2,43 @@
 import { useEffect, useRef, useState } from "react";
 
 const PHRASES = [
-  { top:"THE APEX OF",     mainLeft:"MEDITERRANEAN", mainRight:"LIVING",   bottom:"ULTRA LUXURY ESTATES" },
-  { top:"CURATED FOR",     mainLeft:"UNCOMPROMISING", mainRight:"VISION",  bottom:"ARCHITECTURAL POETRY" },
-  { top:"WHERE ETERNITY",  mainLeft:"MEETS",          mainRight:"THE SEA", bottom:"COASTAL MASTERPIECES" },
-  { top:"REDEFINING",      mainLeft:"MODERN",         mainRight:"OPULENCE",bottom:"EXCLUSIVE SANCTUARIES" },
+  {
+    line1: { text: "MEDITERRANEAN", weight: 900 },
+    line2: { text: "living", weight: 100, italic: true },
+    line3: { text: "ESTATES", weight: 900 },
+    sub: "ULTRA LUXURY REAL ESTATE",
+  },
+  {
+    line1: { text: "UNCOMPROMISING", weight: 900 },
+    line2: { text: "vision", weight: 100, italic: true },
+    line3: { text: "AWAITS", weight: 900 },
+    sub: "ARCHITECTURAL POETRY",
+  },
+  {
+    line1: { text: "WHERE ETERNITY", weight: 100 },
+    line2: { text: "MEETS", weight: 900, italic: false },
+    line3: { text: "the sea", weight: 100, italic: true },
+    sub: "COASTAL MASTERPIECES",
+  },
+  {
+    line1: { text: "REDEFINING", weight: 900 },
+    line2: { text: "modern", weight: 100, italic: true },
+    line3: { text: "OPULENCE", weight: 900 },
+    sub: "EXCLUSIVE SANCTUARIES",
+  },
 ];
 
 export default function SkyHeader() {
   const skyRef = useRef<HTMLDivElement>(null);
   const starsRef = useRef<HTMLDivElement>(null);
   const [idx, setIdx] = useState(0);
+  const [animKey, setAnimKey] = useState(0);
 
   useEffect(() => {
-    const t = setInterval(() => setIdx(p => (p + 1) % PHRASES.length), 7000);
+    const t = setInterval(() => {
+      setIdx(p => (p + 1) % PHRASES.length);
+      setAnimKey(p => p + 1);
+    }, 7000);
     return () => clearInterval(t);
   }, []);
 
@@ -67,42 +91,25 @@ export default function SkyHeader() {
   return (
     <>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,100;0,6..96,400;0,6..96,900;1,6..96,100;1,6..96,400;1,6..96,900&display=swap');
+
         @keyframes starTwinkle{0%,100%{opacity:0.3;transform:scale(1);}50%{opacity:1;transform:scale(1.5);}}
         .star{animation:starTwinkle ease-in-out infinite;}
-        @keyframes revealTopText{
-          0%{opacity:0;transform:translateY(16px);letter-spacing:0.1em;}
-          10%{opacity:1;transform:translateY(0);letter-spacing:0.5em;}
-          88%{opacity:1;letter-spacing:0.6em;}
-          100%{opacity:0;transform:translateY(-10px);}
-        }
-        @keyframes slideImpactLeft{
-          0%{opacity:0;transform:translate3d(-60px,0,0);}
-          10%{opacity:1;transform:translate3d(0,0,0);}
-          88%{opacity:1;}
-          100%{opacity:0;transform:translate3d(40px,0,0);}
-        }
-        @keyframes slideImpactRight{
-          0%{opacity:0;transform:translate3d(60px,0,0);}
-          10%{opacity:1;transform:translate3d(0,0,0);}
-          88%{opacity:1;}
-          100%{opacity:0;transform:translate3d(-40px,0,0);}
-        }
-        @keyframes revealBottomText{
-          0%{opacity:0;transform:translateY(16px);}
-          12%{opacity:1;transform:translateY(0);}
-          88%{opacity:1;}
-          100%{opacity:0;transform:translateY(-10px);}
-        }
-        @keyframes uiFadeIn{
-          0%{opacity:0;transform:translateY(12px);}
+
+        @keyframes lineIn{
+          0%  {opacity:0;transform:translateY(30px);}
           100%{opacity:1;transform:translateY(0);}
         }
-        .att{animation:revealTopText 7s cubic-bezier(0.19,1,0.22,1) both;}
-        .alt{animation:slideImpactLeft 7s cubic-bezier(0.16,1,0.3,1) both;}
-        .art{animation:slideImpactRight 7s cubic-bezier(0.16,1,0.3,1) both;}
-        .abt{animation:revealBottomText 7s cubic-bezier(0.25,1,0.5,1) both;}
-        .d1{animation-delay:0.1s;} .d2{animation-delay:0.3s;} .d3{animation-delay:0.4s;}
-        .ue{animation:uiFadeIn 2.5s cubic-bezier(0.16,1,0.3,1) both;}
+        @keyframes lineOut{
+          0%  {opacity:1;transform:translateY(0);}
+          100%{opacity:0;transform:translateY(-20px);}
+        }
+
+        .tl1{animation:lineIn 0.9s cubic-bezier(0.16,1,0.3,1) 0s both;}
+        .tl2{animation:lineIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.12s both;}
+        .tl3{animation:lineIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.24s both;}
+        .tsub{animation:lineIn 1s cubic-bezier(0.16,1,0.3,1) 0.4s both;}
+        .ue{animation:lineIn 1.2s cubic-bezier(0.16,1,0.3,1) both;}
       `}</style>
 
       {/* CIELO */}
@@ -121,63 +128,109 @@ export default function SkyHeader() {
         ))}
       </div>
 
-      {/* TIPOGRAFIA — sin filter, sin blend, sin shadow */}
+      {/* TIPOGRAFIA — Bodoni Moda con contraste extremo de pesos */}
       <div style={{
         position:"relative", zIndex:10,
         display:"flex", flexDirection:"column",
-        alignItems:"center", padding:"0 2rem",
+        alignItems:"center", padding:"0 3rem",
         userSelect:"none", width:"100%",
       }}>
-        <div key={idx} style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
-          <p className="att" style={{
-            fontFamily:"'Helvetica Neue',sans-serif",
-            fontSize:"clamp(0.6rem,1vw,0.9rem)",
-            fontWeight:300, color:"rgba(255,255,255,0.7)",
-            textTransform:"uppercase", margin:"0 0 1.5rem", textAlign:"center",
-          }}>{p.top}</p>
+        <div key={animKey} style={{
+          display:"flex", flexDirection:"column",
+          alignItems:"center", width:"100%",
+          textAlign:"center",
+        }}>
 
-          <div style={{display:"flex",alignItems:"baseline",justifyContent:"center",flexWrap:"wrap",lineHeight:0.85,padding:"10px 0",gap:"0.15em"}}>
-            <span className="alt d1" style={{
-              fontFamily:"'Helvetica Neue',sans-serif",
-              fontSize:"clamp(3rem,9vw,9rem)", fontWeight:100,
-              color:"transparent",
-              WebkitTextStroke:"1px rgba(255,255,255,0.95)",
-              letterSpacing:"-0.01em",
-            }}>{p.mainLeft}</span>
-            <span className="art d2" style={{
-              fontFamily:"'Playfair Display','Didot',serif",
-              fontSize:"clamp(3.5rem,10vw,10rem)", fontWeight:700,
-              fontStyle:"italic", color:"#fff",
-              letterSpacing:"-0.04em",
-            }}>{p.mainRight}</span>
+          {/* LINEA 1 */}
+          <div className="tl1" style={{
+            fontFamily:"'Bodoni Moda',serif",
+            fontSize: p.line1.weight === 900
+              ? "clamp(2.8rem,7vw,7.5rem)"
+              : "clamp(2rem,5vw,5.5rem)",
+            fontWeight: p.line1.weight,
+            fontStyle: "normal",
+            color: p.line1.weight === 900 ? "#fff" : "rgba(255,255,255,0.6)",
+            letterSpacing: p.line1.weight === 900 ? "-0.02em" : "0.15em",
+            lineHeight: 0.95,
+            textTransform:"uppercase",
+          }}>
+            {p.line1.text}
           </div>
 
-          <p className="abt d3" style={{
-            fontFamily:"'Helvetica Neue',sans-serif",
-            fontWeight:400, fontSize:"clamp(0.65rem,1vw,0.85rem)",
-            textTransform:"uppercase", color:"#c9a96e",
-            margin:"2.5rem 0 0", textAlign:"center", letterSpacing:"0.4em",
-          }}>{p.bottom}</p>
+          {/* LINEA 2 — contraste máximo */}
+          <div className="tl2" style={{
+            fontFamily:"'Bodoni Moda',serif",
+            fontSize: p.line2.weight === 900
+              ? "clamp(3.5rem,9vw,9.5rem)"
+              : "clamp(3rem,8vw,8.5rem)",
+            fontWeight: p.line2.weight,
+            fontStyle: p.line2.italic ? "italic" : "normal",
+            color: p.line2.weight === 100 ? "rgba(255,255,255,0.75)" : "#fff",
+            letterSpacing: p.line2.weight === 900 ? "-0.03em" : "0.02em",
+            lineHeight: 0.9,
+            textTransform: p.line2.italic ? "none" : "uppercase",
+          }}>
+            {p.line2.text}
+          </div>
+
+          {/* LINEA 3 */}
+          <div className="tl3" style={{
+            fontFamily:"'Bodoni Moda',serif",
+            fontSize: p.line3.weight === 900
+              ? "clamp(2.5rem,6vw,6.5rem)"
+              : "clamp(1.8rem,4vw,4.5rem)",
+            fontWeight: p.line3.weight,
+            fontStyle: p.line3?.italic ? "italic" : "normal",
+            color: p.line3.weight === 900
+              ? "transparent"
+              : "rgba(255,255,255,0.5)",
+            WebkitTextStroke: p.line3.weight === 900
+              ? "1px rgba(255,255,255,0.8)"
+              : "none",
+            letterSpacing: p.line3.weight === 900 ? "-0.02em" : "0.2em",
+            lineHeight: 1,
+            textTransform:"uppercase",
+          }}>
+            {p.line3.text}
+          </div>
+
+          {/* Sub */}
+          <div className="tsub" style={{
+            fontFamily:"'Bodoni Moda',serif",
+            fontSize:"clamp(0.5rem,0.8vw,0.75rem)",
+            fontWeight:400,
+            color:"#c9a96e",
+            letterSpacing:"0.5em",
+            textTransform:"uppercase",
+            marginTop:"2.5rem",
+          }}>
+            {p.sub}
+          </div>
+
         </div>
 
+        {/* Linea vertical */}
         <div className="ue" style={{
           width:"1px", height:"4rem",
-          background:"linear-gradient(to bottom,transparent,rgba(255,255,255,0.3),transparent)",
-          margin:"3rem 0 2rem", animationDelay:"1.5s",
+          background:"linear-gradient(to bottom,transparent,rgba(255,255,255,0.25),transparent)",
+          margin:"2.5rem 0 1.5rem",
+          animationDelay:"0.6s",
         }}/>
 
+        {/* Localidades */}
         <div className="ue" style={{
           display:"flex", alignItems:"center", gap:"1.5rem",
           flexWrap:"wrap", justifyContent:"center",
-          color:"rgba(255,255,255,0.4)",
-          fontFamily:"'Helvetica Neue',sans-serif",
-          fontSize:"clamp(0.45rem,0.65vw,0.6rem)",
-          fontWeight:400, letterSpacing:"0.35em",
-          textTransform:"uppercase", animationDelay:"1.7s",
+          color:"rgba(255,255,255,0.35)",
+          fontFamily:"'Bodoni Moda',serif",
+          fontSize:"clamp(0.4rem,0.6vw,0.55rem)",
+          fontWeight:400, letterSpacing:"0.4em",
+          textTransform:"uppercase",
+          animationDelay:"0.8s",
         }}>
           {["Golden Mile","Puerto Banús","Nueva Andalucía","Sierra Blanca"].map((loc,i,arr) => (
             <span key={loc} style={{display:"flex",alignItems:"center",gap:"1.5rem"}}>
-              {loc}{i<arr.length-1&&<span style={{fontFamily:"'Playfair Display',serif",color:"rgba(201,169,110,0.6)",fontSize:"1.2em"}}>✦</span>}
+              {loc}{i<arr.length-1&&<span style={{color:"rgba(201,169,110,0.5)",fontSize:"1.2em"}}>✦</span>}
             </span>
           ))}
         </div>
@@ -186,11 +239,12 @@ export default function SkyHeader() {
       {/* SCROLL */}
       <div className="ue" style={{
         position:"absolute", bottom:"2rem", left:"50%",
-        transform:"translateX(-50%)", zIndex:20, animationDelay:"2s",
+        transform:"translateX(-50%)", zIndex:20,
+        animationDelay:"1s",
       }}>
         <span style={{
-          color:"rgba(255,255,255,0.4)", fontSize:"0.45rem",
-          letterSpacing:"0.6em", fontFamily:"'Helvetica Neue',sans-serif",
+          color:"rgba(255,255,255,0.35)", fontSize:"0.45rem",
+          letterSpacing:"0.6em", fontFamily:"'Bodoni Moda',serif",
           fontWeight:300, textTransform:"uppercase",
         }}>SCROLL</span>
       </div>
