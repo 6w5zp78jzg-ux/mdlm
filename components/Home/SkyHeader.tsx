@@ -73,13 +73,19 @@ export default function SkyHeader() {
       <style>{`
         @keyframes starTwinkle{0%,100%{opacity:0.3;transform:scale(1);}50%{opacity:1;transform:scale(1.5);}}
         .star{animation:starTwinkle ease-in-out infinite;}
+        @keyframes lineInOut{
+          0%  {opacity:0;transform:translateY(30px);filter:blur(12px);}
+          12% {opacity:1;transform:translateY(0);filter:blur(0);}
+          85% {opacity:1;transform:translateY(0);filter:blur(0);}
+          100%{opacity:0;transform:translateY(-20px);filter:blur(20px);}
+        }
         @keyframes lineIn{
-          0%{opacity:0;transform:translateY(30px);filter:blur(8px);}
+          0%  {opacity:0;transform:translateY(20px);filter:blur(8px);}
           100%{opacity:1;transform:translateY(0);filter:blur(0);}
         }
-        .tl1{animation:lineIn 0.9s cubic-bezier(0.16,1,0.3,1) 0s both;}
-        .tl2{animation:lineIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.12s both;}
-        .tl3{animation:lineIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.24s both;}
+        .tl1{animation:lineInOut 7s cubic-bezier(0.16,1,0.3,1) 0s both;}
+        .tl2{animation:lineInOut 7s cubic-bezier(0.16,1,0.3,1) 0.12s both;}
+        .tl3{animation:lineInOut 7s cubic-bezier(0.16,1,0.3,1) 0.24s both;}
         .ue{animation:lineIn 1.2s cubic-bezier(0.16,1,0.3,1) both;}
       `}</style>
 
