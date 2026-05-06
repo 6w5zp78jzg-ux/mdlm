@@ -204,7 +204,7 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
                   <span style={{
                     fontFamily:"'Helvetica Neue',sans-serif",
                     fontSize:"0.38rem",fontWeight:200,
-                    color:`rgba(${filter.accentRgb},${isSel?0.7:0.2})`,
+                    color:`rgba(${filter.accentRgb},${isSel?0.9:0.45})`,
                     letterSpacing:"0.35em",
                     transition:"color 0.4s",
                   }}>{String(oi+1).padStart(2,"0")}</span>
@@ -212,10 +212,10 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
                   {/* FIX 4: Label centrado */}
                   <div className="fname" style={{
                     fontFamily:"'Helvetica Neue',sans-serif",
-                    fontSize:"clamp(0.75rem,1.2vw,1.15rem)",
+                    fontSize:"clamp(0.9rem,1.5vw,1.4rem)",
                     fontWeight:200,
                     textTransform:"uppercase",
-                    color: isSel ? "#fff" : "rgba(255,255,255,0.35)",
+                    color: isSel ? "#fff" : "rgba(255,255,255,0.65)",
                     letterSpacing:"0.05em",
                     transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",
                     textAlign:"center",
