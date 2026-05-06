@@ -80,23 +80,14 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
     <>
       <style>{`
         @keyframes questionReveal {
-          0%   { opacity:0; transform:translateY(22px) skewY(2deg); filter:blur(8px); }
-          100% { opacity:1; transform:translateY(0) skewY(0deg);   filter:blur(0); }
+          0%   { opacity:0; transform:translateY(22px); filter:blur(8px); }
+          100% { opacity:1; transform:translateY(0);    filter:blur(0); }
         }
-        @keyframes lineExpand {
-          0%   { width:0; opacity:0; }
-          100% { width:2.5rem; opacity:1; }
-        }
-        .q-anim {
-          animation: questionReveal 0.8s cubic-bezier(0.16,1,0.3,1) both;
-        }
-        .q-line {
-          animation: lineExpand 0.6s cubic-bezier(0.16,1,0.3,1) 0.3s both;
-        }
+        .q-anim { animation: questionReveal 0.8s cubic-bezier(0.16,1,0.3,1) both; }
+
         .fopt {
           cursor: pointer;
           transition: background 0.35s ease;
-          /* FIX 4: flex column con alineación centrada */
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -105,24 +96,70 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
         .fopt:hover { background: rgba(255,255,255,0.05) !important; }
         .back-btn { transition: all 0.3s ease; cursor:pointer; }
         .back-btn:hover { color: rgba(255,255,255,0.7) !important; }
+
+        /* RESPONSIVE */
+        .filter-panel {
+          position: absolute;
+          top: 50%; left: 50%;
+          /* Desktop */
+          width: 58vw;
+          height: 80vh;
+          margin-left: -29vw;
+          margin-top: -40vh;
+        }
+        .filter-options {
+          grid-template-columns: repeat(var(--cols), 1fr);
+        }
+        .filter-question {
+          font-size: clamp(1.4rem, 2.8vw, 2.8rem);
+        }
+        .filter-label {
+          font-size: clamp(0.85rem, 1.5vw, 1.4rem);
+        }
+        .filter-sub {
+          font-size: clamp(0.55rem, 1vw, 0.75rem);
+        }
+
+        /* Tablet */
+        @media (max-width: 1024px) {
+          .filter-panel {
+            width: 88vw !important;
+            margin-left: -44vw !important;
+          }
+          .filter-question { font-size: clamp(1.3rem, 3.5vw, 2.2rem) !important; }
+          .filter-label    { font-size: clamp(0.8rem, 2vw, 1.2rem) !important; }
+          .filter-sub      { font-size: clamp(0.5rem, 1.2vw, 0.7rem) !important; }
+        }
+
+        /* Mobile — opciones en 2 columnas o 1 */
+        @media (max-width: 640px) {
+          .filter-panel {
+            width: 94vw !important;
+            height: 90vh !important;
+            margin-left: -47vw !important;
+            margin-top: -45vh !important;
+          }
+          .filter-options-zona   { grid-template-columns: repeat(2, 1fr) !important; }
+          .filter-options-tipo   { grid-template-columns: repeat(2, 1fr) !important; }
+          .filter-options-precio { grid-template-columns: repeat(2, 1fr) !important; }
+          .filter-question { font-size: clamp(1.2rem, 5vw, 1.8rem) !important; }
+          .filter-label    { font-size: clamp(0.8rem, 3.5vw, 1.1rem) !important; }
+          .filter-sub      { font-size: clamp(0.5rem, 2.5vw, 0.65rem) !important; }
+        }
       `}</style>
 
       {FILTERS.map((filter, i) => (
         <div
           key={filter.id}
           ref={el => { panelRefs.current[i] = el; }}
+          className="filter-panel"
           style={{
-            position:"absolute",
-            top:"50%", left:"50%",
-            width:"58vw", height:"80vh",
-            marginLeft:"-29vw", marginTop:"-40vh",
             willChange:"transform,opacity,filter",
             background:"rgba(6,4,2,0.65)",
             backdropFilter:"blur(50px) saturate(150%)",
             WebkitBackdropFilter:"blur(50px) saturate(150%)",
             border:`1px solid rgba(${filter.accentRgb},0.18)`,
             boxShadow:`0 0 0 1px rgba(255,255,255,0.04),0 40px 120px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.08)`,
-            // FIX 1: overflow hidden para que opciones no salgan del panel
             overflow:"hidden",
             display:"flex",
             flexDirection:"column",
@@ -132,11 +169,7 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
           <div style={{position:"absolute",top:0,left:"10%",right:"10%",height:"1px",background:`linear-gradient(90deg,transparent,rgba(${filter.accentRgb},0.8),transparent)`}}/>
 
           {/* Header */}
-          <div style={{
-            padding:"2.5rem 3rem 0",
-            display:"flex", justifyContent:"space-between", alignItems:"center",
-            flexShrink:0,
-          }}>
+          <div style={{padding:"2.5rem 3rem 0",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
             <div style={{display:"flex",alignItems:"center",gap:"1.5rem"}}>
               {i > 0 && (
                 <button className="back-btn" onClick={()=>handleBack(i)}
@@ -153,34 +186,31 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
             </span>
           </div>
 
-          {/* FIX 5: Pregunta con animación por key — cambia al cambiar de panel */}
-          <div style={{padding:"2.5rem 3rem 0",flexShrink:0}} key={`q-${i}`}>
-            <h2 className="q-anim" style={{
+          {/* Pregunta */}
+          <div style={{padding:"2rem 3rem 0",flexShrink:0}} key={`q-${i}`}>
+            <h2 className="q-anim filter-question" style={{
               fontFamily:"'Helvetica Neue','Arial',sans-serif",
-              fontSize:"clamp(1.6rem,2.8vw,2.8rem)",
               fontWeight:100,
               color:"rgba(255,255,255,0.92)",
               letterSpacing:"-0.025em",
               lineHeight:1.15,
               margin:0,
             }}>{filter.question}</h2>
-            <div className="q-line" style={{
-              height:"1px",
-              background:`rgba(${filter.accentRgb},0.55)`,
-              marginTop:"1.5rem",
-            }}/>
+            <div style={{height:"1px",width:"2.5rem",background:`rgba(${filter.accentRgb},0.55)`,marginTop:"1.5rem"}}/>
           </div>
 
-          {/* FIX 1+2: Opciones — flex que ocupa el espacio restante, altura uniforme */}
-          <div style={{
-            flex:1,
-            display:"grid",
-            gridTemplateColumns:`repeat(${filter.options.length},1fr)`,
-            borderTop:`1px solid rgba(255,255,255,0.06)`,
-            marginTop:"auto",
-            // FIX 2: altura uniforme por row — no depende del contenido
-            alignItems:"stretch",
-          }}>
+          {/* Opciones */}
+          <div
+            className={`filter-options filter-options-${filter.id}`}
+            style={{
+              flex:1,
+              display:"grid",
+              gridTemplateColumns:`repeat(${filter.options.length},1fr)`,
+              borderTop:`1px solid rgba(255,255,255,0.06)`,
+              marginTop:"auto",
+              alignItems:"stretch",
+            }}
+          >
             {filter.options.map((opt, oi) => {
               const isSel = selected[filter.id] === opt.v;
               const isHov = hoveredOpt === `${i}-${oi}`;
@@ -200,10 +230,8 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
                     gap:"0.8rem",
                   }}
                 >
-                  {/* FIX 4: Label centrado */}
-                  <div className="fname" style={{
+                  <div className="filter-label fname" style={{
                     fontFamily:"'Helvetica Neue',sans-serif",
-                    fontSize:"clamp(0.85rem,1.4vw,1.3rem)",
                     fontWeight:200,
                     textTransform:"uppercase",
                     color: isSel ? "#fff" : "rgba(255,255,255,0.65)",
@@ -212,7 +240,6 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
                     textAlign:"center",
                   }}>{opt.l}</div>
 
-                  {/* Linea */}
                   <div style={{
                     height:"1px",
                     width: isSel ? "70%" : "20%",
@@ -221,21 +248,19 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
                     alignSelf:"center",
                   }}/>
 
-                  {/* FIX 3: Sub — visible en hover Y en seleccionado */}
-                  <span style={{
+                  <span className="filter-sub" style={{
                     fontFamily:"'Helvetica Neue',sans-serif",
-                    fontSize:"0.7rem",fontWeight:200,
+                    fontWeight:200,
                     color: isSel
                       ? `rgba(${filter.accentRgb},0.9)`
                       : isHov
-                        ? "rgba(255,255,255,0.5)"
-                        : "rgba(255,255,255,0.0)",
+                        ? "rgba(255,255,255,0.6)"
+                        : "rgba(255,255,255,0.25)",
                     letterSpacing:"0.2em",
                     textTransform:"uppercase",
                     transition:"all 0.4s ease",
                     textAlign:"center",
-                    opacity: 1,
-                    transform: showSub ? "translateY(0)" : "translateY(3px)",
+                    opacity: showSub ? 1 : 0.4,
                   }}>{opt.sub}</span>
 
                   {isSel && (
