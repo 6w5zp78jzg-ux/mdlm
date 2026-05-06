@@ -77,14 +77,14 @@ export default function SkyHeader({ skyOnly, textOnly }: Props) {
         @keyframes slideImpactLeft{0%{opacity:0;transform:translate3d(-100px,0,-100px) rotateY(15deg);filter:blur(20px);clip-path:inset(0 100% 0 0);}15%{opacity:1;transform:translate3d(0,0,0);filter:blur(0);clip-path:inset(0 0% 0 0);}85%{opacity:1;}100%{opacity:0;transform:translate3d(100px,0,100px);filter:blur(20px);clip-path:inset(0 0 0 100%);}}
         @keyframes slideImpactRight{0%{opacity:0;transform:translate3d(100px,0,100px) rotateY(-15deg);filter:blur(20px);clip-path:inset(0 0 0 100%);}15%{opacity:1;transform:translate3d(0,0,0);filter:blur(0);clip-path:inset(0 0% 0 0);}85%{opacity:1;}100%{opacity:0;transform:translate3d(-100px,0,-100px);filter:blur(20px);clip-path:inset(0 100% 0 0);}}
         @keyframes revealBottomText{0%{opacity:0;transform:translateY(30px) scale(0.95);filter:blur(10px);}20%{opacity:1;transform:translateY(0) scale(1);filter:blur(0);}80%{opacity:1;}100%{opacity:0;transform:translateY(-30px) scale(1.05);filter:blur(10px);}}
-        @keyframes masterBloom{0%,100%{filter:drop-shadow(0 0 20px rgba(255,255,255,0.2));}50%{filter:drop-shadow(0 0 35px rgba(255,255,255,0.5)) drop-shadow(0 0 80px rgba(201,169,110,0.25));}}
+        
         @keyframes uiFadeIn{0%{opacity:0;filter:blur(10px);transform:translateY(15px);}100%{opacity:1;filter:blur(0);transform:translateY(0);}}
         .att{animation:revealTopText 7s cubic-bezier(0.19,1,0.22,1) both;}
         .alt{animation:slideImpactLeft 7s cubic-bezier(0.16,1,0.3,1) both;}
         .art{animation:slideImpactRight 7s cubic-bezier(0.16,1,0.3,1) both;}
         .abt{animation:revealBottomText 7s cubic-bezier(0.25,1,0.5,1) both;}
         .d1{animation-delay:0.1s;} .d2{animation-delay:0.3s;} .d3{animation-delay:0.4s;}
-        .mg{animation:masterBloom 8s ease-in-out infinite;}
+        
         .ue{animation:uiFadeIn 2.5s cubic-bezier(0.16,1,0.3,1) both;}
       `}</style>
 
@@ -109,7 +109,7 @@ export default function SkyHeader({ skyOnly, textOnly }: Props) {
       {/* TIPOGRAFIA */}
       {!skyOnly && (
         <>
-          <div className="mg" style={{position:"relative",zIndex:10,display:"flex",flexDirection:"column",alignItems:"center",padding:"0 2rem",userSelect:"none",width:"100%",perspective:"1000px",transformStyle:"preserve-3d"}}>
+          <div style={{position:"relative",zIndex:10,display:"flex",flexDirection:"column",alignItems:"center",padding:"0 2rem",userSelect:"none",width:"100%",perspective:"1000px",transformStyle:"preserve-3d"}}>
             <div key={idx} style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
               <p className="att" style={{fontFamily:"'Helvetica Neue',sans-serif",fontSize:"clamp(0.6rem,1vw,0.9rem)",fontWeight:300,color:"rgba(255,255,255,0.7)",textTransform:"uppercase",margin:"0 0 1.5rem",textAlign:"center"}}>{p.top}</p>
               <div style={{display:"flex",alignItems:"baseline",justifyContent:"center",flexWrap:"wrap",lineHeight:0.85,padding:"10px 0",gap:"0.15em"}}>
