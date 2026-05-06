@@ -30,14 +30,11 @@ export default async function PropertiesPage({ params, searchParams }: Props) {
     .select("*")
     .eq("activa", true);
 
-  // Filtro zona — busca en el campo ubicacion
+  // Filtro zona — ubicacion contiene el nombre de la zona
   if (zona) {
-    query = query.ilike("ubicacion", `%${zona}%`);
-  }
-
-  // Filtro tipo — busca en el campo tipo si existe, sino en titulo
-  if (tipo) {
-    query = query.ilike("tipo", `%${tipo}%`);
+    // Capitalizar primera letra para coincidir con los datos
+    const zonaCapitalized = zona.charAt(0).toUpperCase() + zona.slice(1);
+    query = query.ilike("ubicacion", `%${zonaCapitalized}%`);
   }
 
   // Filtro precio — rango numérico

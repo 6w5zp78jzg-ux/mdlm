@@ -98,7 +98,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
           <p style={{ fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.5rem", letterSpacing:"0.5em", color:"rgba(201,169,110,0.7)", textTransform:"uppercase", marginBottom:"2rem" }}>
             No properties found
           </p>
-          <h2 style={{ fontFamily:"'Playfair Display',serif", fontSize:"clamp(2rem,4vw,3.5rem)", fontWeight:300, color:"white", letterSpacing:"-0.02em", marginBottom:"3rem" }}>
+          <h2 style={{ fontFamily:"'Helvetica Neue',sans-serif", fontSize:"clamp(2rem,4vw,3.5rem)", fontWeight:300, color:"white", letterSpacing:"-0.02em", marginBottom:"3rem" }}>
             Refine your search
           </h2>
           <button
