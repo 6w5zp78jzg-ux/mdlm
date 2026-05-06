@@ -84,7 +84,7 @@ export default function SkyHeader({ skyOnly, textOnly }: Props) {
         .art{animation:slideImpactRight 7s cubic-bezier(0.16,1,0.3,1) both;}
         .abt{animation:revealBottomText 7s cubic-bezier(0.25,1,0.5,1) both;}
         .d1{animation-delay:0.1s;} .d2{animation-delay:0.3s;} .d3{animation-delay:0.4s;}
-        .mg{animation:masterBloom 8s ease-in-out infinite;mix-blend-mode:screen;}
+        .mg{animation:masterBloom 8s ease-in-out infinite;}
         .ue{animation:uiFadeIn 2.5s cubic-bezier(0.16,1,0.3,1) both;}
       `}</style>
 
