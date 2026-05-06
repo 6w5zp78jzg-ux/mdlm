@@ -203,7 +203,7 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
                   {/* Numero */}
                   <span style={{
                     fontFamily:"'Helvetica Neue',sans-serif",
-                    fontSize:"0.38rem",fontWeight:200,
+                    fontSize:"0.7rem",fontWeight:200,
                     color:`rgba(${filter.accentRgb},${isSel?0.9:0.45})`,
                     letterSpacing:"0.35em",
                     transition:"color 0.4s",
@@ -212,7 +212,7 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
                   {/* FIX 4: Label centrado */}
                   <div className="fname" style={{
                     fontFamily:"'Helvetica Neue',sans-serif",
-                    fontSize:"clamp(1.3rem,2.2vw,2rem)",
+                    fontSize:"clamp(0.85rem,1.4vw,1.3rem)",
                     fontWeight:200,
                     textTransform:"uppercase",
                     color: isSel ? "#fff" : "rgba(255,255,255,0.65)",
@@ -233,7 +233,7 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
                   {/* FIX 3: Sub — visible en hover Y en seleccionado */}
                   <span style={{
                     fontFamily:"'Helvetica Neue',sans-serif",
-                    fontSize:"0.38rem",fontWeight:200,
+                    fontSize:"0.7rem",fontWeight:200,
                     color: isSel
                       ? `rgba(${filter.accentRgb},0.9)`
                       : isHov
