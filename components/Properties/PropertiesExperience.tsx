@@ -17,6 +17,10 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
   const [animating, setAnimating] = useState(false);
   const isAnimating = useRef(false);
 
+  // Scroll acumulado para trinquete continuo
+  const scrollAccum = useRef(0);
+  const SCROLL_THRESHOLD = 120;
+
   const advance = (dir: 1 | -1) => {
     if (isAnimating.current) return;
     const next = current + dir;
@@ -27,7 +31,13 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
       setCurrent(next);
       setAnimating(false);
       isAnimating.current = false;
-    }, 700);
+      // Permitir siguiente avance si hay scroll acumulado
+      if (Math.abs(scrollAccum.current) >= SCROLL_THRESHOLD) {
+        const remainDir = scrollAccum.current > 0 ? 1 : -1;
+        scrollAccum.current = 0;
+        advance(remainDir);
+      }
+    }, 650);
   };
 
   useEffect(() => {
@@ -36,8 +46,12 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      if (Math.abs(e.deltaY) < 30) return;
-      advance(e.deltaY > 0 ? 1 : -1);
+      scrollAccum.current += e.deltaY;
+      if (Math.abs(scrollAccum.current) >= SCROLL_THRESHOLD) {
+        const dir = scrollAccum.current > 0 ? 1 : -1;
+        scrollAccum.current = 0;
+        advance(dir);
+      }
     };
 
     let touchStartX = 0;
@@ -95,20 +109,22 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
     <div style={{ position:"fixed", inset:0, background:"#080604", overflow:"hidden" }}>
       <style>{`
         @keyframes ratchetOut {
-          0%   { transform: perspective(1200px) rotateY(0deg);   opacity:1; }
-          100% { transform: perspective(1200px) rotateY(-90deg); opacity:0; }
+          0%   { transform: rotateY(0deg);    opacity:1; }
+          60%  { opacity:0.3; }
+          100% { transform: rotateY(-110deg); opacity:0; }
         }
         @keyframes ratchetIn {
-          0%   { transform: perspective(1200px) rotateY(90deg);  opacity:0; }
-          100% { transform: perspective(1200px) rotateY(0deg);   opacity:1; }
+          0%   { transform: rotateY(110deg);  opacity:0; }
+          40%  { opacity:0.3; }
+          100% { transform: rotateY(0deg);    opacity:1; }
         }
         @keyframes ratchetOutReverse {
-          0%   { transform: perspective(1200px) rotateY(0deg);  opacity:1; }
-          100% { transform: perspective(1200px) rotateY(90deg); opacity:0; }
+          0%   { transform: rotateY(0deg);   opacity:1; }
+          100% { transform: rotateY(110deg); opacity:0; }
         }
         @keyframes ratchetInReverse {
-          0%   { transform: perspective(1200px) rotateY(-90deg); opacity:0; }
-          100% { transform: perspective(1200px) rotateY(0deg);   opacity:1; }
+          0%   { transform: rotateY(-110deg); opacity:0; }
+          100% { transform: rotateY(0deg);    opacity:1; }
         }
         .card-stack {
           position: absolute;
@@ -120,7 +136,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
         }
         .card-stack-item {
           position: absolute; inset: 0;
-          transform-origin: center center;
+          transform-origin: left center;
         }
       `}</style>
 
