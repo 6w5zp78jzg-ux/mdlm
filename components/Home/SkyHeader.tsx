@@ -74,8 +74,8 @@ export default function SkyHeader() {
         @keyframes starTwinkle{0%,100%{opacity:0.3;transform:scale(1);}50%{opacity:1;transform:scale(1.5);}}
         .star{animation:starTwinkle ease-in-out infinite;}
         @keyframes lineIn{
-          0%{opacity:0;transform:translateY(30px);}
-          100%{opacity:1;transform:translateY(0);}
+          0%{opacity:0;transform:translateY(30px);filter:blur(8px);}
+          100%{opacity:1;transform:translateY(0);filter:blur(0);}
         }
         .tl1{animation:lineIn 0.9s cubic-bezier(0.16,1,0.3,1) 0s both;}
         .tl2{animation:lineIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.12s both;}
