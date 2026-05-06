@@ -212,7 +212,7 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
                   {/* FIX 4: Label centrado */}
                   <div className="fname" style={{
                     fontFamily:"'Helvetica Neue',sans-serif",
-                    fontSize:"clamp(1.1rem,1.8vw,1.7rem)",
+                    fontSize:"clamp(1.3rem,2.2vw,2rem)",
                     fontWeight:200,
                     textTransform:"uppercase",
                     color: isSel ? "#fff" : "rgba(255,255,255,0.65)",
