@@ -105,11 +105,11 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
           style={{
             position:"absolute",
             top:"50%", left:"50%",
-            width:"78vw", height:"78vh",
-            marginLeft:"-39vw", marginTop:"-39vh",
+            width:"58vw", height:"80vh",
+            marginLeft:"-29vw", marginTop:"-40vh",
             willChange:"transform,opacity,filter",
             // GLASSMORPHISM real — transparente con blur
-            background:"rgba(8,6,4,0.45)",
+            background:"rgba(6,4,2,0.65)",
             backdropFilter:"blur(50px) saturate(150%)",
             WebkitBackdropFilter:"blur(50px) saturate(150%)",
             border:`1px solid rgba(${filter.accentRgb},0.18)`,
@@ -171,7 +171,7 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
           }}>
             <h2 style={{
               fontFamily:"'Helvetica Neue','Arial',sans-serif",
-              fontSize:"clamp(2.2rem,4.2vw,4.5rem)",
+              fontSize:"clamp(1.6rem,3vw,3rem)",
               fontWeight:100,
               color:"rgba(255,255,255,0.92)",
               letterSpacing:"-0.025em",
@@ -224,7 +224,7 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
                   <div>
                     <div className="fname" style={{
                       fontFamily:"'Helvetica Neue',sans-serif",
-                      fontSize:"clamp(1rem,1.9vw,1.75rem)",
+                      fontSize:"clamp(0.9rem,1.4vw,1.4rem)",
                       fontWeight:200,
                       textTransform:"uppercase",
                       color: isSel ? "#fff" : "rgba(255,255,255,0.35)",
