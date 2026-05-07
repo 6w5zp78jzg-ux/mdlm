@@ -19,35 +19,66 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
   const [displayIdx, setDisplayIdx] = useState(0);
   const rafRef = useRef<number>(0);
 
-  // Sonido metálico luxury — Web Audio API sin librerías
+  // Sonido Rolex ratchet — click de precisión mecánica
   const playClick = () => {
     try {
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
-      // Tono principal — click metálico suave
-      const osc1 = ctx.createOscillator();
-      const gain1 = ctx.createGain();
-      osc1.connect(gain1);
-      gain1.connect(ctx.destination);
-      osc1.frequency.setValueAtTime(800, ctx.currentTime);
-      osc1.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.15);
-      gain1.gain.setValueAtTime(0.08, ctx.currentTime);
-      gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-      osc1.start(ctx.currentTime);
-      osc1.stop(ctx.currentTime + 0.2);
+      const now = ctx.currentTime;
 
-      // Armónico — shimmer dorado
-      const osc2 = ctx.createOscillator();
+      // Ruido blanco muy corto — el "tick" del trinquete
+      const bufferSize = ctx.sampleRate * 0.04;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let j = 0; j < bufferSize; j++) {
+        data[j] = (Math.random() * 2 - 1) * Math.pow(1 - j/bufferSize, 8);
+      }
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+
+      // Filtro paso alto — elimina graves, solo el click metálico agudo
+      const hpf = ctx.createBiquadFilter();
+      hpf.type = "highpass";
+      hpf.frequency.value = 3500;
+      hpf.Q.value = 0.8;
+
+      // Filtro paso banda — resonancia del acero
+      const bpf = ctx.createBiquadFilter();
+      bpf.type = "bandpass";
+      bpf.frequency.value = 6000;
+      bpf.Q.value = 2;
+
+      // Envelope muy corto — decay inmediato
+      const gainNode = ctx.createGain();
+      gainNode.gain.setValueAtTime(0.12, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+
+      noise.connect(hpf);
+      hpf.connect(bpf);
+      bpf.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      noise.start(now);
+      noise.stop(now + 0.04);
+
+      // Segundo micro-click 12ms después — doble trinquete Rolex
+      const buffer2 = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data2 = buffer2.getChannelData(0);
+      for (let j = 0; j < bufferSize; j++) {
+        data2[j] = (Math.random() * 2 - 1) * Math.pow(1 - j/bufferSize, 10);
+      }
+      const noise2 = ctx.createBufferSource();
+      noise2.buffer = buffer2;
+      const hpf2 = ctx.createBiquadFilter();
+      hpf2.type = "highpass";
+      hpf2.frequency.value = 4000;
       const gain2 = ctx.createGain();
-      osc2.connect(gain2);
+      gain2.gain.setValueAtTime(0.06, now + 0.012);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+      noise2.connect(hpf2);
+      hpf2.connect(gain2);
       gain2.connect(ctx.destination);
-      osc2.type = "sine";
-      osc2.frequency.setValueAtTime(1600, ctx.currentTime);
-      osc2.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.1);
-      gain2.gain.setValueAtTime(0.04, ctx.currentTime);
-      gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
-      osc2.start(ctx.currentTime);
-      osc2.stop(ctx.currentTime + 0.12);
+      noise2.start(now + 0.012);
+      noise2.stop(now + 0.05);
+
     } catch(e) {}
   };
   const scrollAccum = useRef(0);
