@@ -76,35 +76,57 @@ export function useScrollEngine({
 
         const p = videoProgressRef.current;
 
-        // Infografico 1 — entra al 10-25%, luego FIJO para siempre
-        if (infographic1Ref.current && !inf1LockedRef.current) {
+        // Infografico 1 — entra 10-25%, sale 75-90%
+        if (infographic1Ref.current) {
           if (p < 0.10) {
             infographic1Ref.current.style.opacity = "0";
             infographic1Ref.current.style.transform = "translate3d(0px, 120px, 0)";
+            inf1LockedRef.current = false;
           } else if (p < 0.25) {
             const t = (p - 0.10) / 0.15;
             infographic1Ref.current.style.opacity = String(t);
             infographic1Ref.current.style.transform = `translate3d(0px, ${120 - t * 120}px, 0)`;
-          } else {
+            inf1LockedRef.current = false;
+          } else if (p < 0.75) {
             infographic1Ref.current.style.opacity = "1";
             infographic1Ref.current.style.transform = "translate3d(0px, 0px, 0)";
             inf1LockedRef.current = true;
+          } else if (p < 0.90) {
+            const t = (p - 0.75) / 0.15;
+            infographic1Ref.current.style.opacity = String(1 - t);
+            infographic1Ref.current.style.transform = `translate3d(0px, ${-t * 120}px, 0)`;
+            inf1LockedRef.current = false;
+          } else {
+            infographic1Ref.current.style.opacity = "0";
+            infographic1Ref.current.style.transform = "translate3d(0px, -120px, 0)";
+            inf1LockedRef.current = false;
           }
         }
 
-        // Infografico 2 — entra al 50-65%, luego FIJO para siempre
-        if (infographic2Ref.current && !inf2LockedRef.current) {
+        // Infografico 2 — entra 50-65%, sale 85-99%
+        if (infographic2Ref.current) {
           if (p < 0.50) {
             infographic2Ref.current.style.opacity = "0";
             infographic2Ref.current.style.transform = "translate3d(0px, 120px, 0)";
+            inf2LockedRef.current = false;
           } else if (p < 0.65) {
             const t = (p - 0.50) / 0.15;
             infographic2Ref.current.style.opacity = String(t);
             infographic2Ref.current.style.transform = `translate3d(0px, ${120 - t * 120}px, 0)`;
-          } else {
+            inf2LockedRef.current = false;
+          } else if (p < 0.85) {
             infographic2Ref.current.style.opacity = "1";
             infographic2Ref.current.style.transform = "translate3d(0px, 0px, 0)";
             inf2LockedRef.current = true;
+          } else if (p < 0.99) {
+            const t = (p - 0.85) / 0.14;
+            infographic2Ref.current.style.opacity = String(1 - t);
+            infographic2Ref.current.style.transform = `translate3d(0px, ${-t * 120}px, 0)`;
+            inf2LockedRef.current = false;
+          } else {
+            infographic2Ref.current.style.opacity = "0";
+            infographic2Ref.current.style.transform = "translate3d(0px, -120px, 0)";
+            inf2LockedRef.current = false;
           }
         }
 
