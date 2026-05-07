@@ -18,6 +18,38 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
   const currentIdxRef = useRef(0);
   const [displayIdx, setDisplayIdx] = useState(0);
   const rafRef = useRef<number>(0);
+
+  // Sonido metálico luxury — Web Audio API sin librerías
+  const playClick = () => {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      // Tono principal — click metálico suave
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.frequency.setValueAtTime(800, ctx.currentTime);
+      osc1.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.15);
+      gain1.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+      osc1.start(ctx.currentTime);
+      osc1.stop(ctx.currentTime + 0.2);
+
+      // Armónico — shimmer dorado
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.type = "sine";
+      osc2.frequency.setValueAtTime(1600, ctx.currentTime);
+      osc2.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.1);
+      gain2.gain.setValueAtTime(0.04, ctx.currentTime);
+      gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+      osc2.start(ctx.currentTime);
+      osc2.stop(ctx.currentTime + 0.12);
+    } catch(e) {}
+  };
   const scrollAccum = useRef(0);
   const SCROLL_THRESHOLD = 180;
   const n = properties.length;
@@ -228,9 +260,19 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
                 transformStyle:"preserve-3d",
               }}
               onClick={() => {
-                if (displayIdx === i) {
+                const activeIdx = currentIdxRef.current;
+                if (activeIdx === i) {
+                  playClick();
                   router.push(`/${locale}/propiedades/${property.slug}`);
                 }
+              }}
+              onMouseEnter={e => {
+                if (currentIdxRef.current === i) {
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 60px rgba(201,169,110,0.3), inset 0 0 40px rgba(201,169,110,0.05)`;
+                }
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
               }}
             >
               <video
