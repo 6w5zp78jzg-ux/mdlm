@@ -53,7 +53,9 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
         const opacity = normalized < 0.05 ? 0 : Math.min(1, (normalized - 0.05) / 0.25);
         const blur = 0;
 
-        el.style.transform = `translate3d(${x}px, 0, ${z}px)`;
+        // Inclinacion leve proporcional a posicion en la rueda — 0.25 del angulo
+        const tilt = -angle * 0.25;
+        el.style.transform = `translate3d(${x}px, 0, ${z}px) rotateY(${tilt}deg)`;
         el.style.opacity = String(Math.min(1, opacity));
         el.style.scale = String(scale);
         el.style.filter = blur > 0 ? `blur(${blur}px)` : "none";
