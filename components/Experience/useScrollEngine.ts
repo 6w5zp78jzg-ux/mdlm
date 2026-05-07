@@ -35,6 +35,10 @@ export function useScrollEngine({
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
     gsap.set(stage, { height: "100vh" });
+    
+    // Pausar video para permitir scrubbing manual
+    video.pause();
+    video.currentTime = 0;
 
     let smoothTransition = 0;
     let smoothGallery = 0;
