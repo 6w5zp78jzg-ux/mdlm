@@ -53,7 +53,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
         const opacity = normalized < 0.05 ? 0 : Math.min(1, (normalized - 0.05) / 0.25);
         const blur = 0;
 
-        el.style.transform = `translate3d(${x}px, 0, ${z}px) rotateY(${-angle}deg)`;
+        el.style.transform = `translate3d(${x}px, 0, ${z}px)`;
         el.style.opacity = String(Math.min(1, opacity));
         el.style.scale = String(scale);
         el.style.filter = blur > 0 ? `blur(${blur}px)` : "none";
