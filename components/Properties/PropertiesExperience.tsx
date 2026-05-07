@@ -142,14 +142,14 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
       }}>
         {Object.entries(filters).filter(([,v])=>v).map(([k,v]) => (
           <span key={k} style={{
-            fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.4rem", fontWeight:300,
-            color:"rgba(201,169,110,0.7)", letterSpacing:"0.4em", textTransform:"uppercase",
-            padding:"0.4rem 1rem", border:"1px solid rgba(201,169,110,0.2)",
+            fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.6rem", fontWeight:300,
+            color:"rgba(201,169,110,0.8)", letterSpacing:"0.3em", textTransform:"uppercase",
+            padding:"0.6rem 1.4rem", border:"1px solid rgba(201,169,110,0.3)",
           }}>{v}</span>
         ))}
         <button
           onClick={() => router.push(`/${locale}`)}
-          style={{ background:"none", border:"none", color:"rgba(255,255,255,0.2)", fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.4rem", letterSpacing:"0.3em", textTransform:"uppercase", cursor:"pointer" }}
+          style={{ background:"none", border:"none", color:"rgba(255,255,255,0.45)", fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.6rem", letterSpacing:"0.3em", textTransform:"uppercase", cursor:"pointer" }}
         >
           ← new search
         </button>
@@ -209,14 +209,14 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
                     </span>
                   </div>
                   <div style={{ display:"flex", gap:"2rem" }}>
-                    <span style={{ fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.45rem", color:"rgba(255,255,255,0.35)", letterSpacing:"0.3em" }}>
+                    <span style={{ fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.75rem", color:"rgba(255,255,255,0.55)", letterSpacing:"0.25em" }}>
                       {property.habitaciones} BED
                     </span>
-                    <span style={{ fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.45rem", color:"rgba(255,255,255,0.35)", letterSpacing:"0.3em" }}>
+                    <span style={{ fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.75rem", color:"rgba(255,255,255,0.55)", letterSpacing:"0.25em" }}>
                       {property.m2_construidos} M²
                     </span>
                   </div>
-                  <span style={{ fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.45rem", color:"rgba(255,255,255,0.25)", letterSpacing:"0.4em", textTransform:"uppercase" }}>
+                  <span style={{ fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.75rem", color:"rgba(255,255,255,0.45)", letterSpacing:"0.35em", textTransform:"uppercase" }}>
                     Discover →
                   </span>
                 </div>
