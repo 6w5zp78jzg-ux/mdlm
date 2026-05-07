@@ -211,22 +211,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
         backdropFilter:"blur(20px)",
         WebkitBackdropFilter:"blur(20px)",
       }}>
-        {/* Botón volver */}
-        <button
-          onClick={() => router.push(`/${locale}`)}
-          style={{
-            background:"none", border:"none",
-            color:"rgba(255,255,255,0.35)",
-            fontFamily:"'Helvetica Neue',sans-serif",
-            fontSize:"0.55rem", letterSpacing:"0.35em",
-            textTransform:"uppercase", cursor:"pointer",
-            padding:"0 2rem",
-            borderRight:"1px solid rgba(255,255,255,0.08)",
-            height:"100%", display:"flex", alignItems:"center",
-          }}
-        >
-          ← Search
-        </button>
+
 
         {/* Filtros seleccionados */}
         {Object.entries(filters).filter(([,v])=>v).map(([k,v], fi) => (
@@ -336,15 +321,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
                       {property.m2_construidos} M²
                     </span>
                   </div>
-                  <span style={{
-                      fontFamily:"'Helvetica Neue',sans-serif",
-                      fontSize:"0.75rem",
-                      color:"rgba(255,255,255,0.25)",
-                      letterSpacing:"0.35em",
-                      textTransform:"uppercase",
-                    }}>
-                    Discover →
-                  </span>
+
                 </div>
               </div>
             </div>
@@ -370,6 +347,43 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
 
       />
 
+      {/* SEARCH — botón gemelo abajo izquierda */}
+      <button
+        onClick={() => router.push(`/${locale}`)}
+        onMouseEnter={e => {
+          e.currentTarget.style.color = "#fff";
+          e.currentTarget.style.borderColor = "rgba(201,169,110,0.9)";
+          e.currentTarget.style.boxShadow = "0 0 30px rgba(201,169,110,0.5), 0 0 60px rgba(201,169,110,0.2)";
+          e.currentTarget.style.background = "rgba(201,169,110,0.12)";
+          e.currentTarget.style.letterSpacing = "0.5em";
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.color = "rgba(201,169,110,0.8)";
+          e.currentTarget.style.borderColor = "rgba(201,169,110,0.35)";
+          e.currentTarget.style.boxShadow = "none";
+          e.currentTarget.style.background = "transparent";
+          e.currentTarget.style.letterSpacing = "0.4em";
+        }}
+        style={{
+          position:"fixed",
+          bottom:"3rem",
+          left:"3rem",
+          zIndex:500,
+          background:"transparent",
+          border:"1px solid rgba(201,169,110,0.35)",
+          color:"rgba(201,169,110,0.8)",
+          fontFamily:"'Helvetica Neue',sans-serif",
+          fontSize:"0.75rem",
+          letterSpacing:"0.4em",
+          textTransform:"uppercase",
+          padding:"1rem 2.5rem",
+          cursor:"pointer",
+          transition:"all 0.35s cubic-bezier(0.16,1,0.3,1)",
+        }}
+      >
+        ← Search
+      </button>
+
       {/* DISCOVER — botón fijo independiente del RAF */}
       <button
         id="discover-btn"
@@ -394,8 +408,8 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
         }}
         style={{
           position:"fixed",
-          bottom:"8rem",
-          right:"calc(50% - 44vw + 3rem)",
+          bottom:"3rem",
+          right:"3rem",
           zIndex:500,
           background:"transparent",
           border:"1px solid rgba(201,169,110,0.35)",
