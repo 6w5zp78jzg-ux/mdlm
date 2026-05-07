@@ -269,8 +269,8 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
               id={`prop-card-${i}`}
               style={{
                 position:"absolute",
-                width:"62vw", height:"83vh",
-                marginLeft:"-31vw", marginTop:"-48vh",
+                width:"72vw", height:"83vh",
+                marginLeft:"-36vw", marginTop:"-48vh",
                 willChange:"transform,opacity,filter",
                 cursor:"pointer",
                 transformStyle:"preserve-3d",
@@ -334,8 +334,8 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
         style={{
           position:"absolute",
           top:"50%", left:"50%",
-          width:"62vw", height:"83vh",
-          marginLeft:"-31vw", marginTop:"-48vh",
+          width:"72vw", height:"83vh",
+          marginLeft:"-36vw", marginTop:"-48vh",
           zIndex:200,
           cursor:"pointer",
         }}
