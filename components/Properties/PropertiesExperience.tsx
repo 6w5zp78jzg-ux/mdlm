@@ -315,6 +315,31 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
         </div>
       </div>
 
+      {/* Overlay de click — siempre encima, no afectado por RAF */}
+      <div
+        style={{
+          position:"absolute",
+          top:"50%", left:"50%",
+          width:"82vw", height:"76vh",
+          marginLeft:"-41vw", marginTop:"-38vh",
+          zIndex:200,
+          cursor:"pointer",
+        }}
+        onClick={() => {
+          playClick();
+          const slug = properties[currentIdxRef.current]?.slug;
+          if (slug) router.push(`/${locale}/propiedades/${slug}`);
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.boxShadow = `0 0 80px rgba(201,169,110,0.25)`;
+          e.currentTarget.style.outline = `1px solid rgba(201,169,110,0.3)`;
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.boxShadow = "none";
+          e.currentTarget.style.outline = "none";
+        }}
+      />
+
       {/* Indicador */}
       <div style={{
         position:"absolute", bottom:"3rem", left:"50%", transform:"translateX(-50%)",
