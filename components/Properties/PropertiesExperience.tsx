@@ -203,8 +203,9 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
       {/* Filtros activos — barra editorial superior */}
       <div style={{
         position:"absolute", top:0, left:0, right:0,
-        height:"4.5rem",
+        minHeight:"4.5rem",
         display:"flex", alignItems:"center", justifyContent:"center",
+        flexWrap:"wrap",
         gap:"0", zIndex:100,
         borderBottom:"1px solid rgba(255,255,255,0.06)",
         background:"rgba(8,6,4,0.7)",
@@ -218,21 +219,21 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
           <div key={k} style={{
             display:"flex", alignItems:"center",
             height:"100%",
-            padding:"0 2rem",
+            padding:"0 1rem",
             borderRight:"1px solid rgba(255,255,255,0.06)",
           }}>
             <span style={{
               fontFamily:"'Helvetica Neue',sans-serif",
-              fontSize:"0.45rem", fontWeight:200,
+              fontSize:"clamp(0.35rem,1.5vw,0.45rem)", fontWeight:200,
               color:"rgba(201,169,110,0.5)",
-              letterSpacing:"0.4em", textTransform:"uppercase",
-              marginRight:"0.8rem",
+              letterSpacing:"0.3em", textTransform:"uppercase",
+              marginRight:"0.5rem",
             }}>{k}</span>
             <span style={{
               fontFamily:"'Helvetica Neue',sans-serif",
-              fontSize:"0.6rem", fontWeight:300,
+              fontSize:"clamp(0.4rem,1.8vw,0.6rem)", fontWeight:300,
               color:"rgba(201,169,110,0.9)",
-              letterSpacing:"0.2em", textTransform:"uppercase",
+              letterSpacing:"0.15em", textTransform:"uppercase",
             }}>{v}</span>
           </div>
         ))}
@@ -269,8 +270,8 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
               id={`prop-card-${i}`}
               style={{
                 position:"absolute",
-                width:"72vw", height:"83vh",
-                marginLeft:"-36vw", marginTop:"-48vh",
+                width:"clamp(280px,72vw,900px)", height:"83vh",
+                marginLeft:"calc(clamp(280px,72vw,900px) / -2)", marginTop:"-48vh",
                 willChange:"transform,opacity,filter",
                 cursor:"pointer",
                 transformStyle:"preserve-3d",
@@ -373,10 +374,10 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
           border:"1px solid rgba(201,169,110,0.35)",
           color:"rgba(201,169,110,0.8)",
           fontFamily:"'Helvetica Neue',sans-serif",
-          fontSize:"0.75rem",
-          letterSpacing:"0.4em",
+          fontSize:"clamp(0.5rem,2vw,0.75rem)",
+          letterSpacing:"clamp(0.2em,1vw,0.4em)",
           textTransform:"uppercase",
-          padding:"1rem 2.5rem",
+          padding:"clamp(0.6rem,2vw,1rem) clamp(1rem,3vw,2.5rem)",
           cursor:"pointer",
           transition:"all 0.35s cubic-bezier(0.16,1,0.3,1)",
         }}
@@ -416,10 +417,10 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
           border:"1px solid rgba(201,169,110,0.35)",
           color:"rgba(201,169,110,0.8)",
           fontFamily:"'Helvetica Neue',sans-serif",
-          fontSize:"0.75rem",
-          letterSpacing:"0.4em",
+          fontSize:"clamp(0.5rem,2vw,0.75rem)",
+          letterSpacing:"clamp(0.2em,1vw,0.4em)",
           textTransform:"uppercase",
-          padding:"1rem 2.5rem",
+          padding:"clamp(0.6rem,2vw,1rem) clamp(1rem,3vw,2.5rem)",
           cursor:"pointer",
           transition:"all 0.35s cubic-bezier(0.16,1,0.3,1)",
         }}
