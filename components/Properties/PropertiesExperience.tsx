@@ -269,7 +269,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
               id={`prop-card-${i}`}
               style={{
                 position:"absolute",
-                width:"65vw", height:"72vh",
+                width:"65vw", height:"86vh",
                 marginLeft:"-32.5vw", marginTop:"-48vh",
                 willChange:"transform,opacity,filter",
                 cursor:"pointer",
@@ -334,7 +334,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
         style={{
           position:"absolute",
           top:"50%", left:"50%",
-          width:"82vw", height:"76vh",
+          width:"82vw", height:"86vh",
           marginLeft:"-41vw", marginTop:"-48vh",
           zIndex:200,
           cursor:"pointer",
