@@ -134,25 +134,69 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
     <div style={{ position:"fixed", inset:0, background:"#080604", overflow:"hidden" }}>
       <Navbar />
 
-      {/* Filtros activos */}
+      {/* Filtros activos — barra editorial superior */}
       <div style={{
-        position:"absolute", top:"5rem", left:"50%", transform:"translateX(-50%)",
-        display:"flex", alignItems:"center", gap:"1rem", zIndex:100,
-        flexWrap:"wrap", justifyContent:"center",
+        position:"absolute", top:0, left:0, right:0,
+        height:"4.5rem",
+        display:"flex", alignItems:"center", justifyContent:"center",
+        gap:"0", zIndex:100,
+        borderBottom:"1px solid rgba(255,255,255,0.06)",
+        background:"rgba(8,6,4,0.7)",
+        backdropFilter:"blur(20px)",
+        WebkitBackdropFilter:"blur(20px)",
       }}>
-        {Object.entries(filters).filter(([,v])=>v).map(([k,v]) => (
-          <span key={k} style={{
-            fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.6rem", fontWeight:300,
-            color:"rgba(201,169,110,0.8)", letterSpacing:"0.3em", textTransform:"uppercase",
-            padding:"0.6rem 1.4rem", border:"1px solid rgba(201,169,110,0.3)",
-          }}>{v}</span>
-        ))}
+        {/* Botón volver */}
         <button
           onClick={() => router.push(`/${locale}`)}
-          style={{ background:"none", border:"none", color:"rgba(255,255,255,0.45)", fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.6rem", letterSpacing:"0.3em", textTransform:"uppercase", cursor:"pointer" }}
+          style={{
+            background:"none", border:"none",
+            color:"rgba(255,255,255,0.35)",
+            fontFamily:"'Helvetica Neue',sans-serif",
+            fontSize:"0.55rem", letterSpacing:"0.35em",
+            textTransform:"uppercase", cursor:"pointer",
+            padding:"0 2rem",
+            borderRight:"1px solid rgba(255,255,255,0.08)",
+            height:"100%", display:"flex", alignItems:"center",
+          }}
         >
-          ← new search
+          ← Search
         </button>
+
+        {/* Filtros seleccionados */}
+        {Object.entries(filters).filter(([,v])=>v).map(([k,v], fi) => (
+          <div key={k} style={{
+            display:"flex", alignItems:"center",
+            height:"100%",
+            padding:"0 2rem",
+            borderRight:"1px solid rgba(255,255,255,0.06)",
+          }}>
+            <span style={{
+              fontFamily:"'Helvetica Neue',sans-serif",
+              fontSize:"0.45rem", fontWeight:200,
+              color:"rgba(201,169,110,0.5)",
+              letterSpacing:"0.4em", textTransform:"uppercase",
+              marginRight:"0.8rem",
+            }}>{k}</span>
+            <span style={{
+              fontFamily:"'Helvetica Neue',sans-serif",
+              fontSize:"0.6rem", fontWeight:300,
+              color:"rgba(201,169,110,0.9)",
+              letterSpacing:"0.2em", textTransform:"uppercase",
+            }}>{v}</span>
+          </div>
+        ))}
+
+        {/* Contador derecha */}
+        <div style={{
+          marginLeft:"auto",
+          padding:"0 2rem",
+          fontFamily:"'Helvetica Neue',sans-serif",
+          fontSize:"0.5rem", fontWeight:200,
+          color:"rgba(255,255,255,0.2)",
+          letterSpacing:"0.3em",
+        }}>
+          {String(displayIdx+1).padStart(2,"0")} / {String(n).padStart(2,"0")}
+        </div>
       </div>
 
       {/* RUEDA — escena 3D */}
@@ -241,14 +285,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
         ))}
       </div>
 
-      {/* Contador */}
-      <div style={{
-        position:"absolute", bottom:"5.5rem", left:"50%", transform:"translateX(-50%)",
-        fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.4rem", fontWeight:200,
-        color:"rgba(255,255,255,0.15)", letterSpacing:"0.4em", textTransform:"uppercase", zIndex:100,
-      }}>
-        {String(displayIdx + 1).padStart(2,"0")} / {String(n).padStart(2,"0")}
-      </div>
+
 
     </div>
   );
