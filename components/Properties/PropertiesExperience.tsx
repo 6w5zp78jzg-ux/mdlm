@@ -54,7 +54,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
         const blur = 0;
 
         // Inclinacion leve proporcional a posicion en la rueda — 0.25 del angulo
-        const tilt = -angle * 0.25;
+        const tilt = -angle * 0.04;
         el.style.transform = `translate3d(${x}px, 0, ${z}px) rotateY(${tilt}deg)`;
         el.style.opacity = String(Math.min(1, opacity));
         el.style.scale = String(scale);
