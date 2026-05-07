@@ -428,21 +428,22 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
         Discover →
       </button>
 
-      {/* Scroll indicator — neon breath centrado entre los dos botones */}
-      <div style={{
+      {/* Scroll indicator — solo desktop */}
+      <style>{`
+        @keyframes neonBreathProp {
+          0%,100% { height:1.5rem; opacity:0.3; box-shadow:0 0 4px 1px rgba(201,169,110,0.4); }
+          50%     { height:3.5rem; opacity:1;   box-shadow:0 0 12px 3px rgba(201,169,110,0.9); }
+        }
+        @keyframes fadeScroll { 0%,100%{opacity:0.3;} 50%{opacity:0.8;} }
+        .neon-prop { animation: neonBreathProp 2.4s ease-in-out infinite; }
+        .scroll-prop { animation: fadeScroll 2.4s ease-in-out infinite; }
+        @media (max-width: 768px) { .scroll-indicator-prop { display: none !important; } }
+      `}</style>
+      <div className="scroll-indicator-prop" style={{
         position:"fixed", bottom:"1rem", left:"50%", transform:"translateX(-50%)",
         display:"flex", flexDirection:"column", alignItems:"center", gap:"0.6rem",
         zIndex:500,
       }}>
-        <style>{`
-          @keyframes neonBreathProp {
-            0%,100% { height:1.5rem; opacity:0.3; box-shadow:0 0 4px 1px rgba(201,169,110,0.4); }
-            50%     { height:3.5rem; opacity:1;   box-shadow:0 0 12px 3px rgba(201,169,110,0.9); }
-          }
-          @keyframes fadeScroll { 0%,100%{opacity:0.3;} 50%{opacity:0.8;} }
-          .neon-prop { animation: neonBreathProp 2.4s ease-in-out infinite; }
-          .scroll-prop { animation: fadeScroll 2.4s ease-in-out infinite; }
-        `}</style>
         <span className="scroll-prop" style={{
           color:"rgba(201,169,110,0.5)", fontSize:"0.4rem",
           letterSpacing:"0.5em", fontFamily:"'Helvetica Neue',sans-serif",
