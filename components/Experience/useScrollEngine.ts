@@ -148,10 +148,31 @@ export function useScrollEngine({
       }
     };
 
+    // Touch mobile — mismo comportamiento que wheel
+    let touchStartY = 0;
+    let lastTouchY = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+      lastTouchY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+      const currentY = e.touches[0].clientY;
+      const delta = (lastTouchY - currentY) * 2.5; // sensibilidad similar a wheel
+      lastTouchY = currentY;
+      handleWheel({ deltaY: delta, preventDefault: () => {} } as WheelEvent);
+    };
+
     window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: false });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
       cancelAnimationFrame(rafId);
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
