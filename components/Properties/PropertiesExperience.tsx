@@ -50,14 +50,14 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
       // Envelope muy corto — decay inmediato
       const gainNode = ctx.createGain();
       gainNode.gain.setValueAtTime(0.12, now);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
 
       noise.connect(hpf);
       hpf.connect(bpf);
       bpf.connect(gainNode);
       gainNode.connect(ctx.destination);
       noise.start(now);
-      noise.stop(now + 0.04);
+      noise.stop(now + 0.08);
 
       // Segundo micro-click 12ms después — doble trinquete Rolex
       const buffer2 = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
@@ -72,12 +72,12 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
       hpf2.frequency.value = 4000;
       const gain2 = ctx.createGain();
       gain2.gain.setValueAtTime(0.06, now + 0.012);
-      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
       noise2.connect(hpf2);
       hpf2.connect(gain2);
       gain2.connect(ctx.destination);
       noise2.start(now + 0.012);
-      noise2.stop(now + 0.05);
+      noise2.stop(now + 0.10);
 
     } catch(e) {}
   };
@@ -337,6 +337,23 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
                     </span>
                   </div>
                   <span
+                    onClick={e => {
+                      e.stopPropagation();
+                      playClick();
+                      router.push(`/${locale}/propiedades/${property.slug}`);
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.color = "#fff";
+                      e.currentTarget.style.borderColor = "rgba(201,169,110,0.9)";
+                      e.currentTarget.style.boxShadow = "0 0 25px rgba(201,169,110,0.5), 0 0 50px rgba(201,169,110,0.25)";
+                      e.currentTarget.style.background = "rgba(201,169,110,0.12)";
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.color = "rgba(201,169,110,0.7)";
+                      e.currentTarget.style.borderColor = "rgba(201,169,110,0.3)";
+                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.background = "transparent";
+                    }}
                     style={{
                       fontFamily:"'Helvetica Neue',sans-serif",
                       fontSize:"0.75rem",
@@ -347,18 +364,8 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
                       border:"1px solid rgba(201,169,110,0.3)",
                       transition:"all 0.3s ease",
                       cursor:"pointer",
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.color = "#fff";
-                      e.currentTarget.style.borderColor = "rgba(201,169,110,0.8)";
-                      e.currentTarget.style.boxShadow = "0 0 30px rgba(201,169,110,0.4), 0 0 60px rgba(201,169,110,0.2)";
-                      e.currentTarget.style.background = "rgba(201,169,110,0.1)";
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.color = "rgba(201,169,110,0.7)";
-                      e.currentTarget.style.borderColor = "rgba(201,169,110,0.3)";
-                      e.currentTarget.style.boxShadow = "none";
-                      e.currentTarget.style.background = "transparent";
+                      position:"relative",
+                      zIndex:300,
                     }}
                   >
                     Discover →
