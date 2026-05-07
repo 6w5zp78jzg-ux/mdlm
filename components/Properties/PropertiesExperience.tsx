@@ -49,9 +49,9 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
 
         // Opacidad y escala según la profundidad z
         const normalized = (z + RADIUS) / (RADIUS * 2); // 0=atrás, 1=frente
-        const scale = 0.5 + normalized * 0.5;
-        const opacity = normalized < 0.3 ? 0 : (normalized - 0.3) / 0.7;
-        const blur = normalized > 0.75 ? 0 : (1 - normalized) * 3;
+        const scale = 0.7 + normalized * 0.3;
+        const opacity = normalized < 0.1 ? 0 : Math.min(1, (normalized - 0.1) / 0.4);
+        const blur = normalized > 0.7 ? 0 : (1 - normalized) * 2;
 
         el.style.transform = `translate3d(${x}px, 0, ${z}px) rotateY(${-angle}deg)`;
         el.style.opacity = String(Math.min(1, opacity));
