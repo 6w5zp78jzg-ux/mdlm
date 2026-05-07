@@ -19,7 +19,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
   const [displayIdx, setDisplayIdx] = useState(0);
   const rafRef = useRef<number>(0);
   const scrollAccum = useRef(0);
-  const SCROLL_THRESHOLD = 100;
+  const SCROLL_THRESHOLD = 180;
   const n = properties.length;
   const STEP = 360 / n;               // grados entre paneles
   const RADIUS = 600;                 // radio de la rueda en px
@@ -32,7 +32,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
 
     const tick = () => {
       // Suavizado con lerp — efecto de inercia tipo trinquete
-      rotationRef.current = lerp(rotationRef.current, targetRotRef.current, 0.08);
+      rotationRef.current = lerp(rotationRef.current, targetRotRef.current, 0.04);
 
       // Actualizar cada panel
       for (let i = 0; i < n; i++) {
@@ -54,7 +54,8 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
         const blur = 0;
 
         // Inclinacion leve proporcional a posicion en la rueda — 0.25 del angulo
-        const tilt = -angle * 0.04;
+        // Tilt proporcional al seno del angulo — max ~8deg en laterales, 0 al frente
+        const tilt = -Math.sin(rad) * 10;
         el.style.transform = `translate3d(${x}px, 0, ${z}px) rotateY(${tilt}deg)`;
         el.style.opacity = String(Math.min(1, opacity));
         el.style.scale = String(scale);
