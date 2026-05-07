@@ -336,38 +336,13 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
                       {property.m2_construidos} M²
                     </span>
                   </div>
-                  <span
-                    onClick={e => {
-                      e.stopPropagation();
-                      playClick();
-                      router.push(`/${locale}/propiedades/${property.slug}`);
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.color = "#fff";
-                      e.currentTarget.style.borderColor = "rgba(201,169,110,0.9)";
-                      e.currentTarget.style.boxShadow = "0 0 25px rgba(201,169,110,0.5), 0 0 50px rgba(201,169,110,0.25)";
-                      e.currentTarget.style.background = "rgba(201,169,110,0.12)";
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.color = "rgba(201,169,110,0.7)";
-                      e.currentTarget.style.borderColor = "rgba(201,169,110,0.3)";
-                      e.currentTarget.style.boxShadow = "none";
-                      e.currentTarget.style.background = "transparent";
-                    }}
-                    style={{
+                  <span style={{
                       fontFamily:"'Helvetica Neue',sans-serif",
                       fontSize:"0.75rem",
-                      color:"rgba(201,169,110,0.7)",
+                      color:"rgba(255,255,255,0.25)",
                       letterSpacing:"0.35em",
                       textTransform:"uppercase",
-                      padding:"0.8rem 1.8rem",
-                      border:"1px solid rgba(201,169,110,0.3)",
-                      transition:"all 0.3s ease",
-                      cursor:"pointer",
-                      position:"relative",
-                      zIndex:300,
-                    }}
-                  >
+                    }}>
                     Discover →
                   </span>
                 </div>
@@ -394,6 +369,48 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
         }}
 
       />
+
+      {/* DISCOVER — botón fijo independiente del RAF */}
+      <button
+        id="discover-btn"
+        onClick={() => {
+          playClick();
+          const slug = properties[currentIdxRef.current]?.slug;
+          if (slug) router.push(`/${locale}/propiedades/${slug}`);
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.color = "#fff";
+          e.currentTarget.style.borderColor = "rgba(201,169,110,0.9)";
+          e.currentTarget.style.boxShadow = "0 0 30px rgba(201,169,110,0.5), 0 0 60px rgba(201,169,110,0.2)";
+          e.currentTarget.style.background = "rgba(201,169,110,0.12)";
+          e.currentTarget.style.letterSpacing = "0.5em";
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.color = "rgba(201,169,110,0.8)";
+          e.currentTarget.style.borderColor = "rgba(201,169,110,0.35)";
+          e.currentTarget.style.boxShadow = "none";
+          e.currentTarget.style.background = "transparent";
+          e.currentTarget.style.letterSpacing = "0.4em";
+        }}
+        style={{
+          position:"fixed",
+          bottom:"8rem",
+          right:"calc(50% - 44vw + 3rem)",
+          zIndex:500,
+          background:"transparent",
+          border:"1px solid rgba(201,169,110,0.35)",
+          color:"rgba(201,169,110,0.8)",
+          fontFamily:"'Helvetica Neue',sans-serif",
+          fontSize:"0.75rem",
+          letterSpacing:"0.4em",
+          textTransform:"uppercase",
+          padding:"1rem 2.5rem",
+          cursor:"pointer",
+          transition:"all 0.35s cubic-bezier(0.16,1,0.3,1)",
+        }}
+      >
+        Discover →
+      </button>
 
       {/* Indicador */}
       <div style={{
