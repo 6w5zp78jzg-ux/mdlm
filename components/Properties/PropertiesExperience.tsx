@@ -336,7 +336,31 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
                       {property.m2_construidos} M²
                     </span>
                   </div>
-                  <span style={{ fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.75rem", color:"rgba(255,255,255,0.45)", letterSpacing:"0.35em", textTransform:"uppercase" }}>
+                  <span
+                    style={{
+                      fontFamily:"'Helvetica Neue',sans-serif",
+                      fontSize:"0.75rem",
+                      color:"rgba(201,169,110,0.7)",
+                      letterSpacing:"0.35em",
+                      textTransform:"uppercase",
+                      padding:"0.8rem 1.8rem",
+                      border:"1px solid rgba(201,169,110,0.3)",
+                      transition:"all 0.3s ease",
+                      cursor:"pointer",
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.color = "#fff";
+                      e.currentTarget.style.borderColor = "rgba(201,169,110,0.8)";
+                      e.currentTarget.style.boxShadow = "0 0 30px rgba(201,169,110,0.4), 0 0 60px rgba(201,169,110,0.2)";
+                      e.currentTarget.style.background = "rgba(201,169,110,0.1)";
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.color = "rgba(201,169,110,0.7)";
+                      e.currentTarget.style.borderColor = "rgba(201,169,110,0.3)";
+                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.background = "transparent";
+                    }}
+                  >
                     Discover →
                   </span>
                 </div>
@@ -361,14 +385,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
           const slug = properties[currentIdxRef.current]?.slug;
           if (slug) router.push(`/${locale}/propiedades/${slug}`);
         }}
-        onMouseEnter={e => {
-          e.currentTarget.style.boxShadow = `0 0 80px rgba(201,169,110,0.25)`;
-          e.currentTarget.style.outline = `1px solid rgba(201,169,110,0.3)`;
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.boxShadow = "none";
-          e.currentTarget.style.outline = "none";
-        }}
+
       />
 
       {/* Indicador */}
