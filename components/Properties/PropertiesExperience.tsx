@@ -410,6 +410,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
           position:"fixed",
           bottom:"3rem",
           right:"3rem",
+          left:"auto",
           zIndex:500,
           background:"transparent",
           border:"1px solid rgba(201,169,110,0.35)",
@@ -426,19 +427,32 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
         Discover →
       </button>
 
-      {/* Indicador */}
+      {/* Scroll indicator — neon breath centrado entre los dos botones */}
       <div style={{
-        position:"absolute", bottom:"3rem", left:"50%", transform:"translateX(-50%)",
-        display:"flex", alignItems:"center", gap:"0.8rem", zIndex:100,
+        position:"fixed", bottom:"1rem", left:"50%", transform:"translateX(-50%)",
+        display:"flex", flexDirection:"column", alignItems:"center", gap:"0.6rem",
+        zIndex:500,
       }}>
-        {properties.map((_, i) => (
-          <div key={i} style={{
-            width: i === displayIdx ? "2.5rem" : "0.4rem",
-            height:"1px",
-            background: i === displayIdx ? "#c9a96e" : "rgba(255,255,255,0.12)",
-            transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",
-          }}/>
-        ))}
+        <style>{`
+          @keyframes neonBreathProp {
+            0%,100% { height:1.5rem; opacity:0.3; box-shadow:0 0 4px 1px rgba(201,169,110,0.4); }
+            50%     { height:3.5rem; opacity:1;   box-shadow:0 0 12px 3px rgba(201,169,110,0.9); }
+          }
+          @keyframes fadeScroll { 0%,100%{opacity:0.3;} 50%{opacity:0.8;} }
+          .neon-prop { animation: neonBreathProp 2.4s ease-in-out infinite; }
+          .scroll-prop { animation: fadeScroll 2.4s ease-in-out infinite; }
+        `}</style>
+        <span className="scroll-prop" style={{
+          color:"rgba(201,169,110,0.5)", fontSize:"0.4rem",
+          letterSpacing:"0.5em", fontFamily:"'Helvetica Neue',sans-serif",
+          textTransform:"uppercase",
+        }}>
+          {String(displayIdx+1).padStart(2,"0")} / {String(n).padStart(2,"0")}
+        </span>
+        <div className="neon-prop" style={{
+          width:"1px",
+          background:"rgba(201,169,110,0.8)",
+        }}/>
       </div>
 
 
