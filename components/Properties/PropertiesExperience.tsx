@@ -22,7 +22,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
   const SCROLL_THRESHOLD = 100;
   const n = properties.length;
   const STEP = 360 / n;               // grados entre paneles
-  const RADIUS = 900;                 // radio de la rueda en px
+  const RADIUS = 600;                 // radio de la rueda en px
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -49,9 +49,9 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
 
         // Opacidad y escala según la profundidad z
         const normalized = (z + RADIUS) / (RADIUS * 2); // 0=atrás, 1=frente
-        const scale = 0.7 + normalized * 0.3;
-        const opacity = normalized < 0.1 ? 0 : Math.min(1, (normalized - 0.1) / 0.4);
-        const blur = normalized > 0.7 ? 0 : (1 - normalized) * 2;
+        const scale = 0.85 + normalized * 0.15;
+        const opacity = normalized < 0.05 ? 0 : Math.min(1, (normalized - 0.05) / 0.25);
+        const blur = 0;
 
         el.style.transform = `translate3d(${x}px, 0, ${z}px) rotateY(${-angle}deg)`;
         el.style.opacity = String(Math.min(1, opacity));
@@ -158,7 +158,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
       {/* RUEDA — escena 3D */}
       <div style={{
         position:"absolute", inset:0,
-        perspective:"1000px",
+        perspective:"800px",
         perspectiveOrigin:"50% 50%",
       }}>
         <div style={{
