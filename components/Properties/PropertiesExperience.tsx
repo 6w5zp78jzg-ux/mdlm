@@ -366,7 +366,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
         }}
         style={{
           position:"fixed",
-          bottom:"3rem",
+          bottom:"2rem",
           left:"3rem",
           zIndex:500,
           background:"transparent",
@@ -408,7 +408,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
         }}
         style={{
           position:"fixed",
-          bottom:"3rem",
+          bottom:"2rem",
           right:"3rem",
           left:"auto",
           zIndex:500,
