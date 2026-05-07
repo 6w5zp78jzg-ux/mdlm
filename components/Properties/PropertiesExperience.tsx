@@ -270,7 +270,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
               style={{
                 position:"absolute",
                 width:"65vw", height:"72vh",
-                marginLeft:"-32.5vw", marginTop:"-36vh",
+                marginLeft:"-32.5vw", marginTop:"-48vh",
                 willChange:"transform,opacity,filter",
                 cursor:"pointer",
                 transformStyle:"preserve-3d",
@@ -335,7 +335,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
           position:"absolute",
           top:"50%", left:"50%",
           width:"82vw", height:"76vh",
-          marginLeft:"-41vw", marginTop:"-38vh",
+          marginLeft:"-41vw", marginTop:"-48vh",
           zIndex:200,
           cursor:"pointer",
         }}
