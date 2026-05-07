@@ -9,11 +9,23 @@ interface VideoSectionProps {
   inf2?: { label: string; titulo: string; subtitulo: string; texto: string } | null;
 }
 
+const mobileInfStyle = `
+  @media (max-width: 768px) {
+    .inf-box {
+      background: transparent !important;
+      border: none !important;
+      backdrop-filter: none !important;
+    }
+  }
+`;
+
 export default function VideoSection({
   videoRef, infographic1Ref, infographic2Ref,
   videoUrl = "/videos/hero.mp4", inf1, inf2,
 }: VideoSectionProps) {
   return (
+    <>
+    <style>{mobileInfStyle}</style>
     <div style={{ position:"absolute", top:0, left:0, width:"100%", height:"100vh", overflow:"hidden" }}>
       <video
         ref={videoRef}
@@ -26,6 +38,7 @@ export default function VideoSection({
       <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"flex-start", padding:"0 clamp(1.5rem,5vw,8vw)", pointerEvents:"none" }}>
         <div
           ref={infographic1Ref}
+          className="inf-box"
           style={{
             opacity:0,
             transform:"translate3d(0px, 120px, 0)",
@@ -58,6 +71,7 @@ export default function VideoSection({
       <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"flex-end", padding:"0 clamp(1.5rem,5vw,8vw)", pointerEvents:"none" }}>
         <div
           ref={infographic2Ref}
+          className="inf-box"
           style={{
             opacity:0,
             transform:"translate3d(0px, 120px, 0)",
@@ -87,5 +101,6 @@ export default function VideoSection({
         </div>
       </div>
     </div>
+    </>
   );
 }
