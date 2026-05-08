@@ -33,7 +33,7 @@ export default function PropertyExperience({ property, locale }: Props) {
 
   return (
     <div style={{ position: "fixed", inset: 0, width: "100%", height: "100vh", overflow: "hidden", background: "#0a0a0a" }}>
-      <Navbar />
+      <Navbar locale={locale} />
       <ScrollIndicator />
       <div ref={stageRef} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100vh", willChange: "height, transform" }}>
         <VideoSection
