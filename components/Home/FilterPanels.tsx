@@ -1,11 +1,11 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const FILTERS = [
   {
-    id:"zona", index:"01", label:"ZONA",
-    question:"Where do you want to live?",
+    id:"zona", index:"01", label:"ZONA", question:"WHERE",
     accent:"#c9a96e", accentRgb:"201,169,110",
     options:[
       { v:"marbella",   l:"Marbella",   sub:"36°30'N · 4°53'W" },
@@ -16,8 +16,7 @@ const FILTERS = [
     ],
   },
   {
-    id:"tipo", index:"02", label:"TIPO",
-    question:"What defines your vision?",
+    id:"tipo", index:"02", label:"TIPO", question:"WHAT",
     accent:"#d4c4a8", accentRgb:"212,196,168",
     options:[
       { v:"villa",     l:"Villa",     sub:"Private Estate" },
@@ -27,8 +26,7 @@ const FILTERS = [
     ],
   },
   {
-    id:"precio", index:"03", label:"INVERSIÓN",
-    question:"Define the scale of your ambition.",
+    id:"precio", index:"03", label:"PRECIO", question:"HOW",
     accent:"#b8a898", accentRgb:"184,168,152",
     options:[
       { v:"500k-1m", l:"500K – 1M",  sub:"Entry Luxury" },
@@ -45,7 +43,19 @@ interface Props {
 }
 
 export default function FilterPanels({ locale, panelRefs }: Props) {
+  const tf = useTranslations("filters");
   const [activePanel, setActivePanel] = useState(0);
+
+  const filterLabels: Record<string,string> = {
+    zona: tf("zona.label"),
+    tipo: tf("tipo.label"),
+    precio: tf("precio.label"),
+  };
+  const filterQuestions: Record<string,string> = {
+    zona: tf("zona.question"),
+    tipo: tf("tipo.question"),
+    precio: tf("precio.question"),
+  };
   const [selected, setSelected] = useState<Record<string,string>>({});
   const [hoveredOpt, setHoveredOpt] = useState<string|null>(null);
   const router = useRouter();
@@ -174,11 +184,11 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
               {i > 0 && (
                 <button className="back-btn" onClick={()=>handleBack(i)}
                   style={{background:"none",border:"none",padding:0,color:"rgba(255,255,255,0.25)",fontFamily:"'Helvetica Neue',sans-serif",fontSize:"0.42rem",letterSpacing:"0.3em",textTransform:"uppercase",display:"flex",alignItems:"center",gap:"0.4rem",cursor:"pointer"}}>
-                  ← back
+                  {tf("back")}
                 </button>
               )}
               <span style={{fontFamily:"'Helvetica Neue',sans-serif",fontSize:"0.42rem",fontWeight:300,color:`rgba(${filter.accentRgb},0.8)`,letterSpacing:"0.65em",textTransform:"uppercase"}}>
-                {filter.label}
+                {filterLabels[filter.id] || filter.label}
               </span>
             </div>
             <span style={{fontFamily:"'Helvetica Neue',sans-serif",fontSize:"0.42rem",fontWeight:200,color:"rgba(255,255,255,0.1)",letterSpacing:"0.3em"}}>
@@ -195,7 +205,7 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
               letterSpacing:"-0.025em",
               lineHeight:1.15,
               margin:0,
-            }}>{filter.question}</h2>
+            }}>{filterQuestions[filter.id] || filter.question}</h2>
             <div style={{height:"1px",width:"2.5rem",background:`rgba(${filter.accentRgb},0.55)`,marginTop:"1.5rem"}}/>
           </div>
 
@@ -280,7 +290,7 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
                 onMouseEnter={e=>{e.currentTarget.style.background=`rgba(${filter.accentRgb},0.12)`;}}
                 onMouseLeave={e=>{e.currentTarget.style.background="none";}}
               >
-                Discover Properties →
+                {tf("discover")}
               </button>
             </div>
           )}

@@ -1,77 +1,165 @@
 "use client";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 
-const LOCALES = ["EN", "ES", "FR", "RU"];
+const LANGS = [
+  { code: "es", label: "ES", name: "Español" },
+  { code: "en", label: "EN", name: "English" },
+  { code: "fr", label: "FR", name: "Français" },
+  { code: "ru", label: "RU", name: "Русский" },
+];
 
-export default function Navbar() {
-  const [activeLang, setActiveLang] = useState("ES");
+interface Props { locale?: string; }
+
+export default function Navbar({ locale = "es" }: Props) {
+  const [open, setOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  const isProperty = pathname.includes("/propiedades/");
+
+  const switchLocale = (newLocale: string) => {
+    setOpen(false);
+    const segments = pathname.split("/");
+    segments[1] = newLocale;
+    router.push(segments.join("/"));
+  };
+
+  const current = LANGS.find(l => l.code === locale) || LANGS[0];
 
   return (
-    <nav style={{
-      position: "fixed", top: 0, left: 0, width: "100%", height: "5rem",
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "0 2.5rem", zIndex: 100,
-      background: "linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%)",
-    }}>
+    <>
+      <style>{`
+        @keyframes dropIn {
+          0%  { opacity:0; transform:translateY(-8px); }
+          100%{ opacity:1; transform:translateY(0); }
+        }
+        .lang-dropdown { animation: dropIn 0.25s cubic-bezier(0.16,1,0.3,1) both; }
+        .lang-opt { transition: all 0.2s ease; }
+        .lang-opt:hover { background: rgba(201,169,110,0.1) !important; color: #c9a96e !important; }
+      `}</style>
 
-      {/* LOGO o BOTON VOLVER */}
-      <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
-        {isProperty && (
-          <button
-            onClick={() => router.back()}
-            style={{
-              background: "none", border: "none", cursor: "pointer",
-              color: "rgba(255,255,255,0.5)",
-              fontFamily: "Georgia, serif",
-              fontSize: "0.55rem",
-              letterSpacing: "0.3em",
-              textTransform: "uppercase",
-              padding: "0.3rem 0",
-              transition: "color 0.3s ease",
-            }}
-            onMouseEnter={e => (e.currentTarget.style.color = "#c9a96e")}
-            onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.5)")}
-          >
-            ← Volver
-          </button>
-        )}
-        <div
-          onClick={() => router.push("/" + activeLang.toLowerCase())}
-          style={{ cursor: "pointer" }}
-        >
-          <p style={{ color: "#c9a96e", fontFamily: "Georgia, serif", fontSize: "clamp(0.6rem, 1.2vw, 0.85rem)", letterSpacing: "0.25em", fontWeight: 400, margin: 0, lineHeight: 1.3 }}>
-            MILLION DOLLARS
-          </p>
-          <p style={{ color: "#c9a96e", fontFamily: "Georgia, serif", fontSize: "clamp(0.5rem, 0.9vw, 0.65rem)", letterSpacing: "0.5em", fontWeight: 300, margin: 0, opacity: 0.6 }}>
-            LISTING MARBELLA
-          </p>
-        </div>
-      </div>
+      <nav style={{
+        position:"fixed", top:0, left:0, right:0,
+        height:"4rem",
+        display:"flex", alignItems:"center", justifyContent:"space-between",
+        padding:"0 2rem",
+        zIndex:1000,
+        background:"rgba(0,0,0,0.3)",
+        backdropFilter:"blur(12px)",
+        WebkitBackdropFilter:"blur(12px)",
+        borderBottom:"1px solid rgba(255,255,255,0.05)",
+      }}>
 
-      {/* IDIOMAS */}
-      <div style={{ display: "flex", alignItems: "center", gap: "0.1rem" }}>
-        {LOCALES.map((lang, i) => (
-          <div key={lang} style={{ display: "flex", alignItems: "center" }}>
-            <button
-              onClick={() => setActiveLang(lang)}
-              style={{
-                background: "none", border: "none", cursor: "pointer",
-                color: activeLang === lang ? "#c9a96e" : "rgba(255,255,255,0.35)",
-                fontFamily: "Georgia, serif", fontSize: "0.55rem",
-                letterSpacing: "0.2em", padding: "0.3rem 0.5rem",
-                transition: "color 0.3s ease", textTransform: "uppercase",
-              }}
-            >{lang}</button>
-            {i < LOCALES.length - 1 && (
-              <span style={{ color: "rgba(255,255,255,0.15)", fontSize: "0.4rem" }}>|</span>
-            )}
+        {/* Logo */}
+        <Link href={`/${locale}`} style={{ textDecoration:"none" }}>
+          <div style={{ display:"flex", flexDirection:"column", lineHeight:1.2 }}>
+            <span style={{
+              fontFamily:"'Helvetica Neue',sans-serif",
+              fontSize:"clamp(0.45rem,1vw,0.6rem)",
+              fontWeight:400,
+              color:"#c9a96e",
+              letterSpacing:"0.4em",
+              textTransform:"uppercase",
+            }}>MILLION DOLLARS</span>
+            <span style={{
+              fontFamily:"'Helvetica Neue',sans-serif",
+              fontSize:"clamp(0.35rem,0.8vw,0.5rem)",
+              fontWeight:200,
+              color:"rgba(201,169,110,0.6)",
+              letterSpacing:"0.5em",
+              textTransform:"uppercase",
+            }}>LISTING MARBELLA</span>
           </div>
-        ))}
-      </div>
-    </nav>
+        </Link>
+
+        {/* Selector de idioma desplegable */}
+        <div style={{ position:"relative" }}>
+          <button
+            onClick={() => setOpen(p => !p)}
+            style={{
+              background:"none",
+              border:`1px solid rgba(255,255,255,${open?0.2:0.1})`,
+              color:"rgba(255,255,255,0.7)",
+              fontFamily:"'Helvetica Neue',sans-serif",
+              fontSize:"0.55rem",
+              fontWeight:300,
+              letterSpacing:"0.35em",
+              textTransform:"uppercase",
+              padding:"0.5rem 1.2rem",
+              cursor:"pointer",
+              display:"flex", alignItems:"center", gap:"0.6rem",
+              transition:"all 0.2s ease",
+            }}
+          >
+            {current.label}
+            <span style={{
+              fontSize:"0.4rem",
+              opacity:0.5,
+              transform: open ? "rotate(180deg)" : "rotate(0deg)",
+              transition:"transform 0.25s ease",
+              display:"inline-block",
+            }}>▼</span>
+          </button>
+
+          {/* Dropdown */}
+          {open && (
+            <div
+              className="lang-dropdown"
+              style={{
+                position:"absolute", top:"calc(100% + 0.5rem)", right:0,
+                background:"rgba(8,6,4,0.95)",
+                backdropFilter:"blur(20px)",
+                WebkitBackdropFilter:"blur(20px)",
+                border:"1px solid rgba(255,255,255,0.08)",
+                minWidth:"10rem",
+                overflow:"hidden",
+              }}
+            >
+              {LANGS.map((lang, i) => (
+                <button
+                  key={lang.code}
+                  className="lang-opt"
+                  onClick={() => switchLocale(lang.code)}
+                  style={{
+                    width:"100%", textAlign:"left",
+                    background: lang.code === locale ? "rgba(201,169,110,0.08)" : "transparent",
+                    border:"none",
+                    borderBottom: i < LANGS.length-1 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                    padding:"0.9rem 1.4rem",
+                    cursor:"pointer",
+                    display:"flex", alignItems:"center", justifyContent:"space-between",
+                    gap:"1rem",
+                  }}
+                >
+                  <span style={{
+                    fontFamily:"'Helvetica Neue',sans-serif",
+                    fontSize:"0.55rem", fontWeight:300,
+                    color: lang.code === locale ? "#c9a96e" : "rgba(255,255,255,0.5)",
+                    letterSpacing:"0.3em", textTransform:"uppercase",
+                  }}>{lang.label}</span>
+                  <span style={{
+                    fontFamily:"'Helvetica Neue',sans-serif",
+                    fontSize:"0.45rem", fontWeight:200,
+                    color: lang.code === locale ? "rgba(201,169,110,0.6)" : "rgba(255,255,255,0.2)",
+                    letterSpacing:"0.1em",
+                  }}>{lang.name}</span>
+                  {lang.code === locale && (
+                    <span style={{ color:"#c9a96e", fontSize:"0.5rem" }}>✦</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </nav>
+
+      {/* Cerrar dropdown al click fuera */}
+      {open && (
+        <div
+          style={{ position:"fixed", inset:0, zIndex:999 }}
+          onClick={() => setOpen(false)}
+        />
+      )}
+    </>
   );
 }

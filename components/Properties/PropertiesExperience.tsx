@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Property } from "@/types/property";
 import Navbar from "@/components/Experience/Navbar";
@@ -13,6 +14,7 @@ interface Props {
 export default function PropertiesExperience({ properties, locale, filters }: Props) {
   const router = useRouter();
   const lang = locale as "es" | "en" | "fr" | "ru";
+  const tp = useTranslations("properties");
   const rotationRef = useRef(0);       // grados actuales suavizados
   const targetRotRef = useRef(0);      // grados objetivo (múltiplos de step)
   const currentIdxRef = useRef(0);
