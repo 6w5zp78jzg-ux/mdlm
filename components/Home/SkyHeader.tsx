@@ -1,11 +1,14 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { getT } from "@/lib/i18n";
 
 interface Props { locale: string; }
 
 export default function SkyHeader({ locale }: Props) {
-  const t = getT(locale);
+  const pathname = usePathname();
+  const urlLocale = pathname.split("/")[1] || locale;
+  const t = getT(urlLocale);
   const skyRef = useRef<HTMLDivElement>(null);
   const starsRef = useRef<HTMLDivElement>(null);
   const [idx, setIdx] = useState(0);

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 const FILTERS = [
   {
@@ -44,7 +44,9 @@ interface Props {
 }
 
 export default function FilterPanels({ locale, panelRefs }: Props) {
-  const t = getT(locale);
+  const pathname = usePathname();
+  const urlLocale = pathname.split("/")[1] || locale;
+  const t = getT(urlLocale);
   const tf = t.filters;
   const [activePanel, setActivePanel] = useState(0);
 

@@ -13,8 +13,10 @@ interface Props {
 
 export default function PropertiesExperience({ properties, locale, filters }: Props) {
   const router = useRouter();
-  const lang = locale as "es" | "en" | "fr" | "ru";
-  const tp = getT(locale).properties;
+  const pathname = usePathname();
+  const urlLocale = pathname.split("/")[1] || locale;
+  const lang = urlLocale as "es" | "en" | "fr" | "ru";
+  const tp = getT(urlLocale).properties;
   const rotationRef = useRef(0);       // grados actuales suavizados
   const targetRotRef = useRef(0);      // grados objetivo (múltiplos de step)
   const currentIdxRef = useRef(0);
