@@ -43,6 +43,7 @@ export default function PropertyExperience({ property, locale }: Props) {
           videoUrl={property.video_url}
           inf1={inf1}
           inf2={inf2}
+          locale={locale}
         />
         <GallerySection
           galleryTrackRef={galleryTrackRef}

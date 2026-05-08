@@ -1,17 +1,26 @@
 "use client";
 
+type InfText = string | { es: string; en: string; fr: string; ru: string };
+
+function getText(val: InfText | undefined, lang: string): string {
+  if (!val) return "";
+  if (typeof val === "string") return val;
+  return (val as any)[lang] || val.es || "";
+}
+
 interface VideoSectionProps {
   videoRef: React.RefObject<HTMLVideoElement | null>;
   infographic1Ref: React.RefObject<HTMLDivElement | null>;
   infographic2Ref: React.RefObject<HTMLDivElement | null>;
   videoUrl?: string;
-  inf1?: { label: string; titulo: string; subtitulo: string; texto: string } | null;
-  inf2?: { label: string; titulo: string; subtitulo: string; texto: string } | null;
+  locale?: string;
+  inf1?: { label: InfText; titulo: InfText; subtitulo: InfText; texto: InfText } | null;
+  inf2?: { label: InfText; titulo: InfText; subtitulo: InfText; texto: InfText } | null;
 }
 
 export default function VideoSection({
   videoRef, infographic1Ref, infographic2Ref,
-  videoUrl = "/videos/hero.mp4", inf1, inf2,
+  videoUrl = "/videos/hero.mp4", locale = "es", inf1, inf2,
 }: VideoSectionProps) {
   return (
     <>
@@ -46,17 +55,17 @@ export default function VideoSection({
             }}
           >
             <span style={{ color:"rgba(255,255,255,0.55)", textTransform:"uppercase", letterSpacing:"0.45em", fontSize:"clamp(0.4rem,1vw,0.55rem)", display:"block", marginBottom:"1rem", fontStyle:"italic" }}>
-              {inf1?.label || "Especificaciones"}
+              {getText(inf1?.label, locale) || "Especificaciones"}
             </span>
             <h2 style={{ fontFamily:"Georgia,serif", color:"white", fontSize:"clamp(1.6rem,3.5vw,4rem)", fontWeight:300, lineHeight:1.15, margin:"0 0 0.8rem" }}>
-              {inf1?.titulo || "12.000 m²"}<br />
+              {getText(inf1?.titulo, locale) || "12.000 m²"}<br />
               <span style={{ color:"rgba(255,255,255,0.6)", fontSize:"0.75em", fontFamily:"sans-serif", fontWeight:100 }}>
-                {inf1?.subtitulo || "Parcela Privada"}
+                {getText(inf1?.subtitulo, locale) || "Parcela Privada"}
               </span>
             </h2>
             <div style={{ width:"2.5rem", height:"1px", background:"rgba(255,255,255,0.35)", marginBottom:"0.8rem" }}/>
             <p style={{ color:"rgba(255,255,255,0.8)", textTransform:"uppercase", letterSpacing:"0.15em", fontSize:"clamp(0.4rem,0.9vw,0.6rem)", lineHeight:1.9, margin:0 }}>
-              {inf1?.texto || "Arquitectura brutalista fundida con el paisaje mediterraneo."}
+              {getText(inf1?.texto, locale) || "Arquitectura brutalista fundida con el paisaje mediterraneo."}
             </p>
           </div>
         </div>
@@ -78,17 +87,17 @@ export default function VideoSection({
             }}
           >
             <span style={{ color:"rgba(255,255,255,0.55)", textTransform:"uppercase", letterSpacing:"0.45em", fontSize:"clamp(0.4rem,1vw,0.55rem)", display:"block", marginBottom:"1rem", fontStyle:"italic" }}>
-              {inf2?.label || "Perspectiva"}
+              {getText(inf2?.label, locale) || "Perspectiva"}
             </span>
             <h2 style={{ fontFamily:"Georgia,serif", color:"white", fontSize:"clamp(1.6rem,3.5vw,4rem)", fontWeight:300, lineHeight:1.15, margin:"0 0 0.8rem" }}>
-              {inf2?.titulo || "Horizonte"}<br />
+              {getText(inf2?.titulo, locale) || "Horizonte"}<br />
               <span style={{ color:"rgba(255,255,255,0.6)", fontSize:"0.75em", fontFamily:"sans-serif", fontWeight:100 }}>
-                {inf2?.subtitulo || "Sin Limites"}
+                {getText(inf2?.subtitulo, locale) || "Sin Limites"}
               </span>
             </h2>
             <div style={{ width:"2.5rem", height:"1px", background:"rgba(255,255,255,0.35)", marginBottom:"0.8rem", marginLeft:"auto" }}/>
             <p style={{ color:"rgba(255,255,255,0.8)", textTransform:"uppercase", letterSpacing:"0.15em", fontSize:"clamp(0.4rem,0.9vw,0.6rem)", lineHeight:1.9, margin:0 }}>
-              {inf2?.texto || "Piscina panoramica con reflejos de titanio."}
+              {getText(inf2?.texto, locale) || "Piscina panoramica con reflejos de titanio."}
             </p>
           </div>
         </div>

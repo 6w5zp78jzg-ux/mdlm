@@ -1,8 +1,15 @@
+export interface InfografiaTexto {
+  es: string;
+  en: string;
+  fr: string;
+  ru: string;
+}
+
 export interface Infografia {
-  label: string;
-  titulo: string;
-  subtitulo: string;
-  texto: string;
+  label: InfografiaTexto | string;
+  titulo: InfografiaTexto | string;
+  subtitulo: InfografiaTexto | string;
+  texto: InfografiaTexto | string;
   posicion: "izquierda" | "derecha";
 }
 
