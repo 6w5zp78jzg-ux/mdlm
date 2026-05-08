@@ -1,7 +1,7 @@
 "use client";
 import { getT } from "@/lib/i18n";
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Property } from "@/types/property";
 import Navbar from "@/components/Experience/Navbar";
 
