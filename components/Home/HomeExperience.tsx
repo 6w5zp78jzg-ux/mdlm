@@ -89,7 +89,7 @@ export default function HomeExperience({ locale }: Props) {
         display:"flex", flexDirection:"column",
         alignItems:"center", justifyContent:"center",
       }}>
-        <SkyHeader />
+        <SkyHeader locale={locale} />
       </div>
 
       {/* Filtros */}

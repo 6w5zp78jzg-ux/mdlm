@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
 
 const locales = ["en", "es", "fr", "ru"];
 
@@ -18,20 +16,11 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-
-  if (!locales.includes(locale)) {
-    notFound();
-  }
-
-  const messages = await getMessages();
+  if (!locales.includes(locale)) notFound();
 
   return (
     <html lang={locale}>
-      <body>
-        <NextIntlClientProvider messages={messages}>
-          {children}
-        </NextIntlClientProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
 
 const FILTERS = [
   {
@@ -37,24 +36,27 @@ const FILTERS = [
   },
 ];
 
+import { getT } from "@/lib/i18n";
+
 interface Props {
   locale: string;
   panelRefs: React.RefObject<(HTMLDivElement | null)[]>;
 }
 
 export default function FilterPanels({ locale, panelRefs }: Props) {
-  const tf = useTranslations("filters");
+  const t = getT(locale);
+  const tf = t.filters;
   const [activePanel, setActivePanel] = useState(0);
 
   const filterLabels: Record<string,string> = {
-    zona: tf("zona.label"),
-    tipo: tf("tipo.label"),
-    precio: tf("precio.label"),
+    zona: tf.zona.label,
+    tipo: tf.tipo.label,
+    precio: tf.precio.label,
   };
   const filterQuestions: Record<string,string> = {
-    zona: tf("zona.question"),
-    tipo: tf("tipo.question"),
-    precio: tf("precio.question"),
+    zona: tf.zona.question,
+    tipo: tf.tipo.question,
+    precio: tf.precio.question,
   };
   const [selected, setSelected] = useState<Record<string,string>>({});
   const [hoveredOpt, setHoveredOpt] = useState<string|null>(null);
@@ -184,7 +186,7 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
               {i > 0 && (
                 <button className="back-btn" onClick={()=>handleBack(i)}
                   style={{background:"none",border:"none",padding:0,color:"rgba(255,255,255,0.25)",fontFamily:"'Helvetica Neue',sans-serif",fontSize:"0.42rem",letterSpacing:"0.3em",textTransform:"uppercase",display:"flex",alignItems:"center",gap:"0.4rem",cursor:"pointer"}}>
-                  {tf("back")}
+                  {tf.back}
                 </button>
               )}
               <span style={{fontFamily:"'Helvetica Neue',sans-serif",fontSize:"0.42rem",fontWeight:300,color:`rgba(${filter.accentRgb},0.8)`,letterSpacing:"0.65em",textTransform:"uppercase"}}>
@@ -290,7 +292,7 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
                 onMouseEnter={e=>{e.currentTarget.style.background=`rgba(${filter.accentRgb},0.12)`;}}
                 onMouseLeave={e=>{e.currentTarget.style.background="none";}}
               >
-                {tf("discover")}
+                {tf.discover}
               </button>
             </div>
           )}
