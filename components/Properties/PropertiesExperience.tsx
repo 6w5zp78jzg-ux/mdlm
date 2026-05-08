@@ -320,7 +320,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
                   </div>
                   <div style={{ display:"flex", gap:"2rem" }}>
                     <span style={{ fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.75rem", color:"rgba(255,255,255,0.55)", letterSpacing:"0.25em" }}>
-                      {property.habitaciones} BED
+                      {property.habitaciones} {tp.bed}
                     </span>
                     <span style={{ fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.75rem", color:"rgba(255,255,255,0.55)", letterSpacing:"0.25em" }}>
                       {property.m2_construidos} M²
@@ -386,7 +386,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
           transition:"all 0.35s cubic-bezier(0.16,1,0.3,1)",
         }}
       >
-        ← Search
+        {tp.search}
       </button>
 
       {/* DISCOVER — botón fijo independiente del RAF */}
@@ -429,7 +429,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
           transition:"all 0.35s cubic-bezier(0.16,1,0.3,1)",
         }}
       >
-        Discover →
+        {tp.discover}
       </button>
 
       {/* Scroll indicator — solo desktop */}
