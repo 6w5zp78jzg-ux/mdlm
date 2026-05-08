@@ -1,4 +1,6 @@
 "use client";
+import { getT } from "@/lib/i18n";
+"use client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Property } from "@/types/property";
@@ -13,7 +15,6 @@ interface Props {
 export default function PropertiesExperience({ properties, locale, filters }: Props) {
   const router = useRouter();
   const lang = locale as "es" | "en" | "fr" | "ru";
-  const { getT } = require("@/lib/i18n");
   const tp = getT(locale).properties;
   const rotationRef = useRef(0);       // grados actuales suavizados
   const targetRotRef = useRef(0);      // grados objetivo (múltiplos de step)

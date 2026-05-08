@@ -250,7 +250,7 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
                     letterSpacing:"0.05em",
                     transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",
                     textAlign:"center",
-                  }}>{opt.l}</div>
+                  }}>{(tf.options as any)[opt.v] || opt.l}</div>
 
                   <div style={{
                     height:"1px",
@@ -273,7 +273,7 @@ export default function FilterPanels({ locale, panelRefs }: Props) {
                     transition:"all 0.4s ease",
                     textAlign:"center",
                     opacity: showSub ? 1 : 0.4,
-                  }}>{opt.sub}</span>
+                  }}>{(tf.subs as any)[opt.v] || opt.sub}</span>
 
                   {isSel && (
                     <div style={{position:"absolute",bottom:0,left:0,right:0,height:"1px",background:`linear-gradient(90deg,transparent,rgba(${filter.accentRgb},0.6),transparent)`}}/>
