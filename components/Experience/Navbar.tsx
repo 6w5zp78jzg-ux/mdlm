@@ -22,6 +22,7 @@ export default function Navbar({ locale = "es" }: Props) {
     const segments = pathname.split("/");
     segments[1] = newLocale;
     router.push(segments.join("/"));
+    router.refresh();
   };
 
   const current = LANGS.find(l => l.code === locale) || LANGS[0];
