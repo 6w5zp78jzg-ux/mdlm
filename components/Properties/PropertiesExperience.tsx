@@ -1,6 +1,5 @@
 "use client";
 import { getT } from "@/lib/i18n";
-"use client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Property } from "@/types/property";
