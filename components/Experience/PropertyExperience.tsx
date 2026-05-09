@@ -1,4 +1,5 @@
 "use client";
+import { usePathname } from "next/navigation";
 import { useRef } from "react";
 import { Property } from "@/types/property";
 import { useScrollEngine } from "./useScrollEngine";
@@ -19,7 +20,9 @@ export default function PropertyExperience({ property, locale }: Props) {
   const infographic1Ref = useRef<HTMLDivElement>(null);
   const infographic2Ref = useRef<HTMLDivElement>(null);
 
-  const lang = locale as "es" | "en" | "fr" | "ru";
+  const pathname = usePathname();
+  const urlLocale = pathname.split("/")[1] || locale;
+  const lang = urlLocale as "es" | "en" | "fr" | "ru";
   const inf1 = property.infografias?.[0] || null;
   const inf2 = property.infografias?.[1] || null;
 
@@ -43,7 +46,7 @@ export default function PropertyExperience({ property, locale }: Props) {
           videoUrl={property.video_url}
           inf1={inf1}
           inf2={inf2}
-          locale={locale}
+          locale={urlLocale}
         />
         <GallerySection
           galleryTrackRef={galleryTrackRef}
