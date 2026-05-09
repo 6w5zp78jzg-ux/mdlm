@@ -44,7 +44,11 @@ export default function PropertyExperience({ property, locale }: Props) {
           infographic1Ref={infographic1Ref}
           infographic2Ref={infographic2Ref}
           videoUrl={property.video_url}
-          inf1={inf1}
+          m2Construidos={property.m2_construidos}
+          m2Parcela={property.m2_parcela}
+          habitaciones={property.habitaciones}
+          banos={property.banos}
+          precio={property.precio}
           inf2={inf2}
           locale={urlLocale}
         />

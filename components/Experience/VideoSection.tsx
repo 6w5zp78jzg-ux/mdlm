@@ -14,13 +14,18 @@ interface VideoSectionProps {
   infographic2Ref: React.RefObject<HTMLDivElement | null>;
   videoUrl?: string;
   locale?: string;
-  inf1?: { label: InfText; titulo: InfText; subtitulo: InfText; texto: InfText } | null;
+  m2Construidos?: number;
+  m2Parcela?: number;
+  habitaciones?: number;
+  banos?: number;
+  precio?: number;
   inf2?: { label: InfText; titulo: InfText; subtitulo: InfText; texto: InfText } | null;
 }
 
 export default function VideoSection({
   videoRef, infographic1Ref, infographic2Ref,
-  videoUrl = "/videos/hero.mp4", locale = "es", inf1, inf2,
+  videoUrl = "/videos/hero.mp4", locale = "es",
+  m2Construidos, m2Parcela, habitaciones, banos, precio, inf2,
 }: VideoSectionProps) {
   return (
     <>
