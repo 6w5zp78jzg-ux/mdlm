@@ -55,13 +55,15 @@ export default function PropertyExperience({ property, locale }: Props) {
           inf2={inf2}
           locale={urlLocale}
         />
-        <GallerySection
-          galleryTrackRef={galleryTrackRef}
-          images={images}
-          onImageClick={setLightbox}
-          titulo={property.titulo[lang]}
-          ubicacion={property.ubicacion}
-        />
+        <div style={{ position:"absolute", top:0, left:0, width:"100%", height:"100vh", overflow:"hidden" }}>
+          <GallerySection
+            galleryTrackRef={galleryTrackRef}
+            images={images}
+            onImageClick={setLightbox}
+            titulo={property.titulo[lang]}
+            ubicacion={property.ubicacion}
+          />
+        </div>
       </div>
       {/* LIGHTBOX — fuera del stageRef */}
       {lightbox && (
