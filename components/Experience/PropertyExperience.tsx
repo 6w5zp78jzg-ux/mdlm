@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useRef } from "react";
 import { Property } from "@/types/property";
@@ -16,6 +17,8 @@ interface Props {
 export default function PropertyExperience({ property, locale }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const [lightbox, setLightbox] = useState<string | null>(null);
+  const images = property.galeria_urls || [];
   const galleryTrackRef = useRef<HTMLDivElement>(null);
   const infographic1Ref = useRef<HTMLDivElement>(null);
   const infographic2Ref = useRef<HTMLDivElement>(null);
@@ -54,11 +57,71 @@ export default function PropertyExperience({ property, locale }: Props) {
         />
         <GallerySection
           galleryTrackRef={galleryTrackRef}
-          images={property.galeria_urls}
+          images={images}
+          onImageClick={setLightbox}
           titulo={property.titulo[lang]}
           ubicacion={property.ubicacion}
         />
       </div>
+      {/* LIGHTBOX — fuera del stageRef */}
+      {lightbox && (
+        <div
+          onClick={() => setLightbox(null)}
+          style={{
+            position:"fixed", inset:0, zIndex:1000,
+            background:"rgba(0,0,0,0.92)",
+            display:"flex", alignItems:"center", justifyContent:"center",
+            cursor:"zoom-out",
+            backdropFilter:"blur(8px)",
+            animation:"fadeInLB 0.3s ease both",
+          }}
+        >
+          <style>{`
+            @keyframes fadeInLB{0%{opacity:0;}100%{opacity:1;}}
+            @keyframes scaleInLB{0%{opacity:0;transform:scale(0.92);}100%{opacity:1;transform:scale(1);}}
+          `}</style>
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              width:"80vw", height:"80vh",
+              position:"relative",
+              animation:"scaleInLB 0.35s cubic-bezier(0.16,1,0.3,1) both",
+            }}
+          >
+            <img
+              src={lightbox}
+              alt=""
+              style={{ width:"100%", height:"100%", objectFit:"contain" }}
+            />
+            <button
+              onClick={() => setLightbox(null)}
+              style={{
+                position:"absolute", top:"-2.5rem", right:0,
+                background:"none", border:"none",
+                color:"rgba(255,255,255,0.5)",
+                fontFamily:"'Helvetica Neue',sans-serif",
+                fontSize:"0.5rem", letterSpacing:"0.4em",
+                textTransform:"uppercase", cursor:"pointer",
+              }}
+            >CLOSE ✕</button>
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={e => { e.stopPropagation(); const i = images.indexOf(lightbox); setLightbox(images[(i-1+images.length)%images.length]); }}
+                  style={{ position:"absolute", left:"-3rem", top:"50%", transform:"translateY(-50%)", background:"none", border:"1px solid rgba(255,255,255,0.15)", color:"rgba(255,255,255,0.5)", width:"2.2rem", height:"2.2rem", cursor:"pointer", fontSize:"0.9rem", display:"flex", alignItems:"center", justifyContent:"center" }}
+                >←</button>
+                <button
+                  onClick={e => { e.stopPropagation(); const i = images.indexOf(lightbox); setLightbox(images[(i+1)%images.length]); }}
+                  style={{ position:"absolute", right:"-3rem", top:"50%", transform:"translateY(-50%)", background:"none", border:"1px solid rgba(255,255,255,0.15)", color:"rgba(255,255,255,0.5)", width:"2.2rem", height:"2.2rem", cursor:"pointer", fontSize:"0.9rem", display:"flex", alignItems:"center", justifyContent:"center" }}
+                >→</button>
+              </>
+            )}
+            <div style={{ position:"absolute", bottom:"-2rem", left:"50%", transform:"translateX(-50%)", fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.4rem", color:"rgba(255,255,255,0.3)", letterSpacing:"0.4em" }}>
+              {String(images.indexOf(lightbox)+1).padStart(2,"0")} / {String(images.length).padStart(2,"0")}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

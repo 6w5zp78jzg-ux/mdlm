@@ -6,9 +6,10 @@ interface GallerySectionProps {
   images: string[];
   titulo?: string;
   ubicacion?: string;
+  onImageClick?: (url: string) => void;
 }
 
-export default function GallerySection({ galleryTrackRef, images }: GallerySectionProps) {
+export default function GallerySection({ galleryTrackRef, images, onImageClick }: GallerySectionProps) {
   const [lightbox, setLightbox] = useState<string | null>(null);
 
   return (
@@ -117,7 +118,7 @@ export default function GallerySection({ galleryTrackRef, images }: GallerySecti
         {images.map((url, i) => (
           <div
             key={i}
-            onClick={() => setLightbox(url)}
+            onClick={() => { onImageClick ? onImageClick(url) : setLightbox(url); }}
             style={{
               flexShrink:0,
               width:"60vw", height:"70vh",
