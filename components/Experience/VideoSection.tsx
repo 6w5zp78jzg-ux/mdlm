@@ -59,19 +59,54 @@ export default function VideoSection({
               maxWidth:"clamp(180px,32vw,32rem)",
             }}
           >
-            <span style={{ color:"rgba(255,255,255,0.55)", textTransform:"uppercase", letterSpacing:"0.45em", fontSize:"clamp(0.4rem,1vw,0.55rem)", display:"block", marginBottom:"1rem", fontStyle:"italic" }}>
-              {""}
+            {/* Titulo ficha */}
+            <span style={{ color:"rgba(255,255,255,0.55)", textTransform:"uppercase", letterSpacing:"0.45em", fontSize:"clamp(0.4rem,1vw,0.55rem)", display:"block", marginBottom:"1.5rem", fontStyle:"italic" }}>
+              {({"es":"Ficha Técnica","en":"Specifications","fr":"Caractéristiques","ru":"Характеристики"} as Record<string,string>)[locale] || "Specifications"}
             </span>
-            <h2 style={{ fontFamily:"Georgia,serif", color:"white", fontSize:"clamp(1.6rem,3.5vw,4rem)", fontWeight:300, lineHeight:1.15, margin:"0 0 0.8rem" }}>
-              {""}<br />
-              <span style={{ color:"rgba(255,255,255,0.6)", fontSize:"0.75em", fontFamily:"sans-serif", fontWeight:100 }}>
-                {""}
-              </span>
-            </h2>
-            <div style={{ width:"2.5rem", height:"1px", background:"rgba(255,255,255,0.35)", marginBottom:"0.8rem" }}/>
-            <p style={{ color:"rgba(255,255,255,0.8)", textTransform:"uppercase", letterSpacing:"0.15em", fontSize:"clamp(0.4rem,0.9vw,0.6rem)", lineHeight:1.9, margin:0 }}>
-              {""}
-            </p>
+
+            {/* Filas */}
+            <div style={{ display:"flex", flexDirection:"column", gap:"0.9rem" }}>
+              {m2Construidos && (
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", borderBottom:"1px solid rgba(255,255,255,0.1)", paddingBottom:"0.6rem" }}>
+                  <span style={{ color:"rgba(255,255,255,0.45)", fontSize:"clamp(0.4rem,0.9vw,0.55rem)", letterSpacing:"0.3em", textTransform:"uppercase" }}>
+                    {({"es":"Construido","en":"Built","fr":"Construit","ru":"Построено"} as Record<string,string>)[locale] || "Built"}
+                  </span>
+                  <span style={{ color:"white", fontSize:"clamp(1rem,2vw,1.5rem)", fontWeight:200, fontFamily:"'Helvetica Neue',sans-serif" }}>
+                    {m2Construidos.toLocaleString()} m²
+                  </span>
+                </div>
+              )}
+              {m2Parcela && m2Parcela > 0 && (
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", borderBottom:"1px solid rgba(255,255,255,0.1)", paddingBottom:"0.6rem" }}>
+                  <span style={{ color:"rgba(255,255,255,0.45)", fontSize:"clamp(0.4rem,0.9vw,0.55rem)", letterSpacing:"0.3em", textTransform:"uppercase" }}>
+                    {({"es":"Parcela","en":"Plot","fr":"Terrain","ru":"Участок"} as Record<string,string>)[locale] || "Plot"}
+                  </span>
+                  <span style={{ color:"white", fontSize:"clamp(1rem,2vw,1.5rem)", fontWeight:200, fontFamily:"'Helvetica Neue',sans-serif" }}>
+                    {m2Parcela.toLocaleString()} m²
+                  </span>
+                </div>
+              )}
+              {habitaciones && (
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", borderBottom:"1px solid rgba(255,255,255,0.1)", paddingBottom:"0.6rem" }}>
+                  <span style={{ color:"rgba(255,255,255,0.45)", fontSize:"clamp(0.4rem,0.9vw,0.55rem)", letterSpacing:"0.3em", textTransform:"uppercase" }}>
+                    {({"es":"Dorm / Baños","en":"Bed / Bath","fr":"Ch / SDB","ru":"Сп / Ван"} as Record<string,string>)[locale] || "Bed / Bath"}
+                  </span>
+                  <span style={{ color:"white", fontSize:"clamp(1rem,2vw,1.5rem)", fontWeight:200, fontFamily:"'Helvetica Neue',sans-serif" }}>
+                    {habitaciones} / {banos}
+                  </span>
+                </div>
+              )}
+              {precio && (
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline" }}>
+                  <span style={{ color:"rgba(255,255,255,0.45)", fontSize:"clamp(0.4rem,0.9vw,0.55rem)", letterSpacing:"0.3em", textTransform:"uppercase" }}>
+                    {({"es":"Precio","en":"Price","fr":"Prix","ru":"Цена"} as Record<string,string>)[locale] || "Price"}
+                  </span>
+                  <span style={{ color:"#c9a96e", fontSize:"clamp(1rem,2.2vw,1.6rem)", fontWeight:200, fontFamily:"'Helvetica Neue',sans-serif" }}>
+                    €{(precio/1000000).toFixed(1)}M
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
