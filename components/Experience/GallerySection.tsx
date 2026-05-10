@@ -4,6 +4,8 @@ import { useState } from "react";
 interface GallerySectionProps {
   galleryTrackRef: React.RefObject<HTMLDivElement | null>;
   images: string[];
+  titulo?: string;
+  ubicacion?: string;
 }
 
 export default function GallerySection({ galleryTrackRef, images }: GallerySectionProps) {
