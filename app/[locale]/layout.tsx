@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import SkyBackground from "@/components/SkyBackground";
 import { notFound } from "next/navigation";
 
 const locales = ["en", "es", "fr", "ru"];
@@ -20,7 +21,8 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale}>
-      <body>{children}</body>
+      <body style={{ background: "#000", margin: 0 }}>
+        <SkyBackground />{children}</body>
     </html>
   );
 }

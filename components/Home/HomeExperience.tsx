@@ -11,8 +11,6 @@ const TOTAL_PANELS = 3;
 export default function HomeExperience({ locale }: Props) {
   const headerRef = useRef<HTMLDivElement>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
-  const skyRef = useRef<HTMLDivElement>(null);
-  const starsRef = useRef<HTMLDivElement>(null);
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useHomeScroll({ headerRef, filtersRef, panelRefs, totalPanels: TOTAL_PANELS });
@@ -56,17 +54,9 @@ export default function HomeExperience({ locale }: Props) {
     return () => cancelAnimationFrame(rafId);
   }, []);
 
-  const stars = Array.from({ length: 80 }, (_, i) => ({
-    left: (i * 37) % 100, top: (i * 71) % 70,
-    size: i % 3 === 0 ? 2 : 1, delay: (i * 0.13) % 4, bright: i % 5 === 0,
-  }));
 
   return (
     <div style={{position:"fixed",inset:0,width:"100%",height:"100vh",overflow:"hidden",background:"#000"}}>
-      <style>{`
-        @keyframes starTwinkle{0%,100%{opacity:0.3;transform:scale(1);}50%{opacity:1;transform:scale(1.5);}}
-        .star-p{animation:starTwinkle ease-in-out infinite;}
-      `}</style>
 
       {/* Cielo permanente — nunca desaparece */}
       <div ref={skyRef} style={{position:"absolute",inset:0,zIndex:0,transition:"background 0.1s linear"}}/>
