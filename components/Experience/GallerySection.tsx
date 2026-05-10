@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 
 interface GallerySectionProps {
   galleryTrackRef: React.RefObject<HTMLDivElement | null>;
