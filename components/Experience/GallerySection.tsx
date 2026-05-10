@@ -3,10 +3,10 @@ import { useState } from "react";
 
 interface GallerySectionProps {
   galleryTrackRef: React.RefObject<HTMLDivElement | null>;
-  galeriaUrls: string[];
+  images: string[];
 }
 
-export default function GallerySection({ galleryTrackRef, galeriaUrls }: GallerySectionProps) {
+export default function GallerySection({ galleryTrackRef, images }: GallerySectionProps) {
   const [lightbox, setLightbox] = useState<string | null>(null);
 
   return (
@@ -59,13 +59,13 @@ export default function GallerySection({ galleryTrackRef, galeriaUrls }: Gallery
               CLOSE ✕
             </button>
             {/* Navegación */}
-            {galeriaUrls.length > 1 && (
+            {images.length > 1 && (
               <>
                 <button
                   onClick={e => {
                     e.stopPropagation();
-                    const i = galeriaUrls.indexOf(lightbox);
-                    setLightbox(galeriaUrls[(i - 1 + galeriaUrls.length) % galeriaUrls.length]);
+                    const i = images.indexOf(lightbox);
+                    setLightbox(images[(i - 1 + images.length) % images.length]);
                   }}
                   style={{
                     position:"absolute", left:"-3rem", top:"50%", transform:"translateY(-50%)",
@@ -78,8 +78,8 @@ export default function GallerySection({ galleryTrackRef, galeriaUrls }: Gallery
                 <button
                   onClick={e => {
                     e.stopPropagation();
-                    const i = galeriaUrls.indexOf(lightbox);
-                    setLightbox(galeriaUrls[(i + 1) % galeriaUrls.length]);
+                    const i = images.indexOf(lightbox);
+                    setLightbox(images[(i + 1) % images.length]);
                   }}
                   style={{
                     position:"absolute", right:"-3rem", top:"50%", transform:"translateY(-50%)",
@@ -97,7 +97,7 @@ export default function GallerySection({ galleryTrackRef, galeriaUrls }: Gallery
               fontFamily:"'Helvetica Neue',sans-serif", fontSize:"0.4rem",
               color:"rgba(255,255,255,0.3)", letterSpacing:"0.4em",
             }}>
-              {String(galeriaUrls.indexOf(lightbox)+1).padStart(2,"0")} / {String(galeriaUrls.length).padStart(2,"0")}
+              {String(images.indexOf(lightbox)+1).padStart(2,"0")} / {String(images.length).padStart(2,"0")}
             </div>
           </div>
         </div>
@@ -112,7 +112,7 @@ export default function GallerySection({ galleryTrackRef, galeriaUrls }: Gallery
           gap:"2vw", willChange:"transform",
         }}
       >
-        {galeriaUrls.map((url, i) => (
+        {images.map((url, i) => (
           <div
             key={i}
             onClick={() => setLightbox(url)}
