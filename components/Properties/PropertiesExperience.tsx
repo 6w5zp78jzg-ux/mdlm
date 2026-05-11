@@ -29,7 +29,7 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
       const now = ctx.currentTime;
       const TOTAL_CLICKS = 28;
-      const DURATION = 0.85;
+      const DURATION = 0.72;
 
       for (let c = 0; c < TOTAL_CLICKS; c++) {
         // Aceleración inicial, constante en el medio, desaceleración al final
