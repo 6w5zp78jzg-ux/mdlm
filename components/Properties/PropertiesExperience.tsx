@@ -23,66 +23,45 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
   const [displayIdx, setDisplayIdx] = useState(0);
   const rafRef = useRef<number>(0);
 
-  // Sonido UI sistema — estilo PS5/Xbox startup
+  // Click limpio de UI luxury
   const playClick = () => {
     try {
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
       const now = ctx.currentTime;
 
-      // Capa 1 — sweep ascendente (carga espacial)
-      const osc1 = ctx.createOscillator();
-      const gain1 = ctx.createGain();
-      osc1.type = "sine";
-      osc1.frequency.setValueAtTime(120, now);
-      osc1.frequency.exponentialRampToValueAtTime(440, now + 0.35);
-      gain1.gain.setValueAtTime(0, now);
-      gain1.gain.linearRampToValueAtTime(0.12, now + 0.05);
-      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-      osc1.connect(gain1);
-      gain1.connect(ctx.destination);
-      osc1.start(now);
-      osc1.stop(now + 0.5);
+      // Click principal — tono seco y preciso
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(1200, now);
+      osc.frequency.exponentialRampToValueAtTime(600, now + 0.06);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.08);
 
-      // Capa 2 — nota de resolución (el "ping" final)
-      const osc2 = ctx.createOscillator();
-      const gain2 = ctx.createGain();
-      osc2.type = "sine";
-      osc2.frequency.setValueAtTime(660, now + 0.28);
-      osc2.frequency.exponentialRampToValueAtTime(640, now + 1.0);
-      gain2.gain.setValueAtTime(0, now + 0.28);
-      gain2.gain.linearRampToValueAtTime(0.15, now + 0.32);
-      gain2.gain.exponentialRampToValueAtTime(0.001, now + 1.1);
-      osc2.connect(gain2);
-      gain2.connect(ctx.destination);
-      osc2.start(now + 0.28);
-      osc2.stop(now + 1.1);
-
-      // Capa 3 — armónico shimmer (brillo electrónico)
-      const osc3 = ctx.createOscillator();
-      const gain3 = ctx.createGain();
-      osc3.type = "triangle";
-      osc3.frequency.setValueAtTime(1320, now + 0.28);
-      gain3.gain.setValueAtTime(0, now + 0.28);
-      gain3.gain.linearRampToValueAtTime(0.04, now + 0.32);
-      gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
-      osc3.connect(gain3);
-      gain3.connect(ctx.destination);
-      osc3.start(now + 0.28);
-      osc3.stop(now + 0.7);
-
-      // Capa 4 — sub bajo (presencia de sistema)
-      const osc4 = ctx.createOscillator();
-      const gain4 = ctx.createGain();
-      osc4.type = "sine";
-      osc4.frequency.setValueAtTime(55, now);
-      osc4.frequency.exponentialRampToValueAtTime(80, now + 0.3);
-      gain4.gain.setValueAtTime(0, now);
-      gain4.gain.linearRampToValueAtTime(0.18, now + 0.04);
-      gain4.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-      osc4.connect(gain4);
-      gain4.connect(ctx.destination);
-      osc4.start(now);
-      osc4.stop(now + 0.35);
+      // Noise burst — cuerpo del click
+      const len = ctx.sampleRate * 0.012;
+      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i/len, 6);
+      }
+      const noise = ctx.createBufferSource();
+      noise.buffer = buf;
+      const hpf = ctx.createBiquadFilter();
+      hpf.type = "highpass";
+      hpf.frequency.value = 2000;
+      const ng = ctx.createGain();
+      ng.gain.setValueAtTime(0.15, now);
+      ng.gain.exponentialRampToValueAtTime(0.001, now + 0.012);
+      noise.connect(hpf);
+      hpf.connect(ng);
+      ng.connect(ctx.destination);
+      noise.start(now);
+      noise.stop(now + 0.012);
 
     } catch(e) {}
   };
