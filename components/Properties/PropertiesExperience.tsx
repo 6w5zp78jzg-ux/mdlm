@@ -23,46 +23,25 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
   const [displayIdx, setDisplayIdx] = useState(0);
   const rafRef = useRef<number>(0);
 
-  // Click limpio de UI luxury
+  // Click normal de ratón
   const playClick = () => {
     try {
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
       const now = ctx.currentTime;
-
-      // Click principal — tono seco y preciso
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(1200, now);
-      osc.frequency.exponentialRampToValueAtTime(600, now + 0.06);
-      gain.gain.setValueAtTime(0.2, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.08);
-
-      // Noise burst — cuerpo del click
-      const len = ctx.sampleRate * 0.012;
+      const len = ctx.sampleRate * 0.008;
       const buf = ctx.createBuffer(1, len, ctx.sampleRate);
       const data = buf.getChannelData(0);
       for (let i = 0; i < len; i++) {
-        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i/len, 6);
+        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i/len, 3);
       }
       const noise = ctx.createBufferSource();
       noise.buffer = buf;
-      const hpf = ctx.createBiquadFilter();
-      hpf.type = "highpass";
-      hpf.frequency.value = 2000;
-      const ng = ctx.createGain();
-      ng.gain.setValueAtTime(0.15, now);
-      ng.gain.exponentialRampToValueAtTime(0.001, now + 0.012);
-      noise.connect(hpf);
-      hpf.connect(ng);
-      ng.connect(ctx.destination);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.3, now);
+      noise.connect(g);
+      g.connect(ctx.destination);
       noise.start(now);
-      noise.stop(now + 0.012);
-
+      noise.stop(now + 0.008);
     } catch(e) {}
   };
   const scrollAccum = useRef(0);
