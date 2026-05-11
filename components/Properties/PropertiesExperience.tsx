@@ -23,59 +23,73 @@ export default function PropertiesExperience({ properties, locale, filters }: Pr
   const [displayIdx, setDisplayIdx] = useState(0);
   const rafRef = useRef<number>(0);
 
-  // Sonido vuelta completa dial Rolex — 28 clicks en 0.8s con decaimiento progresivo
+  // Chime cristalino — copa de cristal Baccarat
   const playClick = () => {
     try {
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
       const now = ctx.currentTime;
-      const TOTAL_CLICKS = 28;
-      const DURATION = 0.72;
 
-      for (let c = 0; c < TOTAL_CLICKS; c++) {
-        // Aceleración inicial, constante en el medio, desaceleración al final
-        const progress = c / (TOTAL_CLICKS - 1);
-        const eased = progress < 0.2
-          ? progress * 5 * 0.3                          // arranque rápido
-          : progress > 0.8
-            ? 0.3 + (progress - 0.2) * 0.875            // desaceleración final
-            : 0.06 + progress * 0.8;                     // velocidad constante
+      // Nota fundamental — cristal resonante 880Hz (A5)
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = "sine";
+      osc1.frequency.setValueAtTime(880, now);
+      osc1.frequency.exponentialRampToValueAtTime(876, now + 1.2); // micro-detune natural
+      gain1.gain.setValueAtTime(0, now);
+      gain1.gain.linearRampToValueAtTime(0.18, now + 0.008);       // ataque instantáneo
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 1.4);   // decaimiento largo
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 1.4);
 
-        const clickTime = now + eased * DURATION;
+      // Armónico 2 — brillo cristalino 1760Hz (A6)
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = "sine";
+      osc2.frequency.value = 1760;
+      gain2.gain.setValueAtTime(0, now);
+      gain2.gain.linearRampToValueAtTime(0.07, now + 0.006);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.7);   // decae antes
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(now);
+      osc2.stop(now + 0.7);
 
-        // Volumen decrece progresivamente — el dial pierde inercia
-        const vol = 0.13 * (1 - progress * 0.55);
+      // Armónico 3 — cuerpo 2640Hz
+      const osc3 = ctx.createOscillator();
+      const gain3 = ctx.createGain();
+      osc3.type = "sine";
+      osc3.frequency.value = 2640;
+      gain3.gain.setValueAtTime(0, now);
+      gain3.gain.linearRampToValueAtTime(0.03, now + 0.005);
+      gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+      osc3.connect(gain3);
+      gain3.connect(ctx.destination);
+      osc3.start(now);
+      osc3.stop(now + 0.35);
 
-        // Ruido blanco muy corto — tick metálico
-        const tickLen = ctx.sampleRate * 0.022;
-        const buf = ctx.createBuffer(1, tickLen, ctx.sampleRate);
-        const data = buf.getChannelData(0);
-        for (let j = 0; j < tickLen; j++) {
-          data[j] = (Math.random() * 2 - 1) * Math.pow(1 - j / tickLen, 9);
-        }
-        const src = ctx.createBufferSource();
-        src.buffer = buf;
-
-        // HPF + BPF — frecuencia del acero grabado
-        const hpf = ctx.createBiquadFilter();
-        hpf.type = "highpass";
-        hpf.frequency.value = 3800 + progress * 600; // sube levemente al girar
-
-        const bpf = ctx.createBiquadFilter();
-        bpf.type = "bandpass";
-        bpf.frequency.value = 5800;
-        bpf.Q.value = 1.8;
-
-        const gain = ctx.createGain();
-        gain.gain.setValueAtTime(vol, clickTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, clickTime + 0.018);
-
-        src.connect(hpf);
-        hpf.connect(bpf);
-        bpf.connect(gain);
-        gain.connect(ctx.destination);
-        src.start(clickTime);
-        src.stop(clickTime + 0.022);
+      // Click de impacto — el golpe suave en el cristal
+      const impactLen = ctx.sampleRate * 0.015;
+      const impactBuf = ctx.createBuffer(1, impactLen, ctx.sampleRate);
+      const impactData = impactBuf.getChannelData(0);
+      for (let j = 0; j < impactLen; j++) {
+        impactData[j] = (Math.random() * 2 - 1) * Math.pow(1 - j/impactLen, 4) * 0.3;
       }
+      const impact = ctx.createBufferSource();
+      impact.buffer = impactBuf;
+      const impactHpf = ctx.createBiquadFilter();
+      impactHpf.type = "highpass";
+      impactHpf.frequency.value = 2000;
+      const impactGain = ctx.createGain();
+      impactGain.gain.setValueAtTime(0.15, now);
+      impactGain.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
+      impact.connect(impactHpf);
+      impactHpf.connect(impactGain);
+      impactGain.connect(ctx.destination);
+      impact.start(now);
+      impact.stop(now + 0.015);
+
     } catch(e) {}
   };
   const scrollAccum = useRef(0);
