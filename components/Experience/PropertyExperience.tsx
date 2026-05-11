@@ -8,6 +8,7 @@ import Navbar from "./Navbar";
 import ScrollIndicator from "./ScrollIndicator";
 import VideoSection from "./VideoSection";
 import GallerySection from "./GallerySection";
+import PrivateAccessForm from "./PrivateAccessForm";
 
 interface Props {
   property: Property;
@@ -63,6 +64,11 @@ export default function PropertyExperience({ property, locale }: Props) {
           ubicacion={property.ubicacion}
         />
       </div>
+        <PrivateAccessForm
+          locale={urlLocale}
+          propertyTitle={property.titulo[lang]}
+          propertySlug={property.slug}
+        />
       {/* LIGHTBOX — fuera del stageRef */}
       {lightbox && (
         <div
