@@ -1,0 +1,30 @@
+MILLION DOLLARS LISTING MARBELLA — PENDIENTE
+=============================================
+Fecha: 11 Mayo 2026
+
+FUNCIONAL CRÍTICO
+-----------------
+[ ] Panel admin para subir propiedades con traducción automática
+[ ] Formulario de contacto en el template de propiedad
+[ ] Videos reales por propiedad (actualmente las 3 usan el mismo video)
+[ ] Campo "tipo" en Supabase para que el filtro villa/apartment/etc funcione
+
+VISUAL PENDIENTE
+----------------
+[ ] Logo — rediseño completo
+[ ] Paleta de colores definida y coherente en toda la web
+[ ] Lightbox de galería — mejorar diseño
+
+TÉCNICO
+-------
+[ ] Página de resultados vacíos — mejorar diseño
+[ ] SEO dinámico por propiedad (meta tags, og:image)
+[ ] Selector de idioma en mobile — se sale de pantalla
+
+NEGOCIO (PRIORIDAD ALTA)
+------------------------
+[ ] Formulario de contacto con captación de leads
+[ ] Integración email (Resend / SendGrid)
+
+=============================================
+Score PageSpeed: 98 Rendimiento / 100 Accesibilidad / 100 SEO
